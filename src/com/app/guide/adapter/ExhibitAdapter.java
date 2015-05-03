@@ -62,10 +62,10 @@ public class ExhibitAdapter extends ArrayAdapter<Exhibit>{
 	
 	private void bindView(ViewHolder viewHolder,View convertView){
 		viewHolder.ivIcon = (ImageView)convertView.findViewById(R.id.exhibit_list_item_iv_icon);
-		viewHolder.tvName = (TextView)convertView.findViewById(R.id.exhibit_list_item_tv_name);
-		viewHolder.tvAddress = (TextView)convertView.findViewById(R.id.exhibit_list_item_tv_address);
-		viewHolder.tvDynasty = (TextView)convertView.findViewById(R.id.exhibit_list_item_tv_dynasty);
-		viewHolder.tvIntroduction = (TextView)convertView.findViewById(R.id.exhibit_list_item_tv_introduction);
+		viewHolder.tvName = (TextView)convertView.findViewById(R.id.item_exhibit_tv_name);
+		viewHolder.tvAddress = (TextView)convertView.findViewById(R.id.item_exhibit_tv_address);
+		viewHolder.tvDynasty = (TextView)convertView.findViewById(R.id.item_exhibit_tv_dynasty);
+		viewHolder.tvIntroduction = (TextView)convertView.findViewById(R.id.item_exhibit_tv_introduction);
 		convertView.setTag(viewHolder);
 		
 	}

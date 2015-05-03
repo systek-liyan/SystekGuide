@@ -4,8 +4,8 @@
     android:layout_height="match_parent" >
 
     <ListView 
-        android:id="@+id/frag_menu_lv_setting"
-        android:layout_height="wrap_content"
+        android:id="@+id/frag_menu_lv_menu"
+        android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 
 </LinearLayout>

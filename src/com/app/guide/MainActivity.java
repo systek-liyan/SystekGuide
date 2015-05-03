@@ -3,6 +3,7 @@ package com.app.guide;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.actionbarsherlock.view.Menu;
 import com.app.guide.ui.BaseActivity;
 import com.app.guide.ui.CityActivity;
 
@@ -16,5 +17,5 @@ public class MainActivity extends BaseActivity {
         Intent intent = new Intent(MainActivity.this, CityActivity.class);
         startActivity(intent);
     }
-
+    
 }

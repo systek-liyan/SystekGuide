@@ -16,6 +16,7 @@ import android.text.SpannableString;
 import android.text.style.ImageSpan;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -25,6 +26,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.actionbarsherlock.view.Menu;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
 import com.app.guide.bean.Exhibit;
@@ -117,6 +119,8 @@ public class MuseumIntroduceFragment extends Fragment{
 			tipsGroup.addView(imageView,layoutParams);
 		}
 	}
+	
+	
 	
 	
 	@Override
@@ -249,6 +253,7 @@ public class MuseumIntroduceFragment extends Fragment{
 			}
 		};
 	}
+	
 	
 	
 }

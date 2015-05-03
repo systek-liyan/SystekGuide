@@ -6,5 +6,7 @@
     <dimen name="slidingmenu_offset">90dp</dimen>
     <dimen name="shadow_width">15dp</dimen>
     <dimen name="list_item_exhibit_icon_size">90dp</dimen>
-
+	<dimen name="list_item_menu_icon_size">40dp</dimen>
+	<dimen name="btn_height">40dp</dimen>
+	<dimen name="btn_width">50dp</dimen>
 </resources>

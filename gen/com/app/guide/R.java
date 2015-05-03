@@ -936,7 +936,10 @@ containing a value of this type.
          */
         public static final int activity_horizontal_margin=0x7f09000f;
         public static final int activity_vertical_margin=0x7f090010;
+        public static final int btn_height=0x7f090015;
+        public static final int btn_width=0x7f090016;
         public static final int list_item_exhibit_icon_size=0x7f090013;
+        public static final int list_item_menu_icon_size=0x7f090014;
         public static final int shadow_width=0x7f090012;
         public static final int slidingmenu_offset=0x7f090011;
     }
@@ -1074,7 +1077,14 @@ containing a value of this type.
         public static final int list_item_arrow=0x7f020082;
         public static final int page_indicator_focused=0x7f020083;
         public static final int page_indicator_unfocused=0x7f020084;
-        public static final int shadow=0x7f020085;
+        public static final int search_edittext_shape=0x7f020085;
+        public static final int search_icon=0x7f020086;
+        public static final int shadow=0x7f020087;
+        public static final int sliding_menu_back=0x7f020088;
+        public static final int sliding_menu_city=0x7f020089;
+        public static final int sliding_menu_download=0x7f02008a;
+        public static final int sliding_menu_more=0x7f02008b;
+        public static final int sliding_menu_setting=0x7f02008c;
     }
     public static final class id {
         public static final int abs__action_bar=0x7f060026;
@@ -1116,7 +1126,7 @@ containing a value of this type.
         public static final int abs__textButton=0x7f060019;
         public static final int abs__title=0x7f060021;
         public static final int abs__up=0x7f060011;
-        public static final int action_settings=0x7f060060;
+        public static final int action_settings=0x7f060061;
         public static final int city_btn_loacte=0x7f060038;
         public static final int city_dialog=0x7f06003a;
         public static final int city_list=0x7f060039;
@@ -1124,10 +1134,6 @@ containing a value of this type.
         public static final int disableHome=0x7f06000f;
         public static final int edit_query=0x7f06002c;
         public static final int exhibit_list_item_iv_icon=0x7f060056;
-        public static final int exhibit_list_item_tv_address=0x7f060058;
-        public static final int exhibit_list_item_tv_dynasty=0x7f060059;
-        public static final int exhibit_list_item_tv_introduction=0x7f06005a;
-        public static final int exhibit_list_item_tv_name=0x7f060057;
         public static final int frag_follow_guide_btn_set_distance=0x7f060046;
         public static final int frag_follow_guide_btn_set_staytime=0x7f060048;
         public static final int frag_follow_guide_btn_start=0x7f060044;
@@ -1141,13 +1147,12 @@ containing a value of this type.
         public static final int frag_main_pager_tips_group=0x7f06004d;
         public static final int frag_main_sv=0x7f060049;
         public static final int frag_main_tv_introduction=0x7f06004e;
-        public static final int frag_menu_lv_setting=0x7f06004f;
+        public static final int frag_menu_lv_menu=0x7f06004f;
         public static final int frag_subject_lv_exhibits=0x7f060053;
         public static final int frag_subject_select_btn_finish=0x7f060051;
         public static final int frag_subject_select_invis_layout=0x7f060052;
         public static final int frag_subject_select_tv_title=0x7f060050;
         public static final int fullscreen=0x7f060003;
-        public static final int grid_item_btn=0x7f06005b;
         public static final int homeAsUp=0x7f06000c;
         public static final int home_realtabcontent=0x7f06003c;
         public static final int home_tab_course=0x7f06003f;
@@ -1157,8 +1162,14 @@ containing a value of this type.
         public static final int home_tab_set=0x7f060041;
         public static final int item_city_alpha=0x7f060054;
         public static final int item_city_name=0x7f060055;
-        public static final int label_group_item_gridview=0x7f06005d;
-        public static final int label_group_item_tv=0x7f06005c;
+        public static final int item_exhibit_tv_address=0x7f060058;
+        public static final int item_exhibit_tv_dynasty=0x7f060059;
+        public static final int item_exhibit_tv_introduction=0x7f06005a;
+        public static final int item_exhibit_tv_name=0x7f060057;
+        public static final int item_label_grid_btn=0x7f06005b;
+        public static final int item_label_group_gridview=0x7f06005e;
+        public static final int item_label_group_tv=0x7f06005d;
+        public static final int item_menu_tv_title=0x7f06005c;
         public static final int left=0x7f060000;
         public static final int listMode=0x7f060008;
         public static final int margin=0x7f060002;
@@ -1169,8 +1180,8 @@ containing a value of this type.
         public static final int showCustom=0x7f06000e;
         public static final int showHome=0x7f06000b;
         public static final int showTitle=0x7f06000d;
-        public static final int sliding_container=0x7f06005e;
-        public static final int slidingmenumain=0x7f06005f;
+        public static final int sliding_container=0x7f06005f;
+        public static final int slidingmenumain=0x7f060060;
         public static final int tabMode=0x7f060009;
         public static final int useLogo=0x7f06000a;
         public static final int wrap_content=0x7f060006;
@@ -1212,11 +1223,13 @@ containing a value of this type.
         public static final int item_city=0x7f03001e;
         public static final int item_exhibit=0x7f03001f;
         public static final int item_label_grid_view=0x7f030020;
-        public static final int label_group=0x7f030021;
-        public static final int sherlock_spinner_dropdown_item=0x7f030022;
-        public static final int sherlock_spinner_item=0x7f030023;
-        public static final int sliding_menu_left=0x7f030024;
-        public static final int slidingmenumain=0x7f030025;
+        public static final int item_menu=0x7f030021;
+        public static final int label_group=0x7f030022;
+        public static final int search_layout=0x7f030023;
+        public static final int sherlock_spinner_dropdown_item=0x7f030024;
+        public static final int sherlock_spinner_item=0x7f030025;
+        public static final int sliding_menu_left=0x7f030026;
+        public static final int slidingmenumain=0x7f030027;
     }
     public static final class menu {
         public static final int city=0x7f0d0000;

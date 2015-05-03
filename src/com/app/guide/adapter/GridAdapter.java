@@ -48,7 +48,7 @@ public class GridAdapter extends BaseAdapter{
 		Button btnItem;
 		if(converView == null){
 			converView = LayoutInflater.from(mContext).inflate(R.layout.item_label_grid_view, root,false);
-			btnItem = (Button) converView.findViewById(R.id.grid_item_btn);
+			btnItem = (Button) converView.findViewById(R.id.item_label_grid_btn);
 			converView.setTag(btnItem);
 		}else{
 			btnItem = (Button)converView.getTag();

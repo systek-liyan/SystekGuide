@@ -45,8 +45,8 @@ public class SelectorView extends LinearLayout{
 		dm = new DisplayMetrics();
 		WindowManager manager = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
 		manager.getDefaultDisplay().getMetrics(dm);
-		tvTitle = (TextView)findViewById(R.id.label_group_item_tv);
-		gvItems = (GridView)findViewById(R.id.label_group_item_gridview);
+		tvTitle = (TextView)findViewById(R.id.item_label_group_tv);
+		gvItems = (GridView)findViewById(R.id.item_label_group_gridview);
 		tvTitle.setText(items.get(0));
 		setGridView();
 	}

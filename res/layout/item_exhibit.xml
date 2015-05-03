@@ -20,7 +20,7 @@
 	    <!-- name -->
 		<TextView 
 		    android:text="name"
-		    android:id="@+id/exhibit_list_item_tv_name"
+		    android:id="@+id/item_exhibit_tv_name"
 		    android:textAppearance="@style/ExhibitTitleTextAppearance"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"/>	   
@@ -28,30 +28,30 @@
 		<!-- address -->	    
 		<TextView 
 		    android:text="address"
-		    android:layout_toRightOf="@id/exhibit_list_item_tv_name"
-		    android:layout_alignTop="@id/exhibit_list_item_tv_name"
+		    android:layout_toRightOf="@id/item_exhibit_tv_name"
+		    android:layout_alignTop="@id/item_exhibit_tv_name"
 		    android:layout_marginLeft="20dp"
-		    android:id="@+id/exhibit_list_item_tv_address"
+		    android:id="@+id/item_exhibit_tv_address"
 		    android:textAppearance="@style/ExhibitHintTextAppearance"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"/>	   
 		
 		<LinearLayout 
-		    android:layout_below="@id/exhibit_list_item_tv_name"
+		    android:layout_below="@id/item_exhibit_tv_name"
 		    android:orientation="vertical"
 		    android:layout_marginTop="5dp"
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent">
 		    <!-- dynasty -->	    
 			<TextView 
-			    android:id="@+id/exhibit_list_item_tv_dynasty"
+			    android:id="@+id/item_exhibit_tv_dynasty"
 			    android:textAppearance="@style/ExhibitContentTextAppearance"
 			    android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"/>
 				   
 			<!-- introduction -->
 			<TextView 
-			    android:id="@+id/exhibit_list_item_tv_introduction"
+			    android:id="@+id/item_exhibit_tv_introduction"
 			    android:textAppearance="@style/ExhibitContentTextAppearance"
 			    android:layout_marginRight="15dp"
 			    android:layout_width="wrap_content"
