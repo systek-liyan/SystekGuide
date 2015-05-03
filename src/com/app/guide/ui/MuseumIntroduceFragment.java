@@ -30,6 +30,7 @@ import com.actionbarsherlock.view.Menu;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
 import com.app.guide.bean.Exhibit;
+import com.app.guide.widget.HeaderLayout;
 
 /**
  * 博物馆主页fragment
@@ -43,7 +44,7 @@ public class MuseumIntroduceFragment extends Fragment{
 	private final static int[] IMAGE_RESOURCES = {R.drawable.home_tab_main_normal_img,R.drawable.home_tab_follow_normal_img,R.drawable.home_tab_subject_normal_img};
 	private LayoutInflater mInflater;
 	private LinearLayout headerLayout;
-	
+	private HeaderLayout fragHeader;
 	/**
 	 * store the imageView which shows the pictures of museum
 	 */
@@ -151,6 +152,10 @@ public class MuseumIntroduceFragment extends Fragment{
 	 */
 	private void initViews() {
 		if(rootView == null) return ;
+		//获取frag header
+		fragHeader = (HeaderLayout)rootView.findViewById(R.id.frag_header_main);
+		fragHeader.setTitle("XX博物馆");
+		
 		//获取header layout
 		headerLayout = (LinearLayout)mInflater.inflate(R.layout.frag_main_header, null);
 		

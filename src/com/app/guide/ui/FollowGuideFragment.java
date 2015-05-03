@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.app.guide.R;
+import com.app.guide.widget.HeaderLayout;
 import com.app.guide.widget.LyricView;
 import com.estimote.sdk.Beacon;
 import com.yetwish.libs.BeaconSearcher;
@@ -32,6 +33,7 @@ public class FollowGuideFragment extends Fragment implements OnRangingListener{
 	 */
 	private View rootView;
 	
+	private HeaderLayout fragHeader;
 	
 	/**
 	 * the view which show the lyric.
@@ -131,7 +133,10 @@ public class FollowGuideFragment extends Fragment implements OnRangingListener{
 	private void initViews() {
 		if (rootView == null)
 			return;
-
+		//init fragment header
+		fragHeader = (HeaderLayout) rootView.findViewById(R.id.frag_header_follow_guide);
+		fragHeader.setTitle("青铜绝唱——莲鹤方壶");
+		fragHeader.setSearchingVisible(false);
 		// initViews
 		mLyricView = (LyricView) rootView
 				.findViewById(R.id.frag_follow_guide_lyricview);
@@ -187,8 +192,8 @@ public class FollowGuideFragment extends Fragment implements OnRangingListener{
 	@Override
 	public void onResume() {
 		super.onResume();
-		if(beaconSearcher.prepareBluetooth())
-			beaconSearcher.startRanging();
+//		if(beaconSearcher.prepareBluetooth())
+//			beaconSearcher.startRanging();
 	}
 	
 	/**

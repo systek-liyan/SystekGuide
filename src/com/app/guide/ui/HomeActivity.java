@@ -11,9 +11,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.view.Window;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.app.guide.AppManager;
 import com.app.guide.R;
 import com.app.guide.adapter.FragmentTabAdapter;
@@ -35,7 +37,7 @@ public class HomeActivity extends BaseActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 		timer = new Timer();
@@ -52,7 +54,6 @@ public class HomeActivity extends BaseActivity {
 				// TODO: handle exception
 			}
 		}
-		
 		/**
 		 * fragments = new ArrayList<Fragment>();
 		MuseumIntroduceFragment museumFragment = new MuseumIntroduceFragment();
@@ -68,6 +69,12 @@ public class HomeActivity extends BaseActivity {
 		new FragmentTabAdapter(this, fragments, R.id.home_realtabcontent,
 				mRadioGroup);
 	}
+	
+	@Override
+	protected boolean isFullScreen() {
+		return true;
+	}
+	
 
 	@Override
 	public void onBackPressed() {
@@ -142,6 +149,10 @@ public class HomeActivity extends BaseActivity {
 				followGuideFragment.onBluetoothResult(requestCode,resultCode);
 			}//如果未打开则...
 		}
+	}
+	
+	public ActionBar getActivityActionBar(){
+		return getSupportActionBar();
 	}
 
 }

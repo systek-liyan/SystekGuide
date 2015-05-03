@@ -6,6 +6,13 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:orientation="vertical">
+        <com.app.guide.widget.HeaderLayout
+             android:paddingRight="60dp"
+             android:background="@color/myred"
+             android:id="@+id/frag_header_follow_guide"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"/>
+        
         <com.app.guide.widget.LyricView
             android:id="@+id/frag_follow_guide_lyricview"
             android:layout_width="match_parent"

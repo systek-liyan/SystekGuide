@@ -1,0 +1,87 @@
+package com.app.guide.widget;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.app.guide.R;
+
+/**
+ * fragment 头部view，定义setting button的点击事件，提高代码复用性
+ * @author yetwish
+ */
+public class HeaderLayout extends LinearLayout{
+
+	private ImageView ivMenu;
+	private ImageView ivSearch;
+	private TextView tvTitle;
+	private MyClickListener listener;
+	public HeaderLayout(Context context, AttributeSet attrs){
+		super(context,attrs);
+		LayoutInflater.from(context).inflate(R.layout.frag_header, this);
+		initViews();
+	}
+	
+	private void initViews(){
+		ivMenu = (ImageView) findViewById(R.id.frag_header_iv_menu);
+		ivSearch = (ImageView) findViewById(R.id.frag_header_iv_search);
+		tvTitle = (TextView) findViewById(R.id.frag_header_tv_title);
+		listener = new MyClickListener();
+		ivMenu.setOnClickListener(listener);
+		ivSearch.setOnClickListener(listener);
+	}
+	
+	/**
+	 * 设置头部title
+	 * @param title
+	 */
+	public void setTitle(String title){
+		tvTitle.setText(title);
+	}
+	
+	/**
+	 * 设置头部背景
+	 * @param int, drawable resource
+	 */
+	public void setHeaderBackground(int res){
+		this.setBackgroundResource(res);
+	}
+	
+	/**
+	 * 设置setting按钮是否可见
+	 * @param visible
+	 */
+	public void setSettingVisible(boolean visible){
+		if(visible)
+			ivMenu.setVisibility(View.VISIBLE);
+		else 
+			ivMenu.setVisibility(View.GONE);
+	}
+	
+	/**
+	 * 设置search按钮是否可见
+	 * @param visible
+	 */
+	public void setSearchingVisible(boolean visible){
+		if(visible)
+			ivSearch.setVisibility(View.VISIBLE);
+		else 
+			ivSearch.setVisibility(View.GONE);
+	}
+	
+	private class MyClickListener implements OnClickListener{
+		@Override
+		public void onClick(View view) {
+			switch(view.getId()){
+				case R.id.frag_header_iv_menu:
+					break;
+				case R.id.frag_header_iv_search:
+					break;
+			}
+		}
+	}
+}
