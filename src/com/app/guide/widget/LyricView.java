@@ -29,7 +29,7 @@ public class LyricView extends View {
 
 	public static final int INTERVAL = 10;// 歌词每行的间隔
 	private static final int SIZE_LENGTH = 1600;// 显示歌词的高度
-	public final static int SIZE_TEXT_DISPLAY = SIZE_LENGTH / 2;
+	public final static int SIZE_TEXT_DISPLAY = 150;
 
 	private static TreeMap<Integer, LyricObject> lrc_map;
 	private float mX; // 屏幕X轴的中点，此值固定，保持歌词在X中间显示

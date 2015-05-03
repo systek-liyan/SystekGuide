@@ -46,6 +46,11 @@
             android:name="com.app.guide.ui.HomeActivity"
             android:label="@string/title_activity_home" >
         </activity>
+        
+        <service
+            android:name="com.estimote.sdk.service.BeaconService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

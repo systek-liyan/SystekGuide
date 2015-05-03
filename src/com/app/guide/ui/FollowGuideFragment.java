@@ -187,7 +187,8 @@ public class FollowGuideFragment extends Fragment implements OnRangingListener{
 	@Override
 	public void onResume() {
 		super.onResume();
-		beaconSearcher.startRanging();
+		if(beaconSearcher.prepareBluetooth())
+			beaconSearcher.startRanging();
 	}
 	
 	/**
@@ -265,6 +266,11 @@ public class FollowGuideFragment extends Fragment implements OnRangingListener{
 				break;
 			}
 		}
+	}
+	
+	public void onBluetoothResult(int requestCode,int resultCode){
+		if(beaconSearcher.onBluetoothResult(requestCode, resultCode))
+			beaconSearcher.startRanging();
 	}
 
 }

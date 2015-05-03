@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,6 +19,7 @@ import com.app.guide.R;
 import com.app.guide.adapter.FragmentTabAdapter;
 import com.app.guide.ui.MenuFragment.HomeClick;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.yetwish.libs.BeaconSearcher;
 
 public class HomeActivity extends BaseActivity {
 
@@ -129,6 +131,17 @@ public class HomeActivity extends BaseActivity {
 			getSlidingMenu().toggle();
 		}
 		super.onPause();
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode,resultCode,data);
+		if(requestCode == BeaconSearcher.REQUEST_ENABLE_BT){
+			if(resultCode == RESULT_OK){
+				FollowGuideFragment followGuideFragment = (FollowGuideFragment)fragments.get(1);
+				followGuideFragment.onBluetoothResult(requestCode,resultCode);
+			}//如果未打开则...
+		}
 	}
 
 }
