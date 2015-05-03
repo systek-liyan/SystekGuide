@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android:id="@+id/home_realtabcontent"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" />
+
+    <RadioGroup
+        android:id="@+id/home_tab_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ccc"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingTop="2dp" >
+
+        <RadioButton
+            android:id="@+id/home_tab_main"
+            style="@style/style_main_tab"
+			android:drawableTop="@drawable/home_tab_main_bg"
+            android:checked="true"
+            android:text="@string/tab_main_one" />
+
+        <RadioButton
+            android:id="@+id/home_tab_course"
+            style="@style/style_main_tab"
+            android:drawableTop="@drawable/home_tab_follow_bg"
+            android:text="@string/tab_main_two" />
+
+        <RadioButton
+            android:id="@+id/home_tab_my"
+            style="@style/style_main_tab"
+            android:drawableTop="@drawable/home_tab_subject_bg"
+            android:text="@string/tab_main_three" />
+
+        <RadioButton
+            android:id="@+id/home_tab_set"
+            style="@style/style_main_tab"
+            android:drawableTop="@drawable/home_tab_map_bg"
+            android:text="@string/tab_main_four" />
+    </RadioGroup>
+
+</LinearLayout>

@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">TourismGuide</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">GuideApp</string>
     <string name="action_settings">Settings</string>
-	<string name="museum_introduction">上海博物馆（Shanghai Museum）是一座大型的中国古代艺术博物馆，上圆下方的造型寓意中国"天圆地方”之说。陈列面积2,800平方米。馆藏珍贵文物14万件，其中尤其是以青铜器、陶瓷器、书法、绘画为特色。收藏了来自青铜器之乡—宝鸡及河南、湖南等地的青铜器，藏品之丰富、质量之精湛，在国内外享有盛誉，有文物界“半壁江山”之誉。</string>	
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_city">CityActivity</string>
+    <string name="city_location">定位城市：</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="tab_main_one">主页</string>
+    <string name="tab_main_two">随行导游</string>
+    <string name="tab_main_three">专题导游</string>
+    <string name="tab_main_four">地图</string>
+	
+    <string name="frag_follow_tab_pictures">图片讲解</string>
+    <string name="frag_follow_tab_exhibitions">展品列表</string>
 </resources>

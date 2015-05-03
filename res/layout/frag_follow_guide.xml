@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout 
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical">
+        <com.app.guide.widget.LyricView
+            android:id="@+id/frag_follow_guide_lyricview"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"/>
+        <!-- 图片讲解标题栏 -->
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingRight="10dp">
+            <ImageView 
+                android:contentDescription="back"
+                android:src="@drawable/fragment_follow_guide_back"
+                android:id="@+id/frag_follow_guide_iv_back"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
+            <TextView
+                android:text="@string/frag_follow_tab_pictures"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/ExhibitTitleTextAppearance"/>
+            <!-- temp button -->
+            <Button 
+                android:id="@+id/frag_follow_guide_btn_start"
+                android:background="@drawable/btn_frag_subject_bg"
+                android:textColor="@color/color_white"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"/>
+        </LinearLayout>
+        
+         <LinearLayout 
+           android:orientation="horizontal"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content">
+           <TextView 
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="10dp"
+               android:layout_gravity="center"
+               android:text="Distance"/>
+            <EditText 
+                android:id="@+id/frag_follow_guide_et_broadcast_distance"
+	            android:layout_weight="1"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:hint="Please type a double"
+	            android:layout_gravity="center"
+	            android:inputType="number"/>
+           <Button 
+               android:id="@+id/frag_follow_guide_btn_set_distance"
+               android:textColor="@color/color_white"
+               android:layout_margin="10dp"
+               android:textSize="14sp"
+               android:background="@drawable/btn_frag_subject_bg"
+               android:text="Confirm"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"/> 
+       </LinearLayout>
+        
+        <LinearLayout 
+           android:orientation="horizontal"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content">
+           <TextView 
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="10dp"
+               android:layout_gravity="center"
+               android:text="StayTime"/>
+            <EditText 
+	            android:id="@+id/frag_follow_guide_et_staytime"
+	            android:layout_weight="1"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:hint="Please type an integer"
+	            android:inputType="number"/>
+           <Button 
+               android:textColor="@color/color_white"
+               android:layout_margin="10dp"
+               android:textSize="14sp"
+               android:id="@+id/frag_follow_guide_btn_set_staytime"
+               android:background="@drawable/btn_frag_subject_bg"
+               android:text="Confirm"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"/> 
+       </LinearLayout>
+      
+    </LinearLayout>
+</ScrollView>

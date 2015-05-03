@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp" >
+
+            <TextView
+                style="@style/text_large_black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="30dp"
+                android:text="@string/city_location" />
+
+            <Button
+                android:id="@+id/city_btn_loacte"
+                style="@style/text_ac_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="40dp"
+                android:background="@drawable/btn_locatecity_bg"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:text="正在定位..."
+                android:textSize="20sp" />
+        </RelativeLayout>
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="@color/lightgray" />
+
+        <ListView
+            android:id="@+id/city_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:dividerHeight="2dp"
+            android:divider="@color/lightgray" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/city_dialog"
+        android:layout_width="80.0dip"
+        android:layout_height="80.0dip"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@color/myblack"
+        android:textSize="30.0sp"
+        android:visibility="gone" />
+
+    <com.app.guide.widget.QuicLocationBar
+        android:id="@+id/city_loactionbar"
+        android:layout_width="30.0dip"
+        android:layout_height="fill_parent"
+        android:paddingBottom="2dp"
+        android:layout_gravity="right|center" />
+
+</FrameLayout>
