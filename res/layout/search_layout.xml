@@ -17,6 +17,7 @@
 	    android:textSize="16sp"
 	    android:hint="请输入关键字"/>
 	<Button 
+	    android:id="@+id/search_header_btn"
 	    android:layout_marginRight="20dp"
 	    android:layout_marginTop="10dp"
 	    android:layout_marginBottom="10dp"

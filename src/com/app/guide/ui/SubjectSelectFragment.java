@@ -125,8 +125,7 @@ public class SubjectSelectFragment extends Fragment {
 		getSelectorData();
 		getSelectedData();
 		getExhibitData();
-		exhibitAdapter = new ExhibitAdapter(getActivity(),
-				R.layout.item_exhibit, exhibits);
+		exhibitAdapter = new ExhibitAdapter(getActivity(),exhibits,R.layout.item_exhibit);
 	}
 
 	/**
@@ -273,6 +272,17 @@ public class SubjectSelectFragment extends Fragment {
 				invisView.updateView(selectedData);
 			}
 		}
+	}
+	
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		rootView = null;
 	}
 	
 	

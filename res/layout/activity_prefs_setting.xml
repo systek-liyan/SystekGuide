@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+     <LinearLayout 
+           android:orientation="horizontal"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content">
+           <TextView 
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="10dp"
+               android:layout_gravity="center"
+               android:text="Distance"/>
+            <EditText 
+                android:id="@+id/frag_follow_guide_et_broadcast_distance"
+	            android:layout_weight="1"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:hint="Please type a double"
+	            android:layout_gravity="center"
+	            android:inputType="number"/>
+           <Button 
+               android:id="@+id/frag_follow_guide_btn_set_distance"
+               android:textColor="@color/color_white"
+               android:layout_margin="10dp"
+               android:textSize="14sp"
+               android:background="@drawable/btn_frag_subject_bg"
+               android:text="Confirm"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"/> 
+       </LinearLayout>
+        
+        <LinearLayout 
+           android:orientation="horizontal"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content">
+           <TextView 
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="10dp"
+               android:layout_gravity="center"
+               android:text="StayTime"/>
+            <EditText 
+	            android:id="@+id/frag_follow_guide_et_staytime"
+	            android:layout_weight="1"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:hint="Please type an integer"
+	            android:inputType="number"/>
+           <Button 
+               android:textColor="@color/color_white"
+               android:layout_margin="10dp"
+               android:textSize="14sp"
+               android:id="@+id/frag_follow_guide_btn_set_staytime"
+               android:background="@drawable/btn_frag_subject_bg"
+               android:text="Confirm"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"/> 
+       </LinearLayout>
+
+</LinearLayout>

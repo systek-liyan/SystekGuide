@@ -1,6 +1,7 @@
 package com.app.guide.widget;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.guide.R;
+import com.app.guide.ui.SearchActivity;
 
 /**
  * fragment 头部view，定义setting button的点击事件，提高代码复用性
@@ -20,8 +22,10 @@ public class HeaderLayout extends LinearLayout{
 	private ImageView ivSearch;
 	private TextView tvTitle;
 	private MyClickListener listener;
+	private Context mContext;
 	public HeaderLayout(Context context, AttributeSet attrs){
 		super(context,attrs);
+		mContext = context;
 		LayoutInflater.from(context).inflate(R.layout.frag_header, this);
 		initViews();
 	}
@@ -80,6 +84,8 @@ public class HeaderLayout extends LinearLayout{
 				case R.id.frag_header_iv_menu:
 					break;
 				case R.id.frag_header_iv_search:
+					Intent intent = new Intent(mContext,SearchActivity.class);
+					mContext.startActivity(intent);
 					break;
 			}
 		}

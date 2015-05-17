@@ -118,7 +118,7 @@ public class LyricView extends View {
 		// Log.e("tag", "heightSpec:"+heightSpec);
 		paint = new Paint();
 		paint.setTextAlign(Paint.Align.CENTER);
-		paint.setColor(Color.BLACK);
+		paint.setColor(Color.WHITE);
 		paint.setAntiAlias(true);
 		paint.setDither(true);
 		paint.setAlpha(180);
@@ -150,7 +150,7 @@ public class LyricView extends View {
 				max = lrcStrLength.lrc.length();
 			}
 		}
-		wordSize = (int) (width / max);
+		wordSize = (int) (width / max /1.5);
 	}
 
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {

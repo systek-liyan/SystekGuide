@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillViewport="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout 
+    <LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:orientation="vertical">
@@ -12,95 +13,123 @@
              android:id="@+id/frag_header_follow_guide"
              android:layout_width="match_parent"
              android:layout_height="wrap_content"/>
-        
-        <com.app.guide.widget.LyricView
-            android:id="@+id/frag_follow_guide_lyricview"
+        <!-- 文字讲解 -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="300dp"/>
-        <!-- 图片讲解标题栏 -->
-        <LinearLayout 
+            android:layout_height="400dp">
+            <ImageView 
+                android:src="@drawable/pictures_no"
+                android:id="@+id/frag_follow_guide_iv_bg"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"/>
+            <com.app.guide.widget.LyricView
+	            android:id="@+id/frag_follow_guide_lyricview"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"/>
+        </FrameLayout>
+        <!-- 进度条 -->
+        <ProgressBar 
+            android:id="@+id/frag_follow_guide_progressbar"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:max="100"
+            android:progress="40"
+            android:secondaryProgress="70"/>
+        <!-- 语音播放栏 -->
+        <RelativeLayout
+            android:background="@color/lightgray"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:paddingRight="10dp">
-            <ImageView 
-                android:contentDescription="back"
-                android:src="@drawable/fragment_follow_guide_back"
-                android:id="@+id/frag_follow_guide_iv_back"
+             <ImageView 
+                android:contentDescription="play/pause"
+                android:id="@+id/frag_follow_guide_iv_start"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:layout_width="40dp"
                 android:layout_height="40dp"/>
-            <TextView
-                android:text="@string/frag_follow_tab_pictures"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/ExhibitTitleTextAppearance"/>
+             
+            <ImageView 
+                android:contentDescription="prew"
+                android:src="@drawable/play_btn_prew"
+                android:id="@+id/frag_follow_guide_iv_back"
+                android:layout_toLeftOf="@id/frag_follow_guide_iv_start"
+                android:layout_marginRight="20dp"
+                android:layout_centerVertical="true"
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
+            
             <!-- temp button -->
-            <Button 
-                android:id="@+id/frag_follow_guide_btn_start"
-                android:background="@drawable/btn_frag_subject_bg"
-                android:textColor="@color/color_white"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"/>
-        </LinearLayout>
-        
-         <LinearLayout 
-           android:orientation="horizontal"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content">
-           <TextView 
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_marginLeft="10dp"
-               android:layout_gravity="center"
-               android:text="Distance"/>
-            <EditText 
-                android:id="@+id/frag_follow_guide_et_broadcast_distance"
-	            android:layout_weight="1"
-	            android:layout_width="0dp"
+             <ImageView 
+                android:contentDescription="next"
+                android:src="@drawable/play_btn_next"
+                android:id="@+id/frag_follow_guide_iv_next"
+                android:layout_toRightOf="@id/frag_follow_guide_iv_start"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
+        </RelativeLayout>
+		<!-- 多角度展示 -->
+    	<TextView
+	        android:text="多角度展示"
+	        android:background="@color/btn_pressed_color"
+	        android:id="@+id/frag_follow_guide_tv_title_pics"
+	        android:textSize="20sp"
+	        android:textColor="@color/title_textcolor"
+	        android:paddingLeft="20dp"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"/>
+    	 <com.app.guide.widget.MyHorizontalScrollView
+    	    android:visibility="gone"
+	        android:id="@+id/frag_follow_guide_pic_gallery_container"
+	        android:layout_width="wrap_content"
+	        android:layout_height="150dp"
+	        android:layout_gravity="bottom"
+	        android:background="@android:color/white"
+	        android:scrollbars="none" >
+
+	        <LinearLayout
+	            android:id="@+id/frag_follow_guide_pic_gallery"
+	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:hint="Please type a double"
-	            android:layout_gravity="center"
-	            android:inputType="number"/>
-           <Button 
-               android:id="@+id/frag_follow_guide_btn_set_distance"
-               android:textColor="@color/color_white"
-               android:layout_margin="10dp"
-               android:textSize="14sp"
-               android:background="@drawable/btn_frag_subject_bg"
-               android:text="Confirm"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"/> 
-       </LinearLayout>
+	            android:layout_gravity="center_vertical"
+	            android:orientation="horizontal" >
+	        </LinearLayout>
+   	 </com.app.guide.widget.MyHorizontalScrollView>
+    	
+    	
+    	<!-- 展品列表 -->
+        <TextView
+            android:id="@+id/frag_follow_guide_tv_title_exhibits"
+	        android:text="展品列表"
+	        android:textSize="20sp"
+	        android:background="@color/btn_pressed_color"
+	        android:textColor="@color/title_textcolor"
+	        android:paddingLeft="20dp"
+	        android:layout_marginTop="10dp"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"/>
         
-        <LinearLayout 
-           android:orientation="horizontal"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content">
-           <TextView 
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_marginLeft="10dp"
-               android:layout_gravity="center"
-               android:text="StayTime"/>
-            <EditText 
-	            android:id="@+id/frag_follow_guide_et_staytime"
-	            android:layout_weight="1"
-	            android:layout_width="0dp"
+         <com.app.guide.widget.MyHorizontalScrollView
+             android:visibility="gone"
+	        android:id="@+id/frag_follow_guide_exhibit_gallery_container"
+	        android:layout_width="wrap_content"
+	        android:layout_height="150dp"
+	        android:layout_gravity="bottom"
+	        android:background="@android:color/white"
+	        android:scrollbars="none" >
+
+	        <LinearLayout
+	            android:id="@+id/frag_follow_guide_exhibit_gallery"
+	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:layout_gravity="center"
-	            android:hint="Please type an integer"
-	            android:inputType="number"/>
-           <Button 
-               android:textColor="@color/color_white"
-               android:layout_margin="10dp"
-               android:textSize="14sp"
-               android:id="@+id/frag_follow_guide_btn_set_staytime"
-               android:background="@drawable/btn_frag_subject_bg"
-               android:text="Confirm"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"/> 
-       </LinearLayout>
-      
-    </LinearLayout>
+	            android:layout_gravity="center_vertical"
+	            android:orientation="horizontal" >
+	        </LinearLayout>
+    </com.app.guide.widget.MyHorizontalScrollView>
+
+     </LinearLayout>
 </ScrollView>

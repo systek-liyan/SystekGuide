@@ -6,7 +6,7 @@
     android:paddingRight="10dp"
     android:orientation="horizontal" >
     <ImageView 
-        android:id="@+id/exhibit_list_item_iv_icon"
+        android:id="@+id/item_exhibit_iv_icon"
         android:contentDescription="icon"
         android:layout_margin="5dp"
         android:layout_width="@dimen/list_item_exhibit_icon_size"

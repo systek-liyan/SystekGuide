@@ -18,7 +18,7 @@ public class CityDBManager {
 	public static final String DB_NAME = "china_city_name.db";
 	public static final String DB_PATH = "/data"
 			+ Environment.getDataDirectory().getAbsolutePath() + "/"
-			+ PACKAGE_NAME; // ���·��
+			+ PACKAGE_NAME; 
 	private Context mContext;
 	private SQLiteDatabase database;
 

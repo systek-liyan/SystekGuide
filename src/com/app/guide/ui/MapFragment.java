@@ -40,5 +40,19 @@ public class MapFragment extends Fragment{
 		return rootView;
 	}
 	
+	@Override
+	public void onDestroyView() {
+		// TODO Auto-generated method stub
+		super.onDestroyView();
+	
+	}
+	
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		rootView = null;
+	}
+	
 	
 }

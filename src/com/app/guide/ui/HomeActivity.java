@@ -45,6 +45,7 @@ public class HomeActivity extends BaseActivity {
 		for(int i = 0 ;i < fragmentClz.length;i++){
 			try {
 				Class<?> clazz = Class.forName(fragmentClz[i].getName());
+				
 				fragments.add((Fragment)clazz.newInstance());
 			} catch (ClassNotFoundException e) {
 				// TODO: handle exception

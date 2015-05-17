@@ -72,7 +72,7 @@ public class MuseumIntroduceFragment extends Fragment{
 		//获取数据
 		getImages();
 		getExhibitData();
-		exhibitAdapter = new ExhibitAdapter(activity,R.layout.item_exhibit,exhibits);
+		exhibitAdapter = new ExhibitAdapter(activity,exhibits,R.layout.item_exhibit);
 	}
 	
 	/**
@@ -246,7 +246,7 @@ public class MuseumIntroduceFragment extends Fragment{
 			
 			@Override
 			public Object instantiateItem(View container, int position) {
-				ImageView image = images.get(position%images.size());
+				ImageView image = images.get(position);
 				((ViewGroup) container).addView(image,0);
 				return image;
 				
@@ -254,11 +254,22 @@ public class MuseumIntroduceFragment extends Fragment{
 			
 			@Override
 			public void destroyItem(View container, int position, Object object) {
-				((ViewPager)container).removeView(images.get(position%images.size()));
+				((ViewPager)container).removeView(images.get(position));
 			}
 		};
 	}
 	
+	@Override
+	public void onDestroyView() {
+		// TODO Auto-generated method stub
+		super.onDestroyView();
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		rootView = null;
+	}
 	
 	
 }
