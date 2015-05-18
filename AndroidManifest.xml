@@ -53,6 +53,12 @@
             android:label="@string/title_activity_search">
         </activity>
         
+        <activity 
+            android:launchMode="singleTask"
+            android:name="com.app.guide.ui.MuseumActivity"
+            android:label="@string/title_activity_museum">
+        </activity>
+        
         <service
             android:name="com.estimote.sdk.service.BeaconService"
             android:exported="false">

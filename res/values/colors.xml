@@ -22,4 +22,6 @@
 
     <color name="list_item_pressed">#ffe0e0e0</color>
     <color name="text_color">#ff545454</color>
+    
+    <color name="separator_color">#a7a7a7</color>
 </resources>

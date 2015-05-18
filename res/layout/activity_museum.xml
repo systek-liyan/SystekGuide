@@ -11,4 +11,8 @@
 	    android:id="@+id/activity_museum_list"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"/>
+	<View 
+	    android:background="@color/darkgray"
+	    android:layout_width="match_parent"
+	    android:layout_height="1dp"/>
 </LinearLayout>

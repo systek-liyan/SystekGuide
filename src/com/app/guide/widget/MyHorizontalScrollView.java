@@ -297,9 +297,22 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 	public interface OnItemClickListener {
 		void onItemClick(View view, int position);
 	}
-
-	// public interface onLoadingMoreListener{
-	// void onLoading();
-	// void onLoadCompleted();
-	// }
+	
+	
+	/** 
+	 * TODO pause时是否需要进行回收？如果pause进行回收，则resume时要重新加载 
+	 * 回收bitmap
+	 */
+	public void onDestroy(){
+		if(!mViewPos.isEmpty()){
+			for(View view: mViewPos.keySet()){
+				ImageView iv = (ImageView) view;
+				//获取iv中的bitmap
+				iv.setDrawingCacheEnabled(true);
+				iv.getDrawingCache().recycle();
+				iv.setDrawingCacheEnabled(false);
+			}
+		}
+	}
+	
 }

@@ -3,7 +3,9 @@ package com.app.guide.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,12 +29,19 @@ public class MenuFragment extends Fragment {
 	private ListView lvMenu;
 	private List<Menu> mData;
 	
+	private static final int ITEM_CITY = 0;
+	private static final int ITEM_DOWNLOAD = 1;
+	private static final int ITEM_SETTING = 2;
+	private static final int ITEM_MORE = 3;
+	private static final int ITEM_BACK = 4;
+	
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		initData();
 	}
 	
+	@SuppressLint("InflateParams")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -54,7 +63,7 @@ public class MenuFragment extends Fragment {
 	}
 	
 	private void initData(){
-		String[] titles = { "城市选择", "下载中心", "设置", "更多", "返回" };// 返回是否需要
+		String[] titles = { "城市选择", "下载中心", "设置", "更多", "返回" };
 		int[] iconResources = { R.drawable.sliding_menu_city,
 				R.drawable.sliding_menu_download, R.drawable.sliding_menu_setting,
 				R.drawable.sliding_menu_more, R.drawable.sliding_menu_back };
@@ -77,11 +86,32 @@ public class MenuFragment extends Fragment {
 			}
 		
 		});
+		
 		lvMenu.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 					long arg3) {
+				Intent intent = null;
+				switch (position) {
+				case ITEM_CITY:
+					//返回选择城市
+					 intent = new Intent(getActivity(),CityActivity.class);
+					break;
+				case ITEM_DOWNLOAD:
+					break;
+				case ITEM_SETTING:
+					break;
+				case ITEM_MORE:
+					break;
+				case ITEM_BACK:
+					//返回到博物馆
+					intent = new Intent(getActivity(),MuseumActivity.class);
+					break;
+				}
+				if(intent != null){
+					startActivity(intent);
+				}
 			}
 			
 		});

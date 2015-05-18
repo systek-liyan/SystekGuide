@@ -14,4 +14,5 @@
 	<string name="title_activity_search">搜索</string>
     <string name="frag_follow_tab_pictures">图片讲解</string>
     <string name="frag_follow_tab_exhibitions">展品列表</string>
+    <string name="title_activity_museum">选择博物馆</string>
 </resources>

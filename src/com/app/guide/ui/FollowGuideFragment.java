@@ -7,7 +7,6 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -90,8 +89,6 @@ public class FollowGuideFragment extends Fragment implements OnRangingListener {
 	/**
 	 * store image resources for gallery
 	 */
-	private List<Integer> initData;
-
 	private List<String> galleryData;
 
 	private boolean picFlag = false;
@@ -400,6 +397,8 @@ public class FollowGuideFragment extends Fragment implements OnRangingListener {
 		super.onDestroy();
 		beaconSearcher.closeSearcher();
 		rootView = null;
+		mExhibitGallery.onDestroy();
+		mPicGallery.onDestroy();
 	}
 
 	/**
