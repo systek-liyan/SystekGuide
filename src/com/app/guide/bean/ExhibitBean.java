@@ -1,14 +1,22 @@
 package com.app.guide.bean;
 
-import java.util.List;
 
 public class ExhibitBean {
 	private String name;// 展品名
 	private String address;// 展厅
-	private String dynasty;// 展品年代
 	private String introduction;// 展品介绍
-	private List<String> labelList;//该展品拥有的标签
 	private String imgUrl;// 图标的Url地址
+
+	
+	
+	public ExhibitBean(String name, String address, String introduction,
+			String imgUrl) {
+		super();
+		this.name = name;
+		this.address = address;
+		this.introduction = introduction;
+		this.imgUrl = imgUrl;
+	}
 
 	/**
 	 * @return the name
@@ -41,21 +49,6 @@ public class ExhibitBean {
 	}
 
 	/**
-	 * @return the dynasty
-	 */
-	public String getDynasty() {
-		return dynasty;
-	}
-
-	/**
-	 * @param dynasty
-	 *            the dynasty to set
-	 */
-	public void setDynasty(String dynasty) {
-		this.dynasty = dynasty;
-	}
-
-	/**
 	 * @return the introduction
 	 */
 	public String getIntroduction() {
@@ -85,11 +78,4 @@ public class ExhibitBean {
 		this.imgUrl = imgUrl;
 	}
 
-	public List<String> getLabelList() {
-		return labelList;
-	}
-
-	public void setLabelList(List<String> labelList) {
-		this.labelList = labelList;
-	}
 }

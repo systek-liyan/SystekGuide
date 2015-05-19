@@ -8,8 +8,6 @@ import java.util.List;
 
 
 /**
- * 封装 常规Adapter,用以简化代码。
- * 新的Adapter只需继承该类，并实现convert()方法 和构造方法。
  * Created by yetwish on 2015-05-11
  */
 
@@ -45,6 +43,11 @@ public abstract class CommonAdapter<T> extends BaseAdapter{
         ViewHolder holder = ViewHolder.getHolder(mContext,convertView,mLayoutId,parent,position);
         convert(holder,position);
         return holder.getConvertView();
+    }
+    
+    public void addData(List<T> data){
+    	mData.addAll(data);
+    	notifyDataSetChanged();
     }
 
     /**

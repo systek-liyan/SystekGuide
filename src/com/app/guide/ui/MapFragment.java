@@ -1,9 +1,8 @@
 package com.app.guide.ui;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 
-import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -23,9 +22,9 @@ import android.widget.ListView;
 import android.widget.ToggleButton;
 
 import com.app.guide.R;
-import com.app.guide.adapter.CommonAdapter;
-import com.app.guide.adapter.ViewHolder;
+import com.app.guide.adapter.MapExhibitAdapter;
 import com.app.guide.bean.MapExhibitBean;
+import com.app.guide.offline.GetBeanFromSql;
 import com.app.guide.widget.MarkObject;
 import com.app.guide.widget.MarkObject.MarkClickListener;
 import com.app.guide.widget.MyMap;
@@ -38,10 +37,9 @@ public class MapFragment extends Fragment {
 	private ListView mListView;
 	private ToggleButton mToggleButton;
 	private Button loactionButton;
-	
-	private List<MapExhibitBean> mData;
+	private MapExhibitAdapter adapter;
+	private List<MapExhibitBean> mapExhibitBeans;
 
-	@SuppressLint("InflateParams")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -59,49 +57,28 @@ public class MapFragment extends Fragment {
 		mToggleButton = (ToggleButton) view.findViewById(R.id.map_tog_list);
 		loactionButton = (Button) view.findViewById(R.id.map_btn_location);
 		locaImageView = (ImageView) view.findViewById(R.id.map_location);
-		MarkObject markObject = new MarkObject();
-		markObject.setMapX(0.04f);
-		markObject.setMapY(0.5f);
-		markObject.setmBitmap(BitmapFactory.decodeResource(getResources(),
-				R.drawable.icon_marka));
-		markObject.setMarkListener(new MarkClickListener() {
 
-			@Override
-			public void onMarkClick(MarkObject object, int x, int y) {
-				// TODO Auto-generated method stub
-			}
-		});
-		sceneMap.addMark(markObject);
-		sceneMap.setShowMark(true);
-		sceneMap.setLoactionPosition(0.5f, 0.5f);
-		mData = new ArrayList<MapExhibitBean>();
-		for (int i = 0; i < 100; i++) {
-			MapExhibitBean bean = new MapExhibitBean();
-			bean.setAddress("A厅B展333");
-			bean.setName("青花人物笔海");
-			bean.setMapX(0.04f);
-			bean.setMapY(0.5f);
-			mData.add(bean);
+		sceneMap.setShowMark(false);
+		try {
+			mapExhibitBeans = GetBeanFromSql.getMapExhibit(getActivity(),
+					"test", 1);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		mListView.setAdapter(new CommonAdapter<MapExhibitBean>(getActivity(),mData,R.layout.item_map_exhibit) {
-			@Override
-			public void convert(ViewHolder holder, int position) {
-				holder.setText(R.id.item_map_exhibit_name, mData.get(position).getName())
-					.setText(R.id.item_map_exhibit_address, mData.get(position).getAddress());
-				
-			}
-		});
+		adapter = new MapExhibitAdapter(getActivity(), mapExhibitBeans);
+		mListView.setAdapter(adapter);
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				// TODO Auto-generated method stub
-				MapExhibitBean bean = mData.get(position);
-				sceneMap.adjust(bean.getMapX(), bean.getMapY(), 0, 0);
+				MapExhibitBean bean = adapter.getItem(position);
+				sceneMap.adjust(bean.getMapX(), bean.getMapY());
 				MapDialog dialog = new MapDialog(getActivity(), bean);
-				int offsetX = (int) sceneMap.convertToScreenX(bean.getMapX(), 0);  
-				int offsetY= (int) sceneMap.convertToScreenY(bean.getMapY(), 0);
+				int offsetX = (int) sceneMap.convertToScreenX(bean.getMapX());
+				int offsetY = (int) sceneMap.convertToScreenY(bean.getMapY());
 				dialog.showAsDropDown(locaImageView, offsetX, offsetY);
 			}
 		});
@@ -126,10 +103,10 @@ public class MapFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				sceneMap.adjust(0.5f, 0.5f, 0, 0);
-				Log.w("Map", "click");
+				sceneMap.setLoactionPosition(0.5f, 0.5f);
 			}
 		});
+
 	}
 
 	@Override
@@ -145,11 +122,27 @@ public class MapFragment extends Fragment {
 		super.onResume();
 		bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test);
 		sceneMap.setBitmap(bitmap);
+		for (final MapExhibitBean bean : mapExhibitBeans) {
+			MarkObject object = new MarkObject();
+			object.setMapX(bean.getMapX());
+			object.setMapY(bean.getMapY());
+			object.setMarkListener(new MarkClickListener() {
+				
+				@Override
+				public void onMarkClick(MarkObject object, int x, int y) {
+					// TODO Auto-generated method stub
+					bean.getAddress();
+				}
+			});
+			sceneMap.addMark(object);
+		}
+		sceneMap.setLoactionPosition(0.5f, 0.5f);
 	}
 
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
+		super.onDestroy();
 		sceneMap.onDestory();
 	}
 

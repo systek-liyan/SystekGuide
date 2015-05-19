@@ -1,14 +1,13 @@
 package com.app.guide.ui;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -17,7 +16,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,27 +25,30 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
-import com.app.guide.bean.Exhibit;
+import com.app.guide.bean.ExhibitBean;
+import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.widget.AutoLoadListView;
+import com.app.guide.widget.AutoLoadListView.OnLoadListener;
 import com.app.guide.widget.HeaderLayout;
-import com.app.guide.widget.MyListView;
-import com.app.guide.widget.MyListView.FooterLoadingMoreListener;
 
 /**
  * 博物馆主页fragment
  * 
+ * 修改为上拉加载更多以及数据库访问方式
  * @author yetwish
  */
 public class MuseumIntroduceFragment extends Fragment {
 
+	private View rootView;
 	private TextView tvTitle;
 	private ViewPager viewPager;
 	private final static int[] IMAGE_RESOURCES = {
 			R.drawable.home_tab_main_normal_img,
 			R.drawable.home_tab_follow_normal_img,
 			R.drawable.home_tab_subject_normal_img };
-
 	private LayoutInflater mInflater;
 	private LinearLayout headerLayout;
 	private HeaderLayout fragHeader;
@@ -66,25 +67,11 @@ public class MuseumIntroduceFragment extends Fragment {
 
 	private TextView tvIntroduction;
 
-	private MyListView lvExhibit;
+	private AutoLoadListView lvExhibit;
 	private ExhibitAdapter exhibitAdapter;
-	private List<Exhibit> exhibits;
-	private final static int image = R.drawable.exhibit_icon;
+	private List<ExhibitBean> exhibits;
+	private int page;
 
-	private final static int MSG_LOADING_COMPLETE = 0x101;
-	
-	private Handler mHandler = new Handler(){
-		public void handleMessage(android.os.Message msg) {
-			switch (msg.what) {
-			case MSG_LOADING_COMPLETE:
-				lvExhibit.onLoadingComplete();
-				break;
-
-			default:
-				break;
-			}
-		};
-	};
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -99,11 +86,13 @@ public class MuseumIntroduceFragment extends Fragment {
 	 * get 精品的数据
 	 */
 	private void getExhibitData() {
-		exhibits = new ArrayList<Exhibit>();
-		int length = 5;
-		for (int i = 0; i < length; i++) {
-			exhibits.add(new Exhibit("八星八箭青花瓷", "展厅2010", "唐朝", introduction,
-					getResources().getDrawable(image)));
+		page = 0;
+		try {
+			exhibits = GetBeanFromSql.getExhibitBeans(getActivity(), "test",
+					page);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -145,23 +134,38 @@ public class MuseumIntroduceFragment extends Fragment {
 		}
 	}
 
-	@SuppressLint("InflateParams")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.frag_main, null);
-		mInflater = inflater;
-		return view;
+		// 加入缓存加载，避免每次切换fragment都要加载一次视图
+		if (rootView == null) {
+			rootView = inflater.inflate(R.layout.frag_main, null);
+			mInflater = inflater;
+			initViews();
+		}
+		ViewGroup parent = (ViewGroup) rootView.getParent();
+		if (parent != null) {
+			parent.removeView(rootView);
+		}
+
+		return rootView;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
 	}
 
 	/**
 	 * 将viewPager和其他view 作为header加入到listView中，使整个页面可滚动，且能复用list_item
 	 */
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+	private void initViews() {
+		if (rootView == null)
+			return;
 		// 获取frag header
-		fragHeader = (HeaderLayout) view.findViewById(R.id.frag_header_main);
+		fragHeader = (HeaderLayout) rootView
+				.findViewById(R.id.frag_header_main);
 		fragHeader.setTitle("XX博物馆");
 
 		// 获取header layout
@@ -203,48 +207,41 @@ public class MuseumIntroduceFragment extends Fragment {
 		tvIntroduction.append(spanString);
 
 		// 获取listview
-		lvExhibit = (MyListView) view.findViewById(R.id.frag_main_lv_exhibit);
+		lvExhibit = (AutoLoadListView) rootView
+				.findViewById(R.id.frag_main_lv_exhibit);
 		// 添加header
 		lvExhibit.addHeaderView(headerLayout);
-		
 		// 设置adapter
 		lvExhibit.setAdapter(exhibitAdapter);
-		
-		lvExhibit.setLoadingMoreListener(new FooterLoadingMoreListener() {
-			
+		lvExhibit.setOnLoadListener(new OnLoadListener() {
+
 			@Override
-			public void onLoadingMore() {
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							Thread.sleep(1000L);
-							for (int i = 0; i < 5; i++) {
-								exhibits.add(new Exhibit("新加入数据", "展厅2010", "唐朝", introduction,
-										getResources().getDrawable(image)));
-							}
-						} catch (InterruptedException e) {
-						}finally{
-							mHandler.sendEmptyMessage(MSG_LOADING_COMPLETE);
-						}
-						
+			public void onLoad() {
+				// TODO Auto-generated method stub
+				page++;
+				List<ExhibitBean> data = null;
+				try {
+					data = GetBeanFromSql.getExhibitBeans(getActivity(),
+							"test", page);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (data != null) {
+					exhibitAdapter.addData(data);
+					if (data.size() < Constant.PAGE_COUNT) {
+						lvExhibit.setLoadFull();
 					}
-				}).start();
+				} else {
+					lvExhibit.setLoadFailed();
+				}
+				lvExhibit.onLoadComplete();
 			}
 		});
-		
-		
 
 		// 解决slidingMenu和viewPager 滑动冲突
 		HomeActivity.sm.addIgnoredView(viewPager);
 	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-	}
-
-	
 
 	private OnPageChangeListener createPagerChangedListener() {
 		return new OnPageChangeListener() {
@@ -318,6 +315,7 @@ public class MuseumIntroduceFragment extends Fragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		rootView = null;
 	}
 
 }

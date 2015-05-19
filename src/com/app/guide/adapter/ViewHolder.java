@@ -1,5 +1,9 @@
 package com.app.guide.adapter;
 
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+import com.app.guide.R;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.SparseArray;
@@ -10,84 +14,84 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * 封装万能ViewHolder类，用以简化代码
  * Created by yetwish on 2015-05-11
  */
 
 public class ViewHolder {
 
-    private SparseArray<View> mViews;
-    private View mConvertView;
-    /**
-     * 暂时未使用到
-     */
-    @SuppressWarnings("unused")
+	private SparseArray<View> mViews;
+	private View mConvertView;
 	private int mPosition;
-    /**
-     * init holder
-     */
-    public ViewHolder(Context context, int layoutId, ViewGroup parent, int position) {
-        mConvertView = LayoutInflater.from(context).inflate(layoutId,parent,false);
-        mViews = new SparseArray<View>();
-        mPosition = position;
-        mConvertView.setTag(this);
-    }
 
-    /**
-     *  获取viewHolder
-     */
-    public static ViewHolder getHolder(Context context, View convertView,
-                                       int layoutId, ViewGroup parent, int position) {
-        if(convertView == null){
-            return new ViewHolder(context,layoutId,parent,position);
-        }else{
-            ViewHolder holder = (ViewHolder)convertView.getTag();
-            holder.mPosition = position;
-            return holder;
-        }
-    }
+	/**
+	 * init holder
+	 */
+	public ViewHolder(Context context, int layoutId, ViewGroup parent,
+			int position) {
+		mConvertView = LayoutInflater.from(context).inflate(layoutId, parent,
+				false);
+		mViews = new SparseArray<View>();
+		mPosition = position;
+		mConvertView.setTag(this);
+	}
 
-    public View getConvertView(){
-        return mConvertView;
-    }
+	/**
+	 * 获取viewHolder
+	 */
+	public static ViewHolder getHolder(Context context, View convertView,
+			int layoutId, ViewGroup parent, int position) {
+		if (convertView == null) {
+			return new ViewHolder(context, layoutId, parent, position);
+		} else {
+			ViewHolder holder = (ViewHolder) convertView.getTag();
+			holder.mPosition = position;
+			return holder;
+		}
+	}
 
-    /**
-     * get view
-     */
-    @SuppressWarnings("unchecked")
-	public <T extends View> T getView(int viewId){
-        View view = mViews.get(viewId);
-        if(view == null){
-            view = mConvertView.findViewById(viewId);
-            mViews.put(viewId,view);
-        }
-        return (T)view;
-    }
+	public View getConvertView() {
+		return mConvertView;
+	}
 
-    /**
-     * set text
-     */
-    public ViewHolder setText(int viewId, String text){
-        TextView tv = getView(viewId);
-        tv.setText(text);
-        return this;
-    }
+	/**
+	 * get view
+	 */
+	public <T extends View> T getView(int viewId) {
+		View view = mViews.get(viewId);
+		if (view == null) {
+			view = mConvertView.findViewById(viewId);
+			mViews.put(viewId, view);
+		}
+		return (T) view;
+	}
 
-    /**
-     *  set image res
-     */
-    public ViewHolder setImageResource(int viewId,int resId){
-        ImageView iv = getView(viewId);
-        iv.setImageResource(resId);
-        return this;
-    }
+	/**
+	 * set text
+	 */
+	public ViewHolder setText(int viewId, String text) {
+		TextView tv = getView(viewId);
+		tv.setText(text);
+		return this;
+	}
 
-    /**
-     *  set image bitmap
-     */
-    public ViewHolder setImageBitmap(int viewId,Bitmap bitmap){
-        ImageView iv = getView(viewId);
-        iv.setImageBitmap(bitmap);
-        return this;
-    }
+	/**
+	 * set image res
+	 */
+	public ViewHolder setImageResource(int viewId, int resId) {
+		NetworkImageView iv = getView(viewId);
+		iv.setImageResource(resId);
+		return this;
+	}
+
+	/**
+	 * set image bitmap
+	 */
+	public ViewHolder setImageBitmap(int viewId, ImageLoader imageLoader,
+			String url) {
+		NetworkImageView imageView = getView(viewId);
+		imageView.setDefaultImageResId(R.drawable.ic_launcher);
+		imageView.setErrorImageResId(R.drawable.ic_launcher);
+		imageView.setImageUrl(url, imageLoader);
+		return this;
+	}
 }

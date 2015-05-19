@@ -8,6 +8,7 @@ import android.content.ContextWrapper;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.os.Environment;
 import android.util.Log;
 
 /**
@@ -15,6 +16,8 @@ import android.util.Log;
  **/
 public class DatabaseContext extends ContextWrapper {
 
+	private static final String ROOT_SDCARD = Environment
+			.getExternalStorageDirectory().getAbsolutePath();
 	private String dbDir;
 
 	/**
@@ -22,10 +25,13 @@ public class DatabaseContext extends ContextWrapper {
 	 * 
 	 * @param base
 	 *            上下文环境
+	 * @param path
+	 *            存储数据外部文件夹名
+	 * 
 	 */
 	public DatabaseContext(Context base, String path) {
 		super(base);
-		dbDir = path;
+		dbDir = ROOT_SDCARD + "/" +path;
 	}
 
 	/**
@@ -70,7 +76,6 @@ public class DatabaseContext extends ContextWrapper {
 			return dbFile;
 		else
 			return null;
-
 	}
 
 	/**

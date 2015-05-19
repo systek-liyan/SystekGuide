@@ -11,7 +11,6 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -19,6 +18,7 @@ import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -29,13 +29,12 @@ public class LyricView extends View {
 
 	public static final int INTERVAL = 10;// 歌词每行的间隔
 	private static final int SIZE_LENGTH = 1600;// 显示歌词的高度
-	public final static int SIZE_TEXT_DISPLAY = 250;
+	public final static int SIZE_TEXT_DISPLAY = 150;
 
 	private static TreeMap<Integer, LyricObject> lrc_map;
 	private float mX; // 屏幕X轴的中点，此值固定，保持歌词在X中间显示
 	private static boolean blLrc = false;
 	private float touchY; // 当触摸歌词View时，保存为当前触点的Y轴坐标
-	@SuppressWarnings("unused")
 	private float touchX;
 	private boolean blScrollView = false;
 	private int lrcIndex = 0; // 保存歌词TreeMap的下标
@@ -89,7 +88,6 @@ public class LyricView extends View {
 		super.onDraw(canvas);
 	}
 
-	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		// TODO Auto-generated method stub
@@ -167,39 +165,14 @@ public class LyricView extends View {
 	 */
 	private float speedLrc() {
 		float speed = 0;
-		speed = ((offsetY + (wordSize + INTERVAL) * lrcIndex - SIZE_TEXT_DISPLAY) / 20);
-//
-//		if (offsetY + (wordSize + INTERVAL) * lrcIndex > SIZE_TEXT_DISPLAY) {
-//			
-//		} else if (offsetY + (wordSize + INTERVAL) * lrcIndex < SIZE_TEXT_DISPLAY) {
-//			Log.i("speed", "speed is too fast!!!");
-//			speed = 0; 
-//		}
+		if (offsetY + (wordSize + INTERVAL) * lrcIndex > SIZE_TEXT_DISPLAY) {
+			speed = ((offsetY + (wordSize + INTERVAL) * lrcIndex - SIZE_TEXT_DISPLAY) / 20);
+
+		} else if (offsetY + (wordSize + INTERVAL) * lrcIndex < SIZE_TEXT_DISPLAY) {
+			Log.i("speed", "speed is too fast!!!");
+			speed = 0;
+		}
 		return speed;
-	}
-	
-	/**
-	 * 获取播放时间 msec
-	 */
-	public int getDuration(){
-		if(mediaPlayer!=null){
-			return mediaPlayer.getDuration();
-		}
-		else return -1;
-	}
-	
-	
-	/**
-	 * 设置当前播放进度 
-	 * @param position
-	 */
-	public void setCurrentPosition(int position){
-		if(mediaPlayer!=null){
-			mediaPlayer.seekTo(position);
-			if(mProgressChangedListener != null){
-				mProgressChangedListener.onProgressChanged(position);
-			}
-		}
 	}
 
 	/**
@@ -364,8 +337,6 @@ public class LyricView extends View {
 				- selectIndex(mediaPlayer.getCurrentPosition())
 				* (getSIZEWORD() + INTERVAL - 1);
 		new ShowLyricRunnable().start();
-//		new ListenPlayingRunnable().start();
-		
 	}
 
 	public void pause() {
@@ -418,9 +389,6 @@ public class LyricView extends View {
 					offsetY = offsetY - speedLrc();
 					selectIndex(mediaPlayer.getCurrentPosition());
 					postInvalidate();
-					if(mProgressChangedListener!=null){
-						mProgressChangedListener.onProgressChanged(mediaPlayer.getCurrentPosition());
-					}
 				} else {
 					break;
 				}
@@ -432,30 +400,5 @@ public class LyricView extends View {
 				}
 			}
 		}
-	}
-	
-//	private class ListenPlayingRunnable extends Thread{
-//			
-//			@Override
-//			public void run() {
-//				while(mediaPlayer.isPlaying()){
-//					try {
-//						Thread.sleep(20);
-//						
-//					} catch (InterruptedException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//			}
-//	}
-	
-	public void setProgressChangedListener(onProgressChangedListener listener){
-		this.mProgressChangedListener = listener;
-	}
-	
-	private onProgressChangedListener mProgressChangedListener;
-	
-	public interface onProgressChangedListener{
-		void onProgressChanged(int progress);
 	}
 }

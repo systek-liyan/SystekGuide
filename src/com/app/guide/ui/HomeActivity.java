@@ -19,9 +19,9 @@ import com.actionbarsherlock.app.ActionBar;
 import com.app.guide.AppManager;
 import com.app.guide.R;
 import com.app.guide.adapter.FragmentTabAdapter;
+import com.app.guide.adapter.FragmentTabAdapter.OnRgsExtraCheckedChangedListener;
 import com.app.guide.ui.MenuFragment.HomeClick;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.yetwish.libs.BeaconSearcher;
 
 public class HomeActivity extends BaseActivity {
 
@@ -31,9 +31,10 @@ public class HomeActivity extends BaseActivity {
 	private List<Fragment> fragments;
 
 	protected static SlidingMenu sm;
-	
-	private final static Class<?>[] fragmentClz= 
-		{MuseumIntroduceFragment.class,FollowGuideFragment.class,SubjectSelectFragment.class,MapFragment.class};
+
+	private final static Class<?>[] fragmentClz = {
+			MuseumIntroduceFragment.class, FollowGuideFragment.class,
+			SubjectSelectFragment.class, MapFragment.class };
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -42,11 +43,10 @@ public class HomeActivity extends BaseActivity {
 		setContentView(R.layout.activity_home);
 		timer = new Timer();
 		fragments = new ArrayList<Fragment>();
-		for(int i = 0 ;i < fragmentClz.length;i++){
+		for (int i = 0; i < fragmentClz.length; i++) {
 			try {
 				Class<?> clazz = Class.forName(fragmentClz[i].getName());
-				
-				fragments.add((Fragment)clazz.newInstance());
+				fragments.add((Fragment) clazz.newInstance());
 			} catch (ClassNotFoundException e) {
 				// TODO: handle exception
 			} catch (InstantiationException e) {
@@ -55,27 +55,35 @@ public class HomeActivity extends BaseActivity {
 				// TODO: handle exception
 			}
 		}
-		/**
-		 * fragments = new ArrayList<Fragment>();
-		MuseumIntroduceFragment museumFragment = new MuseumIntroduceFragment();
-		fragments.add(museumFragment);
-		FollowGuideFragment followFragment = new FollowGuideFragment();
-		fragments.add(followFragment);
-		SubjectSelectFragment subjectFragment = new SubjectSelectFragment();
-		fragments.add(subjectFragment);
-		MapFragment mapFragment = new MapFragment();
-		fragments.add(mapFragment);	
-		 */
 		mRadioGroup = (RadioGroup) findViewById(R.id.home_tab_group);
-		new FragmentTabAdapter(this, fragments, R.id.home_realtabcontent,
-				mRadioGroup);
+		FragmentTabAdapter adapter = new FragmentTabAdapter(this, fragments,
+				R.id.home_realtabcontent, mRadioGroup);
+		adapter.setOnRgsExtraCheckedChangedListener(new OnRgsExtraCheckedChangedListener() {
+
+			@Override
+			public void OnRgsExtraCheckedChanged(RadioGroup radioGroup,
+					int checkedId, int index) {
+				// TODO Auto-generated method stub
+				sm.setSlidingEnabled(true);
+				switch (index) {
+				case 3:
+					sm.setSlidingEnabled(false);
+					break;
+				case 2:
+					break;
+				default:
+
+					break;
+				}
+			}
+
+		});
 	}
-	
+
 	@Override
 	protected boolean isFullScreen() {
 		return true;
 	}
-	
 
 	@Override
 	public void onBackPressed() {
@@ -100,7 +108,7 @@ public class HomeActivity extends BaseActivity {
 			}, 2000);
 		}
 	}
-	
+
 	@Override
 	protected void initSlidingMenu() {
 		// TODO Auto-generated method stub
@@ -130,7 +138,6 @@ public class HomeActivity extends BaseActivity {
 		sm.setFadeDegree(0.35f);
 		sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
 	}
-	
 
 	@Override
 	protected void onPause() {
@@ -140,19 +147,20 @@ public class HomeActivity extends BaseActivity {
 		}
 		super.onPause();
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode,resultCode,data);
-		if(requestCode == BeaconSearcher.REQUEST_ENABLE_BT){
-			if(resultCode == RESULT_OK){
-				FollowGuideFragment followGuideFragment = (FollowGuideFragment)fragments.get(1);
-				followGuideFragment.onBluetoothResult(requestCode,resultCode);
-			}//如果未打开则...
-		}
+		super.onActivityResult(requestCode, resultCode, data);
+		// if(requestCode == BeaconSearcher.REQUEST_ENABLE_BT){
+		// if(resultCode == RESULT_OK){
+		// FollowGuideFragment followGuideFragment =
+		// (FollowGuideFragment)fragments.get(1);
+		// followGuideFragment.onBluetoothResult(requestCode,resultCode);
+		// }//如果未打开则...
+		// }
 	}
-	
-	public ActionBar getActivityActionBar(){
+
+	public ActionBar getActivityActionBar() {
 		return getSupportActionBar();
 	}
 

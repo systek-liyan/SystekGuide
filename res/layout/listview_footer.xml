@@ -1,25 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="10dp"
-    android:gravity="center"
-    android:background="@android:drawable/list_selector_background"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" 
-    android:orientation="horizontal">
-    <TextView 
-        android:text="@string/to_load_more"
-        android:id="@+id/list_footer_tv"
-        android:textSize="20sp"
+    android:layout_height="40dp"
+    android:gravity="center"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/footer_loadFull"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"/>
-    
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="@string/load_full"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/footer_noData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="@string/no_data"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/footer_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="@string/more" />
+
     <ProgressBar
-        android:visibility="gone"
-        android:id="@+id/list_footer_pb"
-        android:layout_marginLeft="10dp"
-        style="?android:attr/progressBarStyleLargeInverse"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_gravity="center_vertical" />
+        android:id="@+id/footer_loading"
+        style="@style/CustomProgressBar" />
 
 </LinearLayout>

@@ -2,71 +2,77 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="horizontal"
     android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:orientation="horizontal" >
-    <ImageView 
-        android:id="@+id/item_exhibit_iv_icon"
-        android:contentDescription="icon"
-        android:layout_margin="5dp"
-        android:layout_width="@dimen/list_item_exhibit_icon_size"
-        android:layout_height="@dimen/list_item_exhibit_icon_size"/>
+    android:paddingRight="10dp" >
 
-	<RelativeLayout
-	    android:layout_width="0dp"
-	    android:layout_weight="1"
-	    android:layout_height="match_parent">
-	    
-	    <!-- name -->
-		<TextView 
-		    android:text="name"
-		    android:id="@+id/item_exhibit_tv_name"
-		    android:textAppearance="@style/ExhibitTitleTextAppearance"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"/>	   
-		
-		<!-- address -->	    
-		<TextView 
-		    android:text="address"
-		    android:layout_toRightOf="@id/item_exhibit_tv_name"
-		    android:layout_alignTop="@id/item_exhibit_tv_name"
-		    android:layout_marginLeft="20dp"
-		    android:id="@+id/item_exhibit_tv_address"
-		    android:textAppearance="@style/ExhibitHintTextAppearance"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"/>	   
-		
-		<LinearLayout 
-		    android:layout_below="@id/item_exhibit_tv_name"
-		    android:orientation="vertical"
-		    android:layout_marginTop="5dp"
-		    android:layout_width="match_parent"
-		    android:layout_height="match_parent">
-		    <!-- dynasty -->	    
-			<TextView 
-			    android:id="@+id/item_exhibit_tv_dynasty"
-			    android:textAppearance="@style/ExhibitContentTextAppearance"
-			    android:layout_width="wrap_content"
-			    android:layout_height="wrap_content"/>
-				   
-			<!-- introduction -->
-			<TextView 
-			    android:id="@+id/item_exhibit_tv_introduction"
-			    android:textAppearance="@style/ExhibitContentTextAppearance"
-			    android:layout_marginRight="15dp"
-			    android:layout_width="wrap_content"
-			    android:layout_height="wrap_content"
-			    android:maxLines="3"
-			    android:ellipsize="end"/>	   
-			    
-		</LinearLayout>
-		<ImageView 
-		    android:layout_alignParentRight="true"
-		    android:layout_centerVertical="true"
-		    android:contentDescription="arrow"
-		    android:layout_height="wrap_content"
-		    android:layout_width="wrap_content"
-		    android:src="@drawable/list_item_arrow"/>
-	</RelativeLayout>
-	
+    <com.android.volley.toolbox.NetworkImageView
+        android:id="@+id/item_exhibit_iv_icon"
+        android:layout_width="@dimen/list_item_exhibit_icon_size"
+        android:layout_height="@dimen/list_item_exhibit_icon_size"
+        android:layout_margin="5dp"
+        android:contentDescription="icon" />
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" >
+
+        <!-- name -->
+
+        <TextView
+            android:id="@+id/item_exhibit_tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="name"
+            android:textAppearance="@style/ExhibitTitleTextAppearance" />
+
+        <!-- address -->
+
+        <TextView
+            android:id="@+id/item_exhibit_tv_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/item_exhibit_tv_name"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@id/item_exhibit_tv_name"
+            android:text="address"
+            android:textAppearance="@style/ExhibitHintTextAppearance" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/item_exhibit_tv_name"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical" >
+
+            <!-- dynasty -->
+
+            <TextView
+                android:id="@+id/item_exhibit_tv_dynasty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/ExhibitContentTextAppearance" />
+
+            <!-- introduction -->
+
+            <TextView
+                android:id="@+id/item_exhibit_tv_introduction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:ellipsize="end"
+                android:maxLines="3"
+                android:textAppearance="@style/ExhibitContentTextAppearance" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="arrow"
+            android:src="@drawable/list_item_arrow" />
+    </RelativeLayout>
+
 </LinearLayout>
