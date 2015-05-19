@@ -31,7 +31,7 @@
 	    android:id="@+id/frag_subject_select_invis_layout"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content">
-	    <ListView 
+	    <com.app.guide.widget.MyListView
 		    android:id="@+id/frag_subject_lv_exhibits"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"/>

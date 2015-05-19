@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
+ * 封装万能ViewHolder类，用以简化代码
  * Created by yetwish on 2015-05-11
  */
 
@@ -17,7 +18,11 @@ public class ViewHolder {
 
     private SparseArray<View> mViews;
     private View mConvertView;
-    private int mPosition;
+    /**
+     * 暂时未使用到
+     */
+    @SuppressWarnings("unused")
+	private int mPosition;
     /**
      * init holder
      */
@@ -49,7 +54,8 @@ public class ViewHolder {
     /**
      * get view
      */
-    public <T extends View> T getView(int viewId){
+    @SuppressWarnings("unchecked")
+	public <T extends View> T getView(int viewId){
         View view = mViews.get(viewId);
         if(view == null){
             view = mConvertView.findViewById(viewId);

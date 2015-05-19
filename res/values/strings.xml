@@ -15,4 +15,6 @@
     <string name="frag_follow_tab_pictures">图片讲解</string>
     <string name="frag_follow_tab_exhibitions">展品列表</string>
     <string name="title_activity_museum">选择博物馆</string>
+    <string name="to_load_more">加载更多</string>
+    <string name="loading_more">正在加载</string>
 </resources>

@@ -8,7 +8,7 @@
         android:id="@+id/frag_header_main"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"/>
-	<ListView 
+	<com.app.guide.widget.MyListView
 	    android:id="@+id/frag_main_lv_exhibit"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"/>

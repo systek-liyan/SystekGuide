@@ -3,18 +3,19 @@ package com.app.guide.adapter;
 import java.util.List;
 
 import com.app.guide.R;
+import com.app.guide.bean.ImageBean;
 import com.app.guide.utils.ImageLoader;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.widget.ImageView;
 
-public class HorizontalScrollViewAdapter extends CommonAdapter<String>{
+public class HorizontalScrollViewAdapter extends CommonAdapter<ImageBean>{
 
 	private ImageLoader mImageLoader;
 	private Resources mRes;
 	
-	public HorizontalScrollViewAdapter(Context context, List<String> data,
+	public HorizontalScrollViewAdapter(Context context, List<ImageBean> data,
 			int layoutId) {
 		super(context, data, layoutId);
 		mRes = context.getResources();
@@ -28,7 +29,7 @@ public class HorizontalScrollViewAdapter extends CommonAdapter<String>{
 		
 		ImageView imageView = (ImageView)holder.getView(R.id.item_gallery_iv);
 		imageView.setImageResource(R.drawable.icon);
-		mImageLoader.loadImage(mData.get(position), imageView, true, 
+		mImageLoader.loadImage(mData.get(position).getImgUrl(), imageView, true, 
 				(int)mRes.getDimension(R.dimen.gallery_width), (int)mRes.getDimension(R.dimen.gallery_height));
 		
 	}

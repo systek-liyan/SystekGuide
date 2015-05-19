@@ -8,6 +8,8 @@ import java.util.List;
 
 
 /**
+ * 封装 常规Adapter,用以简化代码。
+ * 新的Adapter只需继承该类，并实现convert()方法 和构造方法。
  * Created by yetwish on 2015-05-11
  */
 

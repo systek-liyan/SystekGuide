@@ -32,56 +32,34 @@
             android:id="@+id/frag_follow_guide_progressbar"
             android:layout_width="match_parent"
             android:layout_height="10dp"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:max="100"
-            android:progress="40"
-            android:secondaryProgress="70"/>
+            style="?android:attr/progressBarStyleHorizontal"/>
         <!-- 语音播放栏 -->
         <RelativeLayout
             android:background="@color/lightgray"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingRight="10dp">
+            android:padding="10dp">
              <ImageView 
                 android:contentDescription="play/pause"
                 android:id="@+id/frag_follow_guide_iv_start"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
                 android:layout_width="40dp"
                 android:layout_height="40dp"/>
-             
-            <ImageView 
-                android:contentDescription="prew"
-                android:src="@drawable/play_btn_prew"
-                android:id="@+id/frag_follow_guide_iv_back"
-                android:layout_toLeftOf="@id/frag_follow_guide_iv_start"
-                android:layout_marginRight="20dp"
-                android:layout_centerVertical="true"
-                android:layout_width="30dp"
-                android:layout_height="30dp"/>
-            
-            <!-- temp button -->
-             <ImageView 
-                android:contentDescription="next"
-                android:src="@drawable/play_btn_next"
-                android:id="@+id/frag_follow_guide_iv_next"
-                android:layout_toRightOf="@id/frag_follow_guide_iv_start"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="20dp"
-                android:layout_width="30dp"
-                android:layout_height="30dp"/>
         </RelativeLayout>
 		<!-- 多角度展示 -->
-    	<TextView
+    	<LinearLayout 
+    	    android:background="@color/btn_pressed_color"
+    	    android:layout_width="match_parent"
+    	    android:layout_height="wrap_content"
+    	    android:paddingLeft="20dp">
+    	    <TextView
 	        android:text="多角度展示"
-	        android:background="@color/btn_pressed_color"
 	        android:id="@+id/frag_follow_guide_tv_title_pics"
 	        android:textSize="20sp"
 	        android:textColor="@color/title_textcolor"
-	        android:paddingLeft="20dp"
-	        android:layout_width="match_parent"
+	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"/>
+    	</LinearLayout>
     	 <com.app.guide.widget.MyHorizontalScrollView
     	    android:visibility="gone"
 	        android:id="@+id/frag_follow_guide_pic_gallery_container"
@@ -102,17 +80,20 @@
     	
     	
     	<!-- 展品列表 -->
+        <LinearLayout 
+            android:layout_marginTop="10dp"
+    	    android:background="@color/btn_pressed_color"
+    	    android:layout_width="match_parent"
+    	    android:layout_height="wrap_content"
+    	    android:paddingLeft="20dp">
         <TextView
             android:id="@+id/frag_follow_guide_tv_title_exhibits"
 	        android:text="展品列表"
 	        android:textSize="20sp"
-	        android:background="@color/btn_pressed_color"
 	        android:textColor="@color/title_textcolor"
-	        android:paddingLeft="20dp"
-	        android:layout_marginTop="10dp"
-	        android:layout_width="match_parent"
+	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"/>
-        
+        </LinearLayout>
          <com.app.guide.widget.MyHorizontalScrollView
              android:visibility="gone"
 	        android:id="@+id/frag_follow_guide_exhibit_gallery_container"
