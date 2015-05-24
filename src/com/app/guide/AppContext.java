@@ -5,7 +5,9 @@ import com.baidu.mapapi.SDKInitializer;
 import android.app.Application;
 
 public class AppContext extends Application {
-	
+
+	public static int museumId = 1;
+
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub

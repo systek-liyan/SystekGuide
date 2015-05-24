@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ToggleButton;
 
+import com.app.guide.AppContext;
 import com.app.guide.R;
 import com.app.guide.adapter.MapExhibitAdapter;
 import com.app.guide.bean.MapExhibitBean;
@@ -61,7 +62,7 @@ public class MapFragment extends Fragment {
 		sceneMap.setShowMark(false);
 		try {
 			mapExhibitBeans = GetBeanFromSql.getMapExhibit(getActivity(),
-					"test", 1);
+					((AppContext)getActivity().getApplication()).museumId, 1);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

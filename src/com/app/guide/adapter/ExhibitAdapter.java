@@ -17,16 +17,13 @@ import com.app.guide.utils.BitmapUtils;
  */
 public class ExhibitAdapter extends CommonAdapter<ExhibitBean> {
 
-	private ImageLoader mImageLoader;
-
 	public ExhibitAdapter(Context context, List<ExhibitBean> data, int layoutId) {
 		super(context, data, layoutId);
-		mImageLoader = BitmapUtils.getImageLoader(context);
 	}
 
 	@Override
 	public void convert(ViewHolder holder, int position) {
-		holder.setImageBitmap(R.id.item_exhibit_iv_icon, mImageLoader,
+		holder.setImageBitmap(R.id.item_exhibit_iv_icon, mContext,
 				mData.get(position).getImgUrl())
 				.setText(R.id.item_exhibit_tv_name,
 						mData.get(position).getName())

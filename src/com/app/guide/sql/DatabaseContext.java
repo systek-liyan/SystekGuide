@@ -3,6 +3,8 @@ package com.app.guide.sql;
 import java.io.File;
 import java.io.IOException;
 
+import com.app.guide.Constant;
+
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.database.DatabaseErrorHandler;
@@ -16,8 +18,6 @@ import android.util.Log;
  **/
 public class DatabaseContext extends ContextWrapper {
 
-	private static final String ROOT_SDCARD = Environment
-			.getExternalStorageDirectory().getAbsolutePath();
 	private String dbDir;
 
 	/**
@@ -31,7 +31,7 @@ public class DatabaseContext extends ContextWrapper {
 	 */
 	public DatabaseContext(Context base, String path) {
 		super(base);
-		dbDir = ROOT_SDCARD + "/" +path;
+		dbDir = Constant.ROOT_SDCARD + "/" + path;
 	}
 
 	/**

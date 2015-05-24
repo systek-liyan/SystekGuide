@@ -98,7 +98,7 @@ public class CityActivity extends BaseActivity {
 					.getItem(pos);
 			Toast.makeText(CityActivity.this, cityModel.getCityName(),
 					Toast.LENGTH_SHORT).show();
-			Intent intent = new Intent(CityActivity.this, HomeActivity.class);
+			Intent intent = new Intent(CityActivity.this, MuseumActivity.class);
 			startActivity(intent);
 		}
 

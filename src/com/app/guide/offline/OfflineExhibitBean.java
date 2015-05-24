@@ -6,37 +6,41 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "exhibit")
 public class OfflineExhibitBean {
 
-	@DatabaseField(generatedId = true,useGetSet=true)
+	@DatabaseField(generatedId = true, useGetSet = true)
 	private int id;
-	@DatabaseField(columnName = "name",useGetSet=true)
+	@DatabaseField(columnName = "name", useGetSet = true)
 	private String name;
-	@DatabaseField(columnName = "museumId",useGetSet=true)
-	private String museumId;
-	@DatabaseField(columnName = "beaconId",useGetSet=true)
-	private String beaconId;
-	@DatabaseField(columnName = "introduce",useGetSet=true)
+	@DatabaseField(columnName = "museumId", useGetSet = true)
+	private int museumId;
+	@DatabaseField(columnName = "beaconId", useGetSet = true)
+	private String beaconUId;
+	@DatabaseField(columnName = "introduce", useGetSet = true)
 	private String introduce;
-	@DatabaseField(columnName = "address",useGetSet=true)
+	@DatabaseField(columnName = "address", useGetSet = true)
 	private String address;
-	@DatabaseField(columnName = "mapX",useGetSet=true)
+	@DatabaseField(columnName = "mapX", useGetSet = true)
 	private float mapX;
-	@DatabaseField(columnName = "mapY",useGetSet=true)
+	@DatabaseField(columnName = "mapY", useGetSet = true)
 	private float mapY;
-	@DatabaseField(defaultValue = "1", columnName = "floor",useGetSet=true)
+	@DatabaseField(defaultValue = "1", columnName = "floor", useGetSet = true)
 	private int floor;
-	@DatabaseField(columnName = "iconUrl",useGetSet=true)
+	@DatabaseField(columnName = "iconUrl", useGetSet = true)
 	private String iconUrl;
-	@DatabaseField(columnName = "imgJson",useGetSet=true)
+	@DatabaseField(columnName = "imgJson", useGetSet = true)
 	private String imgJson;
-	@DatabaseField(columnName = "audioUrl",useGetSet=true)
+	@DatabaseField(columnName = "audioUrl", useGetSet = true)
 	private String audioUrl;
-	@DatabaseField(columnName = "textUrl",useGetSet=true)
+	@DatabaseField(columnName = "textUrl", useGetSet = true)
 	private String textUrl;
-	@DatabaseField(columnName = "labelJson",useGetSet=true)
+	@DatabaseField(columnName = "labelJson", useGetSet = true)
 	private String labelJson;
 	@DatabaseField(columnName = "isBoutique")
 	private boolean isBoutique;
-	@DatabaseField(columnName = "version",useGetSet=true)
+	@DatabaseField(columnName = "lExhibitBeanId")
+	private String lExhibitBeanId;
+	@DatabaseField(columnName = "rExhibitBeanId")
+	private String rExhibitBeanId;
+	@DatabaseField(columnName = "version", useGetSet = true)
 	private int version;
 
 	/**
@@ -72,7 +76,7 @@ public class OfflineExhibitBean {
 	/**
 	 * @return the museumId
 	 */
-	public String getMuseumId() {
+	public int getMuseumId() {
 		return museumId;
 	}
 
@@ -80,23 +84,23 @@ public class OfflineExhibitBean {
 	 * @param museumId
 	 *            the museumId to set
 	 */
-	public void setMuseumId(String museumId) {
+	public void setMuseumId(int museumId) {
 		this.museumId = museumId;
 	}
 
 	/**
 	 * @return the beaconId
 	 */
-	public String getBeaconId() {
-		return beaconId;
+	public String getBeaconUId() {
+		return beaconUId;
 	}
 
 	/**
 	 * @param beaconId
 	 *            the beaconId to set
 	 */
-	public void setBeaconId(String beaconId) {
-		this.beaconId = beaconId;
+	public void setBeaconUId(String beaconId) {
+		this.beaconUId = beaconId;
 	}
 
 	/**
@@ -262,6 +266,22 @@ public class OfflineExhibitBean {
 	 */
 	public void setBoutique(boolean isBoutique) {
 		this.isBoutique = isBoutique;
+	}
+
+	public String getlExhibitBeanId() {
+		return lExhibitBeanId;
+	}
+
+	public void setlExhibitBeanId(String lExhibitBeanId) {
+		this.lExhibitBeanId = lExhibitBeanId;
+	}
+
+	public String getrExhibitBeanId() {
+		return rExhibitBeanId;
+	}
+
+	public void setrExhibitBeanId(String rExhibitBeanId) {
+		this.rExhibitBeanId = rExhibitBeanId;
 	}
 
 	/**

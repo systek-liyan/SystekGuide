@@ -25,6 +25,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.app.guide.AppContext;
 import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
@@ -38,6 +39,7 @@ import com.app.guide.widget.HeaderLayout;
  * 博物馆主页fragment
  * 
  * 修改为上拉加载更多以及数据库访问方式
+ * 
  * @author yetwish
  */
 public class MuseumIntroduceFragment extends Fragment {
@@ -88,7 +90,8 @@ public class MuseumIntroduceFragment extends Fragment {
 	private void getExhibitData() {
 		page = 0;
 		try {
-			exhibits = GetBeanFromSql.getExhibitBeans(getActivity(), "test",
+			exhibits = GetBeanFromSql.getExhibitBeans(getActivity(),
+					((AppContext) getActivity().getApplication()).museumId,
 					page);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -221,8 +224,10 @@ public class MuseumIntroduceFragment extends Fragment {
 				page++;
 				List<ExhibitBean> data = null;
 				try {
-					data = GetBeanFromSql.getExhibitBeans(getActivity(),
-							"test", page);
+					data = GetBeanFromSql
+							.getExhibitBeans(getActivity(),
+									((AppContext) getActivity()
+											.getApplication()).museumId, page);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

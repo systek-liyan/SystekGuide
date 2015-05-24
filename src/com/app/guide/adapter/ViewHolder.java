@@ -3,6 +3,7 @@ package com.app.guide.adapter;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.app.guide.R;
+import com.app.guide.utils.BitmapUtils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -86,11 +87,11 @@ public class ViewHolder {
 	/**
 	 * set image bitmap
 	 */
-	public ViewHolder setImageBitmap(int viewId, ImageLoader imageLoader,
-			String url) {
+	public ViewHolder setImageBitmap(int viewId, Context context, String url) {
 		NetworkImageView imageView = getView(viewId);
 		imageView.setDefaultImageResId(R.drawable.ic_launcher);
 		imageView.setErrorImageResId(R.drawable.ic_launcher);
+		ImageLoader imageLoader = BitmapUtils.getImageLoader(context);
 		imageView.setImageUrl(url, imageLoader);
 		return this;
 	}

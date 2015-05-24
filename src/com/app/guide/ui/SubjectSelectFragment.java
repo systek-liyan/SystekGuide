@@ -2,7 +2,6 @@ package com.app.guide.ui;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import android.app.Activity;
@@ -20,12 +19,13 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.app.guide.AppContext;
 import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
 import com.app.guide.adapter.GridAdapter.GridItemClickListener;
-import com.app.guide.bean.Exhibit;
 import com.app.guide.bean.ExhibitBean;
+import com.app.guide.bean.LabelBean;
 import com.app.guide.offline.GetBeanFromSql;
 import com.app.guide.widget.AutoLoadListView;
 import com.app.guide.widget.AutoLoadListView.OnLoadListener;
@@ -37,6 +37,7 @@ import com.app.guide.widget.SelectorView;
  * 
  * 
  * 修改为上拉加载更多以及数据库访问方式
+ * 
  * @author yetwish
  * @date 2015-4-21
  */
@@ -48,10 +49,9 @@ public class SubjectSelectFragment extends Fragment {
 	private View rootView;
 
 	/**
-	 * 存储筛选器的数据
+	 * 存储筛选器的数据,修改为数据库加载方式
 	 */
-	private List<String[]> selectorData;
-
+	private List<LabelBean> labelBeans;
 	/**
 	 * 存储已筛选的数据
 	 */
@@ -142,11 +142,12 @@ public class SubjectSelectFragment extends Fragment {
 	 * get SelectorData;
 	 */
 	private void getSelectorData() {
-		selectorData = new ArrayList<String[]>();
-		selectorData.add(new String[] { "材质", "石器", "陶器", "铜器", "玉器", "木制品",
-				"铁器" });
-		selectorData.add(new String[] { "年代", "夏", "商", "秦汉", "三国" });
-		selectorData.add(new String[] { "用途", "日常用具", "农耕", "雕刻" });
+		try {
+			labelBeans = GetBeanFromSql.getLabelBeans(mContext, 1);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -154,7 +155,6 @@ public class SubjectSelectFragment extends Fragment {
 	 */
 	private void getSelectedData() {
 		selectedData = new ArrayList<String>();
-		selectedData.add("已选择");
 	}
 
 	/**
@@ -163,7 +163,9 @@ public class SubjectSelectFragment extends Fragment {
 	private void getExhibitData() {
 		page = 0;
 		try {
-			exhibits = GetBeanFromSql.getExhibitBeans(mContext, "test", page);
+			exhibits = GetBeanFromSql.getExhibitBeans(mContext,
+					((AppContext) getActivity().getApplication()).museumId,
+					page);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -174,10 +176,9 @@ public class SubjectSelectFragment extends Fragment {
 	 * 根据筛选器数据加载筛选器，并将筛选器添加到listView头部，同时记录invisItem
 	 */
 	private void initSelectorHeader() {
-		for (int i = 0; i < selectorData.size(); i++) {
+		for (int i = 0; i < labelBeans.size(); i++) {
 			selectorHeader = new SelectorView(this.getActivity(),
-					Arrays.asList(selectorData.get(i)),
-					new SelectorItemListener());
+					labelBeans.get(i), new SelectorItemListener());
 			lvExhibits.addHeaderView(selectorHeader);
 			invisItem++;
 		}
@@ -187,7 +188,8 @@ public class SubjectSelectFragment extends Fragment {
 	 * 加载已选择view，并将已选择view添加到listView头部，
 	 */
 	private void initSelectedHeader() {
-		selectedHeader = new SelectorView(mContext, selectedData,
+		LabelBean bean = new LabelBean("已选择", selectedData);
+		selectedHeader = new SelectorView(mContext, bean,
 				new SelectedItemListener());
 		lvExhibits.addHeaderView(selectedHeader);
 	}
@@ -197,8 +199,8 @@ public class SubjectSelectFragment extends Fragment {
 	 */
 	private void initInvisView() {
 		// invis
-		invisView = new SelectorView(this.getActivity(), selectedData,
-				new SelectedItemListener());
+		LabelBean bean = new LabelBean("已选择", selectedData);
+		invisView = new SelectorView(mContext, bean, new SelectedItemListener());
 		invisLayout = (FrameLayout) rootView
 				.findViewById(R.id.frag_subject_select_invis_layout);
 		invisLayout.addView(invisView);
@@ -264,8 +266,10 @@ public class SubjectSelectFragment extends Fragment {
 				page++;
 				List<ExhibitBean> data = null;
 				try {
-					data = GetBeanFromSql.getExhibitBeans(mContext, "test",
-							page);
+					data = GetBeanFromSql
+							.getExhibitBeans(mContext,
+									((AppContext) getActivity()
+											.getApplication()).museumId, page);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

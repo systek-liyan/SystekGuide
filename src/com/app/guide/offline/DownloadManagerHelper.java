@@ -11,6 +11,11 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
+/**
+ * 管理已下载的离线数据包
+ * @author joe_c
+ *
+ */
 public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 
 	private Dao<DownloadBean, Integer> downloaDao;

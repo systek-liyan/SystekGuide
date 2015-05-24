@@ -1,41 +1,47 @@
 package com.app.guide.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LabelBean {
 
-	private String belong;
-	private ArrayList<String> labels;
-	
-	public LabelBean(String belong, ArrayList<String> labels) {
+	private String name;
+	private List<String> labels;
+
+	public LabelBean(String name, List<String> list) {
 		super();
-		this.belong = belong;
-		this.labels = labels;
+		this.name = name;
+		this.labels = list;
 	}
+
 	/**
 	 * @return the belong
 	 */
-	public String getBelong() {
-		return belong;
+	public String getName() {
+		return name;
 	}
+
 	/**
-	 * @param belong the belong to set
+	 * @param belong
+	 *            the belong to set
 	 */
-	public void setBelong(String belong) {
-		this.belong = belong;
+	public void setName(String name) {
+		this.name = name;
 	}
+
 	/**
 	 * @return the labels
 	 */
-	public ArrayList<String> getLabels() {
+	public List<String> getLabels() {
 		return labels;
 	}
+
 	/**
-	 * @param labels the labels to set
+	 * @param labels
+	 *            the labels to set
 	 */
-	public void setLabels(ArrayList<String> labels) {
+	public void setLabels(List<String> labels) {
 		this.labels = labels;
 	}
-	
-	
+
 }
