@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -42,11 +43,6 @@ import com.app.guide.widget.SelectorView;
  * @date 2015-4-21
  */
 public class SubjectSelectFragment extends Fragment {
-
-	/**
-	 * 根layoutView
-	 */
-	private View rootView;
 
 	/**
 	 * 存储筛选器的数据,修改为数据库加载方式
@@ -93,11 +89,6 @@ public class SubjectSelectFragment extends Fragment {
 	private int invisItem = 0;
 
 	/**
-	 * 展品暂用icon资源
-	 */
-	private final static int image = R.drawable.exhibit_icon;
-
-	/**
 	 * 存储筛选器view
 	 */
 	private SelectorView selectorHeader;
@@ -113,11 +104,6 @@ public class SubjectSelectFragment extends Fragment {
 	private Context mContext;
 
 	private int page;
-
-	/**
-	 * 展品介绍字符串
-	 */
-	private final static String introduction = "1977年平谷刘家河出土。敛口，口沿外折，方唇，颈粗短，折肩，深腹，高圈足。颈部饰以两道平行凸弦纹，肩部饰一周目雷纹，其上圆雕等距离三个大卷角羊首，腹部饰以扉棱为鼻的饕餮纹，圈足饰一周对角云雷纹，其上有三个方形小镂孔。此罍带有商代中期的显著特征。其整体造型，纹饰与河南郑州白家庄M3出土的罍较相似。此器造型凝重，纹饰细密，罍肩上的羊首系用分铸法铸造，显示了商代北京地区青铜铸造工艺的高度水平。";
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -197,39 +183,36 @@ public class SubjectSelectFragment extends Fragment {
 	/**
 	 * 初始化悬浮部分view
 	 */
-	private void initInvisView() {
+	private void initInvisLayout() {
 		// invis
 		LabelBean bean = new LabelBean("已选择", selectedData);
 		invisView = new SelectorView(mContext, bean, new SelectedItemListener());
-		invisLayout = (FrameLayout) rootView
-				.findViewById(R.id.frag_subject_select_invis_layout);
 		invisLayout.addView(invisView);
 	}
 
+	@SuppressLint("InflateParams")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// 缓存加载，避免多次加载
-		if (rootView == null) {
-			rootView = inflater.inflate(R.layout.frag_subject_sellect, null);
-			initViews();
-		}
-		ViewGroup parent = (ViewGroup) rootView.getParent();
-		if (parent != null)
-			parent.removeView(rootView);
-		return rootView;
+		View view = inflater.inflate(R.layout.frag_subject_sellect, null);
+		return view;
 	}
 
-	private void initViews() {
-		btnFinish = (Button) rootView
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		btnFinish = (Button) view
 				.findViewById(R.id.frag_subject_select_btn_finish);
 
 		// get exhibit list
-		lvExhibits = (AutoLoadListView) rootView
+		lvExhibits = (AutoLoadListView) view
 				.findViewById(R.id.frag_subject_lv_exhibits);
 		initSelectorHeader();// 加载筛选器头部
 		initSelectedHeader();// 加载已选择头部
-		initInvisView();// 加载悬浮头部
+		invisLayout = (FrameLayout) view
+				.findViewById(R.id.frag_subject_select_invis_layout);
+		initInvisLayout();// 加载悬浮头部
 		lvExhibits.setAdapter(exhibitAdapter);
 		lvExhibits.setOnMyScrollListener(new OnScrollListener() {
 
@@ -271,7 +254,6 @@ public class SubjectSelectFragment extends Fragment {
 									((AppContext) getActivity()
 											.getApplication()).museumId, page);
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				if (data != null) {
@@ -286,6 +268,7 @@ public class SubjectSelectFragment extends Fragment {
 			}
 		});
 	}
+
 
 	/**
 	 * 实现 gridAdapter中定义的　itemClicker 接口，通过回调函数获取item的text内容，从而知道用户点击了哪个item
@@ -318,15 +301,5 @@ public class SubjectSelectFragment extends Fragment {
 		}
 	}
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		rootView = null;
-	}
 
 }

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,18 +20,22 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.NetworkImageView;
 import com.app.guide.AppContext;
 import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
 import com.app.guide.bean.ExhibitBean;
 import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.utils.BitmapUtils;
 import com.app.guide.widget.AutoLoadListView;
 import com.app.guide.widget.AutoLoadListView.OnLoadListener;
 import com.app.guide.widget.HeaderLayout;
@@ -44,20 +49,28 @@ import com.app.guide.widget.HeaderLayout;
  */
 public class MuseumIntroduceFragment extends Fragment {
 
-	private View rootView;
 	private TextView tvTitle;
 	private ViewPager viewPager;
-	private final static int[] IMAGE_RESOURCES = {
-			R.drawable.home_tab_main_normal_img,
-			R.drawable.home_tab_follow_normal_img,
-			R.drawable.home_tab_subject_normal_img };
+
+	private static String[] urls = {
+			"http://img.my.csdn.net/uploads/201407/26/1406383299_1976.jpg",
+			"http://img.my.csdn.net/uploads/201407/26/1406383291_6518.jpg",
+			"http://img.my.csdn.net/uploads/201407/26/1406383291_8239.jpg",
+			"http://img.my.csdn.net/uploads/201407/26/1406383290_9329.jpg",
+			"http://img.my.csdn.net/uploads/201407/26/1406383290_1042.jpg",
+			"http://img.my.csdn.net/uploads/201407/26/1406383275_3977.jpg",
+			"http://img.my.csdn.net/uploads/201407/26/1406383264_3954.jpg",
+			"http://img.my.csdn.net/uploads/201407/26/1406383264_4787.jpg",
+			"http://img.my.csdn.net/uploads/201407/26/1406383264_8243.jpg",
+			"http://img.my.csdn.net/uploads/201407/26/1406383248_3693.jpg" };
+
 	private LayoutInflater mInflater;
 	private LinearLayout headerLayout;
 	private HeaderLayout fragHeader;
 	/**
 	 * store the imageView which shows the pictures of museum
 	 */
-	private ArrayList<ImageView> images;
+	private ArrayList<NetworkImageView> images;
 
 	/**
 	 * store the imageview which shows the circles
@@ -65,23 +78,32 @@ public class MuseumIntroduceFragment extends Fragment {
 	private ArrayList<ImageView> tips;
 	private LinearLayout tipsGroup;
 
-	private final static String introduction = "1977年平谷刘家河出土。敛口，口沿外折，方唇，颈粗短，折肩，深腹，高圈足。颈部饰以两道平行凸弦纹，肩部饰一周目雷纹，其上圆雕等距离三个大卷角羊首，腹部饰以扉棱为鼻的饕餮纹，圈足饰一周对角云雷纹，其上有三个方形小镂孔。此罍带有商代中期的显著特征。其整体造型，纹饰与河南郑州白家庄M3出土的罍较相似。此器造型凝重，纹饰细密，罍肩上的羊首系用分铸法铸造，显示了商代北京地区青铜铸造工艺的高度水平。";
-
 	private TextView tvIntroduction;
 
 	private AutoLoadListView lvExhibit;
 	private ExhibitAdapter exhibitAdapter;
 	private List<ExhibitBean> exhibits;
 	private int page;
+	
+	private DisplayMetrics dm;
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+		getScreenHeight();
 		// 获取数据
 		getImages();
 		getExhibitData();
 		exhibitAdapter = new ExhibitAdapter(activity, exhibits,
 				R.layout.item_exhibit);
+		
+		
+	}
+
+	private void getScreenHeight() {
+		dm = new DisplayMetrics();
+		this.getActivity().getWindowManager().getDefaultDisplay()
+				.getMetrics(dm);
 	}
 
 	/**
@@ -103,12 +125,15 @@ public class MuseumIntroduceFragment extends Fragment {
 	 * 获取博物馆图片集，并将其放入imageView数组中
 	 */
 	private void getImages() {
-		images = new ArrayList<ImageView>();
-		ImageView imageView;
-		for (int i = 0; i < IMAGE_RESOURCES.length; i++) {
-			imageView = new ImageView(this.getActivity());
-			imageView.setBackgroundResource(IMAGE_RESOURCES[i]);
-			images.add(imageView);
+		images = new ArrayList<NetworkImageView>();
+		NetworkImageView networkImageView;
+		for (int i = 0; i < urls.length; i++) {
+			networkImageView = new NetworkImageView(this.getActivity());
+			networkImageView.setErrorImageResId(R.drawable.icon);
+			networkImageView.setDefaultImageResId(R.drawable.pictures_no);
+			networkImageView.setImageUrl(urls[i],
+					BitmapUtils.getImageLoader(this.getActivity()));
+			images.add(networkImageView);
 		}
 	}
 
@@ -118,7 +143,7 @@ public class MuseumIntroduceFragment extends Fragment {
 	private void getTips() {
 		tips = new ArrayList<ImageView>();
 		ImageView imageView;
-		for (int i = 0; i < IMAGE_RESOURCES.length; i++) {
+		for (int i = 0; i < urls.length; i++) {
 			imageView = new ImageView(this.getActivity());
 			imageView.setLayoutParams(new LayoutParams(10, 10));
 			tips.add(imageView);
@@ -137,38 +162,23 @@ public class MuseumIntroduceFragment extends Fragment {
 		}
 	}
 
+	@SuppressLint("InflateParams")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		// 加入缓存加载，避免每次切换fragment都要加载一次视图
-		if (rootView == null) {
-			rootView = inflater.inflate(R.layout.frag_main, null);
-			mInflater = inflater;
-			initViews();
-		}
-		ViewGroup parent = (ViewGroup) rootView.getParent();
-		if (parent != null) {
-			parent.removeView(rootView);
-		}
-
-		return rootView;
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-
+		View view = inflater.inflate(R.layout.frag_main, null);
+		mInflater = inflater;
+		return view;
 	}
 
 	/**
 	 * 将viewPager和其他view 作为header加入到listView中，使整个页面可滚动，且能复用list_item
 	 */
-	private void initViews() {
-		if (rootView == null)
-			return;
-		// 获取frag header
-		fragHeader = (HeaderLayout) rootView
-				.findViewById(R.id.frag_header_main);
+	@SuppressLint("InflateParams")
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		fragHeader = (HeaderLayout) view.findViewById(R.id.frag_header_main);
 		fragHeader.setTitle("XX博物馆");
 
 		// 获取header layout
@@ -179,13 +189,13 @@ public class MuseumIntroduceFragment extends Fragment {
 		// 解决viewPager占满屏幕的问题,将viewPager嵌套在一个layout下，通过指定该layout的params来决定viewPager的params
 		viewPager = (ViewPager) headerLayout.findViewById(R.id.frag_main_pager);
 		// 获取屏幕宽高度，并将viewPager的高度设为屏幕高度的2/5
-		DisplayMetrics dm = new DisplayMetrics();
-		this.getActivity().getWindowManager().getDefaultDisplay()
-				.getMetrics(dm);
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-				dm.widthPixels, dm.heightPixels * 2 / 5);
-		params.setMargins(20, 20, 20, 20);
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, dm.heightPixels * 2 / 5);
+		//params.setMargins(0, 0, 0, 0);
 		viewPager.setLayoutParams(params);
+		
+		//TODO viewPager 宽度 无法占满？ 如何解决？
+		Toast.makeText(this.getActivity(), "width " + params.width,
+				Toast.LENGTH_SHORT).show();
 
 		// 加载提示小点点
 		tipsGroup = (LinearLayout) headerLayout
@@ -210,7 +220,7 @@ public class MuseumIntroduceFragment extends Fragment {
 		tvIntroduction.append(spanString);
 
 		// 获取listview
-		lvExhibit = (AutoLoadListView) rootView
+		lvExhibit = (AutoLoadListView) view
 				.findViewById(R.id.frag_main_lv_exhibit);
 		// 添加header
 		lvExhibit.addHeaderView(headerLayout);
@@ -298,7 +308,7 @@ public class MuseumIntroduceFragment extends Fragment {
 
 			@Override
 			public Object instantiateItem(View container, int position) {
-				ImageView image = images.get(position);
+				NetworkImageView image = images.get(position);
 				((ViewGroup) container).addView(image, 0);
 				return image;
 
@@ -309,18 +319,6 @@ public class MuseumIntroduceFragment extends Fragment {
 				((ViewPager) container).removeView(images.get(position));
 			}
 		};
-	}
-
-	@Override
-	public void onDestroyView() {
-		// TODO Auto-generated method stub
-		super.onDestroyView();
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		rootView = null;
 	}
 
 }

@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-	<RelativeLayout
-        android:background="@color/btn_pressed_color"
+	<FrameLayout
         android:id="@+id/frag_main_pager_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -12,15 +11,16 @@
 	        android:id="@+id/frag_main_pager"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"/>
+        <!-- tips -->
        <LinearLayout
             android:id="@+id/frag_main_pager_tips_group"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center"
             android:paddingTop="150dp"
             android:orientation="horizontal"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content">
 		</LinearLayout>
-	</RelativeLayout>
+	</FrameLayout>
         
    <TextView 
         android:id="@+id/frag_main_tv_introduction"

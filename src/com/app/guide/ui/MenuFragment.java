@@ -25,7 +25,6 @@ import com.app.guide.bean.Menu;
 public class MenuFragment extends Fragment {
 
 	private HomeClick homeClick;
-	private View rootView;
 	private ListView lvMenu;
 	private List<Menu> mData;
 	
@@ -45,36 +44,14 @@ public class MenuFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		if (rootView == null) {
-			rootView = inflater.inflate(R.layout.frag_menu, null);
-			
-		}
-		ViewGroup parent = (ViewGroup) rootView.getParent();
-		if (parent != null) {
-			parent.removeView(rootView);
-		}
-		return rootView;
+			View view = inflater.inflate(R.layout.frag_menu, null);
+		return view;
 	}
 	
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		initViews();
-	}
-	
-	private void initData(){
-		String[] titles = { "城市选择", "下载中心", "设置", "更多", "返回" };
-		int[] iconResources = { R.drawable.sliding_menu_city,
-				R.drawable.sliding_menu_download, R.drawable.sliding_menu_setting,
-				R.drawable.sliding_menu_more, R.drawable.sliding_menu_back };
-		mData = new ArrayList<Menu>();
-		for(int i =0 ; i < titles.length;i++)
-			mData.add(new Menu(iconResources[i],titles[i]));
-	}
-	
-	private void initViews() {
-		if(rootView== null) return ;
-		lvMenu = (ListView)rootView.findViewById(R.id.frag_menu_lv_menu);
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		lvMenu = (ListView)view.findViewById(R.id.frag_menu_lv_menu);
 		lvMenu.setAdapter(new CommonAdapter<Menu>(this.getActivity(),mData,R.layout.item_menu) {
 			@Override
 			public void convert(ViewHolder holder, int position) {
@@ -88,7 +65,6 @@ public class MenuFragment extends Fragment {
 		});
 		
 		lvMenu.setOnItemClickListener(new OnItemClickListener() {
-
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 					long arg3) {
@@ -113,10 +89,20 @@ public class MenuFragment extends Fragment {
 					startActivity(intent);
 				}
 			}
-			
 		});
 	}
-
+	
+	
+	private void initData(){
+		String[] titles = { "城市选择", "下载中心", "设置", "更多", "返回" };
+		int[] iconResources = { R.drawable.sliding_menu_city,
+				R.drawable.sliding_menu_download, R.drawable.sliding_menu_setting,
+				R.drawable.sliding_menu_more, R.drawable.sliding_menu_back };
+		mData = new ArrayList<Menu>();
+		for(int i =0 ; i < titles.length;i++)
+			mData.add(new Menu(iconResources[i],titles[i]));
+	}
+	
 	public void setHomeClick(HomeClick homeClick) {
 		this.homeClick = homeClick;
 	}

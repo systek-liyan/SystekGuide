@@ -58,7 +58,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 	/**
 	 * 记录当前选中view 的position
 	 */
-	private int mCurrentPos;
+	private int mLastIndex;
 
 	/**
 	 * 当前第一张图片的下标
@@ -73,7 +73,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 
 	private int mLastItemCounts;
 
-	private int mCurrentClickedItem;
+	private int mCurrentSelectedItem;
 	/**
 	 * 标识是否加载了空白view
 	 */
@@ -87,6 +87,15 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 	public void setOnItemClickListener(OnItemClickListener listener) {
 		mItemClickListener = listener;
 	}
+	
+	/**
+	 * 获取当前选中的图片的坐标
+	 * @return
+	 */
+	public int getCurrentSelectedIndex(){
+		return mFirstIndex;
+	}
+
 
 	public MyHorizontalScrollView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -106,6 +115,25 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 	}
 
 	/**
+	 * 设置当前选中item
+	 * @param index
+	 */
+	public void setCurrentSelectedItem(int index){
+		if(index < 0)
+			index = 0 ;
+		if(index > mAdapter.getCount()-1)
+			index = mAdapter.getCount()-1;
+		//如何获得view
+		for(View view :mViewPos.keySet()){
+			if(mViewPos.get(view).equals(index)){
+				onClick(view);
+				break;
+			}
+		}
+	}
+
+	
+	/**
 	 * 初始化数据和adapter
 	 */
 	public void initData(HorizontalScrollViewAdapter adapter) {
@@ -120,17 +148,13 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 					R.dimen.gallery_width) + 1;
 			// 计算每次加载多少个view
 			mCountOneScreen = mScreenWidth / mChildWidth + 2;
-			mLastItemCounts = mCountOneScreen;
-			Log.w("TAG", "countOneScreen1 " + mCountOneScreen + ","
-					+ mChildWidth);
+			mLastItemCounts = mCountOneScreen -1;
 			// 如果adapter中view 的总数比能一屏能加载的少，则把最多能加载数置为view总数
 			if (mCountOneScreen > mAdapter.getCount())
 				mCountOneScreen = mAdapter.getCount();
-			Log.w("TAG", "countOneScreen2 " + mCountOneScreen);
 		}
 		// 初始化第一屏幕
 		initFirstScreenChild(mCountOneScreen);
-
 	}
 
 	/**
@@ -147,7 +171,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 			else view.setAlpha(0.5f);
 			mContainer.addView(view);
 			mViewPos.put(view, i);
-			mCurrentPos = i;
+			mLastIndex = i;
 		}
 		if (mItemChangedListener != null) {
 			notifyCurrentItemChanged();
@@ -159,7 +183,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 		for (int i = 0; i < mContainer.getChildCount(); i++) {
 			mContainer.getChildAt(i).setAlpha(0.5f);
 		}
-		Log.w("TAG", "mFirstIndex:" + mFirstIndex + ", current: " + mCurrentPos
+		Log.w("TAG", "mFirstIndex:" + mFirstIndex + ", current: " + mLastIndex
 				+ "mlast" + mLastItemCounts);
 		mItemChangedListener.onCurrentImgChanged(mFirstIndex,
 				mContainer.getChildAt(0));
@@ -192,18 +216,18 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 		if (isLoaded) {
 			return;
 		}
-		// 后面没有了
+		// 加载到最后一屏
 		if (mFirstIndex >= mAdapter.getCount() - mCountOneScreen
-				&& mLastItemCounts > 1) {
+				&& mLastItemCounts > 0) {
 			view = new ImageView(getContext());
 			view.setLayoutParams(new ViewGroup.LayoutParams(mChildWidth,
 					mChildWidth));
 			mLastItemCounts--;
-			if (mLastItemCounts == 1)
+			if (mLastItemCounts == 0)
 				isLoaded = true;
 		} else {
 			// 获取下一张图片
-			view = mAdapter.getView(++mCurrentPos, null, mContainer);
+			view = mAdapter.getView(++mLastIndex, null, mContainer);
 			view.setOnClickListener(this);
 		}
 		// 移除第一张图片，并将水平滚动位置置0
@@ -211,8 +235,8 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 		mViewPos.remove(mContainer.getChildAt(0));
 		mContainer.removeViewAt(0);
 		mContainer.addView(view);
-		mViewPos.put(view, mCurrentPos);
-		if(mCurrentPos != mCurrentClickedItem)
+		mViewPos.put(view, mLastIndex);
+		if(mLastIndex != mCurrentSelectedItem)
 			view.setAlpha(0.5f);
 		else view.setAlpha(1f);
 		// 更新第一张图片的下标
@@ -244,7 +268,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 			mViewPos.remove(mContainer.getChildAt(oldViewPos));
 			mContainer.removeViewAt(oldViewPos);
 			View view = mAdapter.getView(index, null, mContainer);
-			if(index != mCurrentClickedItem)
+			if(index != mCurrentSelectedItem)
 				view.setAlpha(0.5f);
 			else view.setAlpha(1f);
 			view.setOnClickListener(this);
@@ -253,7 +277,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 			// 水平滚动位置向左移动view的宽度个像素
 			scrollTo(mChildWidth, 0);
 			if (mFirstIndex <= mAdapter.getCount() - mCountOneScreen)
-				mCurrentPos--;
+				mLastIndex--;
 			mFirstIndex--;
 			if (mItemChangedListener != null) {
 				notifyCurrentItemChanged();
@@ -261,33 +285,36 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 		}
 
 	}
-
 	@Override
 	public void onClick(View view) {
+		Log.w("TAG", "onClick");
 		if (mItemClickListener != null) {
 			for (int i = 0; i < mContainer.getChildCount(); i++) {
 				mContainer.getChildAt(i).setAlpha(0.5f);
 			}
 			view.setAlpha(1f);
 		}
-		mCurrentClickedItem = mViewPos.get(view);
+		mCurrentSelectedItem = mViewPos.get(view);
 		mItemClickListener.onItemClick(view, mViewPos.get(view));
 		// 点击时 滚动到相应位置 需要load
 		int changePosition = mViewPos.get(view) - mFirstIndex;
 		for (int i = 0; i < changePosition; i++) {
 			loadNextImage();
 		}
-		if (changePosition > 2)
-			smoothScrollBy(mChildWidth * (changePosition - 3), 0);
-		else if (changePosition > 1) {
-			smoothScrollBy(mChildWidth * (changePosition - 2), 0);
-		} else {
-			smoothScrollBy(mChildWidth * (changePosition - 1), 0);
-		}
-		Log.w("TAG", "first" + mFirstIndex + "onclick " + mViewPos.get(view)
-				+ "change:" + changePosition + ", by" + mChildWidth
-				* (changePosition));
+		mFirstIndex = mCurrentSelectedItem;
+		smoothScrollBy(calculateScrollWidth(changePosition),0);
+	}
 
+	private int calculateScrollWidth(int changePosition){
+		int width = 0;
+		if (changePosition > 2)
+			width = mChildWidth * (changePosition - 3);
+		else if (changePosition > 1) {
+			width = mChildWidth * (changePosition - 2);
+		} else {
+			width = mChildWidth * (changePosition - 1);
+		}
+		return width;
 	}
 
 	public interface CurrentImageChangedListener {

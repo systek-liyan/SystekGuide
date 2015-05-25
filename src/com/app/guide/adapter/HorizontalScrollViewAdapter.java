@@ -2,23 +2,21 @@ package com.app.guide.adapter;
 
 import java.util.List;
 
+import android.content.Context;
+
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.app.guide.R;
+import com.app.guide.bean.ImageBean;
 import com.app.guide.utils.BitmapUtils;
 
-import android.content.Context;
-import android.content.res.Resources;
-
-public class HorizontalScrollViewAdapter extends CommonAdapter<String> {
+public class HorizontalScrollViewAdapter extends CommonAdapter<ImageBean> {
 
 	private ImageLoader mImageLoader;
-	private Resources mRes;
 
-	public HorizontalScrollViewAdapter(Context context, List<String> data,
+	public HorizontalScrollViewAdapter(Context context, List<ImageBean> data,
 			int layoutId) {
 		super(context, data, layoutId);
-		mRes = context.getResources();
 		mImageLoader = BitmapUtils.getImageLoader(context);
 	}
 
@@ -30,7 +28,7 @@ public class HorizontalScrollViewAdapter extends CommonAdapter<String> {
 				.getView(R.id.item_gallery_iv);
 		imageView.setDefaultImageResId(R.drawable.ic_launcher);
 		imageView.setErrorImageResId(R.drawable.ic_launcher);
-		imageView.setImageUrl(mData.get(position), mImageLoader);
+		imageView.setImageUrl(mData.get(position).getImgUrl(), mImageLoader);
 
 	}
 
