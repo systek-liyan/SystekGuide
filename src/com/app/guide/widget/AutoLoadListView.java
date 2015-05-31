@@ -1,7 +1,5 @@
 package com.app.guide.widget;
 
-import com.app.guide.R;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -11,6 +9,8 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.app.guide.R;
 
 /**
  * 
@@ -56,6 +56,17 @@ public class AutoLoadListView extends ListView implements OnScrollListener {
 		footer = inflater.inflate(R.layout.listview_footer, null);
 		loadFull = (TextView) footer.findViewById(R.id.footer_loadFull);
 		loadFail = (TextView) footer.findViewById(R.id.footer_noData);
+		loadFail.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				setloading();
+				if (mOnLoadListener != null) {
+					mOnLoadListener.onRetry();
+				}
+			}
+		});
 		loadIng = (TextView) footer.findViewById(R.id.footer_more);
 		progressBar = (ProgressBar) footer.findViewById(R.id.footer_loading);
 		addFooterView(footer);
@@ -125,6 +136,7 @@ public class AutoLoadListView extends ListView implements OnScrollListener {
 
 	public interface OnLoadListener {
 		public void onLoad();
+		public void onRetry();
 	}
 
 }

@@ -256,6 +256,7 @@ public class MuseumIntroduceFragment extends Fragment {
 			public void onLoad() {
 				// TODO Auto-generated method stub
 				page++;
+<<<<<<< HEAD
 				List<ExhibitBean> data = null;
 				try {
 					data = GetBeanFromSql.getExhibitBeans(getActivity(),
@@ -274,6 +275,15 @@ public class MuseumIntroduceFragment extends Fragment {
 					lvExhibit.setLoadFailed();
 				}
 				lvExhibit.onLoadComplete();
+=======
+				loadOnPage();
+			}
+
+			@Override
+			public void onRetry() {
+				// TODO Auto-generated method stub
+				loadOnPage();
+>>>>>>> cec9edcc478b020a1921b6eb8813ff48b97e1559
 			}
 		});
 		
@@ -288,6 +298,28 @@ public class MuseumIntroduceFragment extends Fragment {
 			}
 		});
 
+	}
+	
+	private void loadOnPage(){
+		List<ExhibitBean> data = null;
+		try {
+			data = GetBeanFromSql
+					.getExhibitBeans(getActivity(),
+							((AppContext) getActivity()
+									.getApplication()).museumId, page);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (data != null) {
+			exhibitAdapter.addData(data);
+			if (data.size() < Constant.PAGE_COUNT) {
+				lvExhibit.setLoadFull();
+			}
+		} else {
+			lvExhibit.setLoadFailed();
+		}
+		lvExhibit.onLoadComplete();
 	}
 
 	private OnPageChangeListener createPagerChangedListener() {
