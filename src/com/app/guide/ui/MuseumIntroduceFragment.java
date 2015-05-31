@@ -232,30 +232,40 @@ public class MuseumIntroduceFragment extends Fragment {
 			public void onLoad() {
 				// TODO Auto-generated method stub
 				page++;
-				List<ExhibitBean> data = null;
-				try {
-					data = GetBeanFromSql
-							.getExhibitBeans(getActivity(),
-									((AppContext) getActivity()
-											.getApplication()).museumId, page);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (data != null) {
-					exhibitAdapter.addData(data);
-					if (data.size() < Constant.PAGE_COUNT) {
-						lvExhibit.setLoadFull();
-					}
-				} else {
-					lvExhibit.setLoadFailed();
-				}
-				lvExhibit.onLoadComplete();
+				loadOnPage();
+			}
+
+			@Override
+			public void onRetry() {
+				// TODO Auto-generated method stub
+				loadOnPage();
 			}
 		});
 
 		// 解决slidingMenu和viewPager 滑动冲突
 		HomeActivity.sm.addIgnoredView(viewPager);
+	}
+	
+	private void loadOnPage(){
+		List<ExhibitBean> data = null;
+		try {
+			data = GetBeanFromSql
+					.getExhibitBeans(getActivity(),
+							((AppContext) getActivity()
+									.getApplication()).museumId, page);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (data != null) {
+			exhibitAdapter.addData(data);
+			if (data.size() < Constant.PAGE_COUNT) {
+				lvExhibit.setLoadFull();
+			}
+		} else {
+			lvExhibit.setLoadFailed();
+		}
+		lvExhibit.onLoadComplete();
 	}
 
 	private OnPageChangeListener createPagerChangedListener() {

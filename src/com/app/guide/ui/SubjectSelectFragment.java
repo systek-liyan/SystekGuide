@@ -247,28 +247,37 @@ public class SubjectSelectFragment extends Fragment {
 			public void onLoad() {
 				// TODO Auto-generated method stub
 				page++;
-				List<ExhibitBean> data = null;
-				try {
-					data = GetBeanFromSql
-							.getExhibitBeans(mContext,
-									((AppContext) getActivity()
-											.getApplication()).museumId, page);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				if (data != null) {
-					exhibitAdapter.addData(data);
-					if (data.size() < Constant.PAGE_COUNT) {
-						lvExhibits.setLoadFull();
-					}
-				} else {
-					lvExhibits.setLoadFailed();
-				}
-				lvExhibits.onLoadComplete();
+				loadOnPage();
+			}
+
+			@Override
+			public void onRetry() {
+				// TODO Auto-generated method stub
+				loadOnPage();
 			}
 		});
 	}
 
+	private void loadOnPage(){
+		List<ExhibitBean> data = null;
+		try {
+			data = GetBeanFromSql
+					.getExhibitBeans(mContext,
+							((AppContext) getActivity()
+									.getApplication()).museumId, page);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if (data != null) {
+			exhibitAdapter.addData(data);
+			if (data.size() < Constant.PAGE_COUNT) {
+				lvExhibits.setLoadFull();
+			}
+		} else {
+			lvExhibits.setLoadFailed();
+		}
+		lvExhibits.onLoadComplete();
+	}
 
 	/**
 	 * 实现 gridAdapter中定义的　itemClicker 接口，通过回调函数获取item的text内容，从而知道用户点击了哪个item
