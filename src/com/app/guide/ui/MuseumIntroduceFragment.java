@@ -79,7 +79,7 @@ public class MuseumIntroduceFragment extends Fragment {
 	private DisplayMetrics dm;
 
 	private Intent mIntent;
-	
+
 	private int mMuseumId;
 
 	private MuseumDetailBean mMuseumDetailBean;
@@ -87,17 +87,17 @@ public class MuseumIntroduceFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		//获取intent
+		// 获取intent
 		mIntent = activity.getIntent();
 		// 获取museumId
 		mMuseumId = mIntent.getIntExtra(Constant.EXTRA_MUSEUM_ID, 1);
-		Log.w("Fragment", mMuseumId+"");
+		Log.w("Fragment", mMuseumId + "");
 		getScreenHeight();
 		// 初始化博物馆数据
 		initMuseumData();
 		// 获取博物馆精品展品数据
 		getExhibitData();
-		
+
 		exhibitAdapter = new ExhibitAdapter(activity, exhibits,
 				R.layout.item_exhibit);
 
@@ -210,7 +210,7 @@ public class MuseumIntroduceFragment extends Fragment {
 		// 获取屏幕宽高度，并将viewPager的高度设为屏幕高度的2/5
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
 				FrameLayout.LayoutParams.MATCH_PARENT, dm.heightPixels * 2 / 5);
-//		params.setMargins(20, 20, 20, 0);
+		// params.setMargins(20, 20, 20, 0);
 		viewPager.setLayoutParams(params);
 
 		// 加载提示小点点
@@ -256,26 +256,6 @@ public class MuseumIntroduceFragment extends Fragment {
 			public void onLoad() {
 				// TODO Auto-generated method stub
 				page++;
-<<<<<<< HEAD
-				List<ExhibitBean> data = null;
-				try {
-					data = GetBeanFromSql.getExhibitBeans(getActivity(),
-							mMuseumId, page);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (data != null) {
-					//TODO exhibitBean
-					exhibits.addAll(data);
-					if (data.size() < Constant.PAGE_COUNT) {
-						lvExhibit.setLoadFull();
-					}
-				} else {
-					lvExhibit.setLoadFailed();
-				}
-				lvExhibit.onLoadComplete();
-=======
 				loadOnPage();
 			}
 
@@ -283,30 +263,31 @@ public class MuseumIntroduceFragment extends Fragment {
 			public void onRetry() {
 				// TODO Auto-generated method stub
 				loadOnPage();
->>>>>>> cec9edcc478b020a1921b6eb8813ff48b97e1559
 			}
 		});
-		
+
 		lvExhibit.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-					long arg3) {
-				mIntent.putExtra(Constant.EXTRA_EXHIBIT_ID, exhibits.get(position).getId());
-				//不能使用HomeActivity.mRadioGroup.check(R.id.home_tab_follow); 因为该方法会重复调用onCheckedChanged()方法  ，从而导致java.lang.IllegalStateException异常
-				//跳转到follow guide fragment
-				((RadioButton)HomeActivity.mRadioGroup.findViewById(R.id.home_tab_follow)).setChecked(true);
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int position, long arg3) {
+				mIntent.putExtra(Constant.EXTRA_EXHIBIT_ID,
+						exhibits.get(position).getId());
+				// 不能使用HomeActivity.mRadioGroup.check(R.id.home_tab_follow);
+				// 因为该方法会重复调用onCheckedChanged()方法
+				// ，从而导致java.lang.IllegalStateException异常
+				// 跳转到follow guide fragment
+				((RadioButton) HomeActivity.mRadioGroup
+						.findViewById(R.id.home_tab_follow)).setChecked(true);
 			}
 		});
 
 	}
-	
-	private void loadOnPage(){
+
+	private void loadOnPage() {
 		List<ExhibitBean> data = null;
 		try {
-			data = GetBeanFromSql
-					.getExhibitBeans(getActivity(),
-							((AppContext) getActivity()
-									.getApplication()).museumId, page);
+			data = GetBeanFromSql.getExhibitBeans(getActivity(), mMuseumId,
+					page);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

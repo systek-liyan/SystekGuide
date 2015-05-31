@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
 
+import com.app.guide.AppContext;
 import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
@@ -243,9 +244,10 @@ public class SubjectSelectFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				mIntent.putExtra(Constant.EXTRA_EXHIBIT_ID, 
+				mIntent.putExtra(Constant.EXTRA_EXHIBIT_ID,
 						exhibits.get(position).getId());
-				((RadioButton)HomeActivity.mRadioGroup.findViewById(R.id.home_tab_follow)).setChecked(true);
+				((RadioButton) HomeActivity.mRadioGroup
+						.findViewById(R.id.home_tab_follow)).setChecked(true);
 			}
 		});
 		lvExhibits.setOnLoadListener(new OnLoadListener() {
@@ -254,24 +256,6 @@ public class SubjectSelectFragment extends Fragment {
 			public void onLoad() {
 				// TODO Auto-generated method stub
 				page++;
-<<<<<<< HEAD
-				List<ExhibitBean> data = null;
-				try {
-					data = GetBeanFromSql.getExhibitBeans(mContext, mMuseumId,
-							page);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				if (data != null) {
-					exhibitAdapter.addData(data);
-					if (data.size() < Constant.PAGE_COUNT) {
-						lvExhibits.setLoadFull();
-					}
-				} else {
-					lvExhibits.setLoadFailed();
-				}
-				lvExhibits.onLoadComplete();
-=======
 				loadOnPage();
 			}
 
@@ -279,20 +263,14 @@ public class SubjectSelectFragment extends Fragment {
 			public void onRetry() {
 				// TODO Auto-generated method stub
 				loadOnPage();
->>>>>>> cec9edcc478b020a1921b6eb8813ff48b97e1559
 			}
 		});
 	}
 
-<<<<<<< HEAD
-=======
-	private void loadOnPage(){
+	private void loadOnPage() {
 		List<ExhibitBean> data = null;
 		try {
-			data = GetBeanFromSql
-					.getExhibitBeans(mContext,
-							((AppContext) getActivity()
-									.getApplication()).museumId, page);
+			data = GetBeanFromSql.getExhibitBeans(mContext, mMuseumId, page);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -307,7 +285,6 @@ public class SubjectSelectFragment extends Fragment {
 		lvExhibits.onLoadComplete();
 	}
 
->>>>>>> cec9edcc478b020a1921b6eb8813ff48b97e1559
 	/**
 	 * 实现 gridAdapter中定义的　itemClicker 接口，通过回调函数获取item的text内容，从而知道用户点击了哪个item
 	 * 
