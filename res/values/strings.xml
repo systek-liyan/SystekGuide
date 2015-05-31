@@ -27,4 +27,8 @@
     <!-- 展品列表 -->
     <string name="exhibit_list_title">展品列表</string>
     
+    <!-- 自动导游和手动导游 -->
+    <string name="auto_guide">自动导游</string>
+    <string name="manally_guide">手动导游</string>
+    
 </resources>

@@ -271,13 +271,14 @@ public class MuseumIntroduceFragment extends Fragment {
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
 				mIntent.putExtra(Constant.EXTRA_EXHIBIT_ID,
-						exhibits.get(position).getId());
+						exhibits.get(position-1).getId());
 				// 不能使用HomeActivity.mRadioGroup.check(R.id.home_tab_follow);
 				// 因为该方法会重复调用onCheckedChanged()方法
 				// ，从而导致java.lang.IllegalStateException异常
 				// 跳转到follow guide fragment
 				((RadioButton) HomeActivity.mRadioGroup
 						.findViewById(R.id.home_tab_follow)).setChecked(true);
+				
 			}
 		});
 

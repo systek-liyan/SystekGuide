@@ -4,12 +4,26 @@
     android:layout_height="match_parent" 
     android:orientation="vertical">
 
-    <ListView 
+    <ListView
         android:id="@+id/frag_menu_lv_menu"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <View 
 	    android:background="@color/darkgray"
 	    android:layout_width="match_parent"
 	    android:layout_height="1dp"/>
+    
+    <!-- TODO 改图片 -->
+    <ToggleButton 
+        android:id="@+id/frag_menu_tb_autoguide"
+        android:checked="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/toggle_btn_selector"
+        android:textOn=""
+        android:textOff=""
+        android:text=""
+        android:layout_height="wrap_content"
+        android:layout_width="80dp"/>
 </LinearLayout>

@@ -35,6 +35,8 @@ import com.app.guide.adapter.HorizontalScrollViewAdapter;
 import com.app.guide.bean.Exhibit;
 import com.app.guide.bean.ImageOption;
 import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
+import com.app.guide.ui.MenuFragment.HomeClick;
 import com.app.guide.utils.BitmapUtils;
 import com.app.guide.widget.HeaderLayout;
 import com.app.guide.widget.LyricView;
@@ -44,18 +46,12 @@ import com.app.guide.widget.MyHorizontalScrollView.CurrentImageChangedListener;
 import com.app.guide.widget.MyHorizontalScrollView.OnItemClickListener;
 import com.app.guide.widget.MyHorizontalScrollView.OnLoadingMoreListener;
 
-import edu.xidian.NearestBeacon.BeaconSearcher;
-import edu.xidian.NearestBeacon.BeaconSearcher.OnNearestBeaconListener;
-import edu.xidian.NearestBeacon.NearestBeacon;
 
 /**
  * 两种进入该界面的方式，底部导航进入 和选择某一展品进入
  * 随身导游页面，包含与Beacon相关的操作，根据停留时间获取最近的beacon，并让相应的音频文件自动播放，并显示文字
  * 
- * 自动和手动的切换  跳转  手动 自动
- * 放到侧边栏 checkBox
- * 
- * map 点击展品 跳转
+ * map 点击展品 跳转  
  * 
  * 设置 距离
  * 
@@ -68,8 +64,7 @@ import edu.xidian.NearestBeacon.NearestBeacon;
  * @author yetwish
  * @date 2015-4-25
  */
-public class FollowGuideFragment extends Fragment implements
-		OnNearestBeaconListener {
+public class FollowGuideFragment extends Fragment implements onBeaconSearcherListener{
 
 	private static final String TAG = FollowGuideFragment.class.getSimpleName();
 
@@ -208,11 +203,7 @@ public class FollowGuideFragment extends Fragment implements
 	 */
 	private MyClickListener mClickListener;
 
-	/**
-	 * store BeaconSearcher instance, we use it to range beacon,and get the
-	 * minBeacon from it.
-	 */
-	private BeaconSearcher beaconSearcher;
+//	private BeaconSearcher beaconSearcher;
 
 	private boolean isFirst = true;
 
@@ -228,7 +219,7 @@ public class FollowGuideFragment extends Fragment implements
 			"3205.lrc" };
 
 	private static final int MSG_PROGRESS_CHANGED = 0x200;
-	private static final int MSG_BEACON_CHANGED = 0x201;
+	private static final int MSG_EXHIBIT_CHANGED = 0x201;
 
 	@SuppressLint("HandlerLeak")
 	private Handler mHandler = new Handler() {
@@ -254,9 +245,9 @@ public class FollowGuideFragment extends Fragment implements
 					isFirst = false;
 				}
 				break;
-			case MSG_BEACON_CHANGED:
+			case MSG_EXHIBIT_CHANGED:
 				// 若当前beacon改变了
-//				notifyCurrentExhibitChanged();
+				notifyExhibitChanged(msg.arg1);
 				break;
 			}
 		}
@@ -272,8 +263,6 @@ public class FollowGuideFragment extends Fragment implements
 		mContext = activity;
 		// 获取屏幕信息
 		getScreenDisplayMetrix();
-		// 初始化beacon 搜索器
-		// initBeaconSearcher(activity);
 		// 获取intent
 		mIntent = activity.getIntent();
 		// 获取museum id
@@ -321,7 +310,7 @@ public class FollowGuideFragment extends Fragment implements
 							mCurrentExhibit.getrExhibitBeanId());
 					// 将展品添加到展品数组中
 					mExhibitsList.clear();
-					Log.w(TAG, "clear done");
+					mExhibitImages.clear();
 					mExhibitsList.add(lExhibit);
 					mExhibitsList.add(mCurrentExhibit);
 					mExhibitsList.add(rExhibit);
@@ -329,51 +318,57 @@ public class FollowGuideFragment extends Fragment implements
 					for(int i = 0 ;i < mExhibitsList.size(); i++){
 						mExhibitImages.add(new ImageOption(mExhibitsList.get(i).getIconUrl(),0));
 					}
+					Log.w("TAG", mExhibitImages.size()+"size");
+					
 				}
 				// 获取audio数据
-				
 
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {// 是从导航键跳转过来的，开启随身导航模式（自动）
+			//判断是否可以开启自动导航
+			if(HomeActivity.isAutoGuide()){
+				HomeActivity.setBeaconSearcherListener(this);
+			}
 			// 开启BeaconSearcher
-			// initBeaconSearcher(getActivity());
+			
+//			initBeaconSearcher(getActivity());
 		}
 
 	}
 
-	/**
-	 * 初始化beacon 搜索器
-	 * 
-	 * @param activity
-	 */
-	private void initBeaconSearcher(Activity activity) {
+//	/**
+//	 * 初始化beacon 搜索器
+//	 * 
+//	 * @param activity
+//	 */
+//	private void initBeaconSearcher(Activity activity) {
+//
+//		beaconSearcher = BeaconSearcher.getInstance(activity);
+//		// 设定用于展品定位的最小停留时间(ms)
+//		beaconSearcher.setMin_stay_milliseconds(5000);
+//		// 设定用于展品定位的最小距离(m)
+//		beaconSearcher.setExhibit_distance(5.0);
+//		// 设置获取距离最近的beacon类型
+//		// NearestBeacon.GET_EXHIBIT_BEACON：游客定位beacon。可以不用设置上述的最小停留时间和最小距离
+//		// NearestBeacon.GET_EXHIBIT_BEACON：展品定位beacon
+//		beaconSearcher.setNearestBeaconType(NearestBeacon.GET_EXHIBIT_BEACON);
+//		// 设置beacon监听器
+//		beaconSearcher.setNearestBeaconListener(this);
+//		// 当蓝牙打开时，打开beacon搜索器，开始搜索距离最近的Beacon
+//		if (beaconSearcher.checkBLEEnable())
+//			beaconSearcher.openSearcher();
+//	}
 
-		beaconSearcher = BeaconSearcher.getInstance(activity);
-		// 设定用于展品定位的最小停留时间(ms)
-		beaconSearcher.setMin_stay_milliseconds(5000);
-		// 设定用于展品定位的最小距离(m)
-		beaconSearcher.setExhibit_distance(5.0);
-		// 设置获取距离最近的beacon类型
-		// NearestBeacon.GET_EXHIBIT_BEACON：游客定位beacon。可以不用设置上述的最小停留时间和最小距离
-		// NearestBeacon.GET_EXHIBIT_BEACON：展品定位beacon
-		beaconSearcher.setNearestBeaconType(NearestBeacon.GET_EXHIBIT_BEACON);
-		// 设置beacon监听器
-		beaconSearcher.setNearestBeaconListener(this);
-		// 当蓝牙打开时，打开beacon搜索器，开始搜索距离最近的Beacon
-		if (beaconSearcher.checkBLEEnable())
-			beaconSearcher.openSearcher();
-	}
-
-	/**
-	 * 打开蓝牙请求回调方法
-	 */
-	public void onBluetoothResult(int requestCode, int resultCode) {
-		if (beaconSearcher.onBluetoothResult(requestCode, resultCode))
-			beaconSearcher.openSearcher();
-	}
+//	/**
+//	 * 打开蓝牙请求回调方法
+//	 */
+//	public void onBluetoothResult(int requestCode, int resultCode) {
+//		if (beaconSearcher.onBluetoothResult(requestCode, resultCode))
+//			beaconSearcher.openSearcher();
+//	}
 
 	@SuppressLint("InflateParams")
 	@Override
@@ -450,18 +445,30 @@ public class FollowGuideFragment extends Fragment implements
 	public void onResume() {
 		super.onResume();
 		// 从intent中获取exhibit id
+		if(HomeActivity.isAutoGuide()){
+			mIntent.putExtra(Constant.EXTRA_EXHIBIT_ID, -1);
+		}
 		int id = mIntent.getIntExtra(Constant.EXTRA_EXHIBIT_ID,
 				mCurrentExhibitId);
-		if (id != mCurrentExhibitId) {
-			Log.w(TAG, "id changed" + "id: "+id+"currentId : "+ mCurrentExhibitId);
-			// 当前展品与选中的展品不同
-			initData(id);
-			// TODO
-			// 通知audio 改变 gallery 改变
-			if (mCurrentExhibit != null) {
-				//需要把之前的注销掉
-				initGalleryViews();
+		notifyExhibitChanged(id);
+	}
+	
+	private void notifyExhibitChanged(int exhibitId){
+		if(mCurrentExhibitId != exhibitId && exhibitId != -1){
+			if(mLyricView != null)
+				mLyricView.stop();
+			initData(exhibitId);
+			if(mCurrentExhibit != null){
+				if(mGalleryAdapter== null){
+					//未初始化galleray view 
+					initGalleryViews();
+				}else{
+					//已初始化
+					mExhibitGallery.initData(mExhibitAdapter);
+				}
+				mPicGallery.setBackToBegin();
 				notifyStartPlaying();
+				
 			}
 		}
 	}
@@ -473,9 +480,6 @@ public class FollowGuideFragment extends Fragment implements
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if (beaconSearcher != null) {
-			beaconSearcher.closeSearcher();
-		}
 		if (mLyricView != null) {
 			mLyricView.destroy();
 		}
@@ -566,11 +570,11 @@ public class FollowGuideFragment extends Fragment implements
 			}
 		});
 
-		mGalleryAdapter = new HorizontalScrollViewAdapter(mContext,
-				mGalleryList, R.layout.item_gallery);
+		if(mGalleryAdapter == null)
+			mGalleryAdapter = new HorizontalScrollViewAdapter(mContext,
+					mGalleryList, R.layout.item_gallery);
 		mPicGallery.initData(mGalleryAdapter);
 
-		mPicGallery.setCurrentSelectedItem(0);
 		
 		/**
 		 * 设置tvPic可点击
@@ -584,30 +588,34 @@ public class FollowGuideFragment extends Fragment implements
 		mExhibitGallery.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(View view, int position) {
-				//changeCurrentExhibitById(position);
-//				// 将多角度图片设置为首张
-//				mPicGallery.setBackToBegin();
-				ivLyricBg.setImageUrl(mExhibitImages.get(position).getImgUrl(),
-						BitmapUtils.getImageLoader(mContext));
+				//将图片设置为首张
+				//切换展品
+				notifyExhibitChanged(mExhibitsList.get(position).getId());
+//				if(mCurrentExhibitId != mExhibitsList.get(position).getId()){
+//					//切换展品
+//					mPicGallery.setBackToBegin();
+//				}
 			}
 		});
 		mExhibitGallery.seOnLoadingMoreListener(new OnLoadingMoreListener() {
 			@Override
 			public int onRightLoadingMore() {
 				// TODO Auto-generated method stub
+				mExhibitsList.add(mExhibitsList.get(0));
 				mExhibitImages.add(mGalleryList.get(4));
 				return 1;
 			}
 			
 			@Override
 			public int onLeftLoadingMore() {
-				// TODO Auto-generated method stub
+				mExhibitsList.add(0,mExhibitsList.get(2));
 				mExhibitImages.add(0,mGalleryList.get(6));
 				return 1;
 			}
 		});
 		
-		mExhibitAdapter = new HorizontalScrollViewAdapter(mContext,
+		if(mExhibitAdapter ==null)
+			mExhibitAdapter = new HorizontalScrollViewAdapter(mContext,
 				mExhibitImages, R.layout.item_gallery);
 		
 		mExhibitGallery.initData(mExhibitAdapter);
@@ -619,61 +627,24 @@ public class FollowGuideFragment extends Fragment implements
 
 	}
 
-	/**
-	 * 当传入的beacon与当前beacon不同时，则证明已经进入其他展品区域，则自动播放其他展品 ？还是弹出转换？
-	 */
-	@Override
-	public void getNearestBeacon(int type, Beacon beacon) {
-		if (beacon == null)// 不做处理
-			return;
-		Log.w("BeaconSearcher", beacon.getId2().toString());
-		if (beacon.getId2().toString().contains("40")) {
-			changeCurrentExhibitById(1);
-		} else if (beacon.getId2().toString().contains("44")) {
-			changeCurrentExhibitById(2);
-		}
-	}
 
 	private void changeCurrentExhibitById(int i) {
 		if (mCurrentExhibitId != i) {
-			mCurrentExhibitId = i;
-			mHandler.sendEmptyMessage(MSG_BEACON_CHANGED);
+			Message msg = Message.obtain();
+			msg.what = MSG_EXHIBIT_CHANGED;
+			msg.arg1 = i;
+			mHandler.sendMessage(msg);
 		}
 	}
 
-	/**
-	 * 当前展品改变时
-	 */
-	private void notifyCurrentExhibitChanged() {
-		try {
-			// 根据当前id 获取展品数据
-			mCurrentExhibit = GetBeanFromSql.getExhibit(mContext, mMuseumId,
-					mCurrentExhibitId);
-			// 各控件加载数据
-			// gallery
-			mGalleryList = mCurrentExhibit.getImgList();
-			// // 加载附近的展品
-			// exhibitList.clear();
-			// // TODO
-			// lExhibit = GetBeanFromSql.getExhibit(mContext, mMuseumId,
-			// mCurrentExhibitId + 2);
-			// rExhibit = GetBeanFromSql.getExhibit(mContext, mMuseumId,
-			// mCurrentExhibitId + 3);
-			// // 存入列表中
-			// exhibitList.add(mCurrentExhibit);
-			// exhibitList.add(lExhibit);
-			// exhibitList.add(rExhibit);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-	}
 
 	/**
 	 * 开始播放
 	 */
 	private void notifyStartPlaying() {
-		if (mCurrentExhibitId == -1)
+		if (mCurrentExhibit == null)
+			return;
+		if(mLyricView == null) 
 			return;
 		// 准备音频文件
 		mLyricView.prepare(FILE_PATH
@@ -732,6 +703,21 @@ public class FollowGuideFragment extends Fragment implements
 				break;
 
 			}
+		}
+	}
+
+	/**
+	 * 当传入的beacon与当前beacon不同时，则证明已经进入其他展品区域，则自动播放其他展品 ？还是弹出转换？
+	 */
+	@Override
+	public void onNearestBeaconDiscovered(int type, Beacon beacon) {
+		if (beacon == null)// 不做处理
+			return;
+		Log.w("BeaconSearcher", beacon.getId2().toString());
+		if (beacon.getId2().toString().contains("40")) {
+			changeCurrentExhibitById(1);
+		} else if (beacon.getId2().toString().contains("44")) {
+			changeCurrentExhibitById(2);
 		}
 	}
 }

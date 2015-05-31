@@ -31,7 +31,7 @@ public class LyricView extends View {
 	private static final int SIZE_LENGTH = 1600;// 显示歌词的高度
 	public final static int SIZE_TEXT_DISPLAY = 250;
 
-	private static TreeMap<Integer, LyricObject> lrc_map;
+	private TreeMap<Integer, LyricObject> lrc_map;
 	private float mX; // 屏幕X轴的中点，此值固定，保持歌词在X中间显示
 	private static boolean blLrc = false;
 	private float touchY; // 当触摸歌词View时，保存为当前触点的Y轴坐标
@@ -63,7 +63,9 @@ public class LyricView extends View {
 		if (blLrc) {
 			paintHL.setTextSize(wordSize);
 			paint.setTextSize(wordSize);
+			//TODO 
 			LyricObject temp = lrc_map.get(lrcIndex);
+			if(temp == null) return ;
 			canvas.drawText(temp.lrc, mX, offsetY + (wordSize + INTERVAL)
 					* lrcIndex, paintHL);
 			// 画当前歌词之前的歌词
@@ -85,12 +87,12 @@ public class LyricView extends View {
 						* i, paint);
 			}
 		} else {
-			paint.setTextSize(25);
-			canvas.drawText("暂时无法找到该景点介绍 ", mX, 310, paint);
+			paint.setTextSize(35);
+			canvas.drawText("请打开自动导航或手动选取展品 ", mX, 310, paint);
 		}
 		super.onDraw(canvas);
 	}
-
+	
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {

@@ -832,6 +832,7 @@ containing a value of this type.
         public static final int tab_main_text=0x7f07001d;
         public static final int text_color=0x7f070016;
         public static final int title_textcolor=0x7f07001e;
+        public static final int toggle_btn_selector=0x7f07001f;
     }
     public static final class dimen {
         /**  Default height of an action bar. 
@@ -1116,6 +1117,9 @@ containing a value of this type.
         public static final int sliding_menu_more=0x7f0200a1;
         public static final int sliding_menu_setting=0x7f0200a2;
         public static final int test=0x7f0200a3;
+        public static final int toggle_btn_close=0x7f0200a4;
+        public static final int toggle_btn_open=0x7f0200a5;
+        public static final int toggle_btn_selector=0x7f0200a6;
     }
     public static final class id {
         public static final int abs__action_bar=0x7f0a0026;
@@ -1157,7 +1161,7 @@ containing a value of this type.
         public static final int abs__textButton=0x7f0a0019;
         public static final int abs__title=0x7f0a0021;
         public static final int abs__up=0x7f0a0001;
-        public static final int action_settings=0x7f0a008c;
+        public static final int action_settings=0x7f0a008d;
         public static final int activity_museum_header=0x7f0a0042;
         public static final int activity_museum_list=0x7f0a0043;
         public static final int city_btn_loacte=0x7f0a0038;
@@ -1168,10 +1172,10 @@ containing a value of this type.
         public static final int dia_map_title=0x7f0a004a;
         public static final int disableHome=0x7f0a000b;
         public static final int edit_query=0x7f0a002c;
-        public static final int footer_loadFull=0x7f0a0085;
-        public static final int footer_loading=0x7f0a0088;
-        public static final int footer_more=0x7f0a0087;
-        public static final int footer_noData=0x7f0a0086;
+        public static final int footer_loadFull=0x7f0a0086;
+        public static final int footer_loading=0x7f0a0089;
+        public static final int footer_more=0x7f0a0088;
+        public static final int footer_noData=0x7f0a0087;
         public static final int frag_follow_guide_btn_set_distance=0x7f0a0045;
         public static final int frag_follow_guide_btn_set_staytime=0x7f0a0047;
         public static final int frag_follow_guide_et_broadcast_distance=0x7f0a0044;
@@ -1199,10 +1203,11 @@ containing a value of this type.
         public static final int frag_main_sv=0x7f0a005b;
         public static final int frag_main_tv_introduction=0x7f0a0061;
         public static final int frag_menu_lv_menu=0x7f0a006c;
-        public static final int frag_subject_lv_exhibits=0x7f0a0070;
-        public static final int frag_subject_select_btn_finish=0x7f0a006e;
-        public static final int frag_subject_select_invis_layout=0x7f0a006f;
-        public static final int frag_subject_select_tv_title=0x7f0a006d;
+        public static final int frag_menu_tb_autoguide=0x7f0a006d;
+        public static final int frag_subject_lv_exhibits=0x7f0a0071;
+        public static final int frag_subject_select_btn_finish=0x7f0a006f;
+        public static final int frag_subject_select_invis_layout=0x7f0a0070;
+        public static final int frag_subject_select_tv_title=0x7f0a006e;
         public static final int fullscreen=0x7f0a0013;
         public static final int homeAsUp=0x7f0a000c;
         public static final int home_realtabcontent=0x7f0a003c;
@@ -1211,26 +1216,26 @@ containing a value of this type.
         public static final int home_tab_introduction=0x7f0a003e;
         public static final int home_tab_map=0x7f0a0041;
         public static final int home_tab_subject=0x7f0a0040;
-        public static final int item_city_alpha=0x7f0a0071;
-        public static final int item_city_name=0x7f0a0072;
-        public static final int item_exhibit_iv_icon=0x7f0a0073;
-        public static final int item_exhibit_tv_address=0x7f0a0075;
-        public static final int item_exhibit_tv_dynasty=0x7f0a0076;
-        public static final int item_exhibit_tv_introduction=0x7f0a0077;
-        public static final int item_exhibit_tv_name=0x7f0a0074;
-        public static final int item_gallery_iv=0x7f0a0078;
-        public static final int item_label_grid_btn=0x7f0a0079;
-        public static final int item_label_group_gridview=0x7f0a0084;
-        public static final int item_label_group_tv=0x7f0a0083;
-        public static final int item_map_exhibit_address=0x7f0a007b;
-        public static final int item_map_exhibit_name=0x7f0a007a;
-        public static final int item_menu_tv_title=0x7f0a007c;
-        public static final int item_museum_btn_isopen=0x7f0a0080;
-        public static final int item_museum_iv_icon=0x7f0a007d;
-        public static final int item_museum_tv_address=0x7f0a007f;
-        public static final int item_museum_tv_name=0x7f0a007e;
-        public static final int item_museum_tv_time=0x7f0a0081;
-        public static final int item_recycler_gallery_iv=0x7f0a0082;
+        public static final int item_city_alpha=0x7f0a0072;
+        public static final int item_city_name=0x7f0a0073;
+        public static final int item_exhibit_iv_icon=0x7f0a0074;
+        public static final int item_exhibit_tv_address=0x7f0a0076;
+        public static final int item_exhibit_tv_dynasty=0x7f0a0077;
+        public static final int item_exhibit_tv_introduction=0x7f0a0078;
+        public static final int item_exhibit_tv_name=0x7f0a0075;
+        public static final int item_gallery_iv=0x7f0a0079;
+        public static final int item_label_grid_btn=0x7f0a007a;
+        public static final int item_label_group_gridview=0x7f0a0085;
+        public static final int item_label_group_tv=0x7f0a0084;
+        public static final int item_map_exhibit_address=0x7f0a007c;
+        public static final int item_map_exhibit_name=0x7f0a007b;
+        public static final int item_menu_tv_title=0x7f0a007d;
+        public static final int item_museum_btn_isopen=0x7f0a0081;
+        public static final int item_museum_iv_icon=0x7f0a007e;
+        public static final int item_museum_tv_address=0x7f0a0080;
+        public static final int item_museum_tv_name=0x7f0a007f;
+        public static final int item_museum_tv_time=0x7f0a0082;
+        public static final int item_recycler_gallery_iv=0x7f0a0083;
         public static final int left=0x7f0a0011;
         public static final int listMode=0x7f0a0008;
         public static final int map_btn_friend=0x7f0a0066;
@@ -1247,15 +1252,15 @@ containing a value of this type.
         public static final int none=0x7f0a0015;
         public static final int normal=0x7f0a0009;
         public static final int right=0x7f0a0012;
-        public static final int search_header_btn=0x7f0a0089;
+        public static final int search_header_btn=0x7f0a008a;
         public static final int search_header_seach=0x7f0a0048;
         public static final int search_lv_results=0x7f0a0049;
         public static final int selected_view=0x7f0a0006;
         public static final int showCustom=0x7f0a000d;
         public static final int showHome=0x7f0a000e;
         public static final int showTitle=0x7f0a000f;
-        public static final int sliding_container=0x7f0a008a;
-        public static final int slidingmenumain=0x7f0a008b;
+        public static final int sliding_container=0x7f0a008b;
+        public static final int slidingmenumain=0x7f0a008c;
         public static final int tabMode=0x7f0a000a;
         public static final int useLogo=0x7f0a0010;
         public static final int wrap_content=0x7f0a0007;
@@ -1366,6 +1371,9 @@ containing a value of this type.
         public static final int abs__shareactionprovider_share_with_application=0x7f0b0007;
         public static final int action_settings=0x7f0b000e;
         public static final int app_name=0x7f0b000d;
+        /**  自动导游和手动导游 
+         */
+        public static final int auto_guide=0x7f0b0021;
         public static final int city_location=0x7f0b0011;
         /**  展品列表 
          */
@@ -1379,6 +1387,7 @@ containing a value of this type.
         /**  用于上拉加载更多ListView 
          */
         public static final int load_full=0x7f0b001b;
+        public static final int manally_guide=0x7f0b0022;
         public static final int more=0x7f0b001d;
         public static final int no_data=0x7f0b001c;
         public static final int play_pause=0x7f0b001e;

@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.altbeacon.beacon.Beacon;
+
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -24,15 +27,47 @@ import com.app.guide.ui.MenuFragment.HomeClick;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 import edu.xidian.NearestBeacon.BeaconSearcher;
+import edu.xidian.NearestBeacon.BeaconSearcher.OnNearestBeaconListener;
+import edu.xidian.NearestBeacon.NearestBeacon;
 
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends BaseActivity implements
+		OnNearestBeaconListener {
 
 	protected static RadioGroup mRadioGroup;
 	private int pressedCount;
 	private Timer timer;
 	private List<Fragment> fragments;
 
+	/**
+	 * 侧滑栏 TODO 考虑是否不能侧滑
+	 */
 	protected static SlidingMenu sm;
+
+	public static boolean bleEnable = false;
+	
+	/**
+	 * 是否自动导游
+	 */
+	private static boolean isAutoGuide = true;
+
+	/**
+	 * 设置导游模式
+	 * 
+	 * @param autoGuide
+	 *            boolean
+	 */
+	public static void setAutoGuide(boolean autoGuide) {
+		isAutoGuide = autoGuide;
+	}
+
+	/**
+	 * 获取导游模式
+	 * 
+	 * @return boolean whether is auto guide mode or not.
+	 */
+	public static boolean isAutoGuide() {
+		return isAutoGuide;
+	}
 
 	private final static Class<?>[] fragmentClz = {
 			MuseumIntroduceFragment.class, FollowGuideFragment.class,
@@ -43,6 +78,8 @@ public class HomeActivity extends BaseActivity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
+		//初始化beacon搜索器
+		initBeaconSearcher();
 		timer = new Timer();
 		fragments = new ArrayList<Fragment>();
 		for (int i = 0; i < fragmentClz.length; i++) {
@@ -111,6 +148,7 @@ public class HomeActivity extends BaseActivity {
 		}
 	}
 
+	@SuppressLint("InflateParams")
 	@Override
 	protected void initSlidingMenu() {
 		// TODO Auto-generated method stub
@@ -153,15 +191,95 @@ public class HomeActivity extends BaseActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if(requestCode == BeaconSearcher.REQUEST_ENABLE_BT){
-			FollowGuideFragment followGuideFragment = (FollowGuideFragment) fragments
-					.get(1);
-			followGuideFragment.onBluetoothResult(requestCode, resultCode);
+		/**
+		 * 处理打开蓝牙请求
+		 */
+		if (requestCode == BeaconSearcher.REQUEST_ENABLE_BT) {
+			if (mBeaconSearcher.onBluetoothResult(requestCode, resultCode)){
+				mBeaconSearcher.openSearcher();
+				isAutoGuide = true;
+				bleEnable = true;
+			}
+			else{
+				isAutoGuide = false;
+				bleEnable = false;
+			}
 		}
 	}
 
 	public ActionBar getActivityActionBar() {
 		return getSupportActionBar();
+	}
+	
+	private static onBeaconSearcherListener mBeaconListener;
+
+	/**
+	 * 设置beacon搜索器监听接口
+	 * 
+	 * @param listener
+	 */
+	public static void setBeaconSearcherListener(onBeaconSearcherListener listener) {
+		mBeaconListener = listener;
+	}
+
+	/**
+	 * beacon搜索回调接口，用于给监听者传递nearest beacon数据
+	 * 
+	 * @author yetwish
+	 */
+	public interface onBeaconSearcherListener {
+
+		void onNearestBeaconDiscovered(int type,Beacon beacon);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (mBeaconSearcher != null) {
+			mBeaconSearcher.closeSearcher();
+		}
+	}
+	
+	/**
+	 * store BeaconSearcher instance, we use it to range beacon,and get the
+	 * minBeacon from it.
+	 */
+	private static BeaconSearcher mBeaconSearcher;
+	
+	public static void setBeaconLocateType(int type){
+		if(type == NearestBeacon.GET_EXHIBIT_BEACON || type == NearestBeacon.GET_LOCATION_BEACON)
+			mBeaconSearcher.setNearestBeaconType(type);
+	}
+	
+	@Override
+	public void getNearestBeacon(int type, Beacon beacon) {
+		// TODO Auto-generated method stub
+		if(mBeaconListener!=null){
+			mBeaconListener.onNearestBeaconDiscovered(type,beacon);
+		}
+	}
+
+	/**
+	 * 初始化beacon 搜索器
+	 * 
+	 * @param activity
+	 */
+	private void initBeaconSearcher() {
+
+		mBeaconSearcher = BeaconSearcher.getInstance(this);
+		// 设定用于展品定位的最小停留时间(ms)
+		mBeaconSearcher.setMin_stay_milliseconds(5000);
+		// 设定用于展品定位的最小距离(m)
+		mBeaconSearcher.setExhibit_distance(5.0);
+		// 设置获取距离最近的beacon类型
+		// NearestBeacon.GET_EXHIBIT_BEACON：游客定位beacon。可以不用设置上述的最小停留时间和最小距离
+		// NearestBeacon.GET_EXHIBIT_BEACON：展品定位beacon
+		mBeaconSearcher.setNearestBeaconType(NearestBeacon.GET_EXHIBIT_BEACON);
+		// 设置beacon监听器
+		mBeaconSearcher.setNearestBeaconListener(this);
+		// 当蓝牙打开时，打开beacon搜索器，开始搜索距离最近的Beacon
+		if (mBeaconSearcher.checkBLEEnable())
+			mBeaconSearcher.openSearcher();
 	}
 
 }

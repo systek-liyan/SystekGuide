@@ -14,8 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.app.guide.R;
 import com.app.guide.adapter.CommonAdapter;
@@ -34,6 +38,8 @@ public class MenuFragment extends Fragment {
 	private static final int ITEM_MORE = 3;
 	private static final int ITEM_BACK = 4;
 	
+	private ToggleButton tbAutoGuide ;
+	
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -51,6 +57,29 @@ public class MenuFragment extends Fragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		
+		tbAutoGuide = (ToggleButton) view.findViewById(R.id.frag_menu_tb_autoguide);
+		if(!HomeActivity.bleEnable){
+			tbAutoGuide.setChecked(false);
+			tbAutoGuide.setClickable(false);
+		}else{
+			tbAutoGuide.setClickable(true);
+		}
+		
+		tbAutoGuide.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				// TODO Auto-generated method stub
+				if(isChecked){
+					HomeActivity.setAutoGuide(true);
+					Toast.makeText(getActivity(), "进入自动导航模式", Toast.LENGTH_SHORT).show();
+				}else{
+					HomeActivity.setAutoGuide(false);
+					Toast.makeText(getActivity(), "进入手动导航模式", Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
 		lvMenu = (ListView)view.findViewById(R.id.frag_menu_lv_menu);
 		lvMenu.setAdapter(new CommonAdapter<Menu>(this.getActivity(),mData,R.layout.item_menu) {
 			@Override

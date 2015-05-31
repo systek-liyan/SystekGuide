@@ -104,8 +104,8 @@ public class OfflineDownloadHelper {
 			bean.setFloor(1);
 			//补充  TODO id 是否应该改为 int
 			//bean.setAudioUrl(); 需要设置音频的url
-			bean.setrExhibitBeanId(i>0?i:1); 
-			bean.setlExhibitBeanId(i+2);
+			bean.setlExhibitBeanId(i>0?i:1);
+			bean.setrExhibitBeanId(i+2); 
 			exhibitDao.createOrUpdate(bean);
 			i++;
 		}
