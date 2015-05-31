@@ -4,11 +4,8 @@ import java.util.List;
 
 import android.content.Context;
 
-import com.android.volley.toolbox.ImageLoader;
 import com.app.guide.R;
-import com.app.guide.bean.Exhibit;
 import com.app.guide.bean.ExhibitBean;
-import com.app.guide.utils.BitmapUtils;
 
 /**
  * 展品listView adapter

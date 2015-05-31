@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="18"
         android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -58,11 +58,17 @@
             android:launchMode="singleTask" >
         </activity>
 
-        <service
-            android:name="com.estimote.sdk.service.BeaconService"
-            android:exported="false" >
-        </service>
         <service android:name="com.app.guide.service.AppService" />
+        
+        <service android:enabled="true"
+            android:exported="false"
+            android:isolatedProcess="false"
+            android:label="beacon"
+            android:name="org.altbeacon.beacon.service.BeaconService"/>
+        
+	    <service android:name="org.altbeacon.beacon.BeaconIntentProcessor"
+	            android:enabled="true"
+	            android:exported="false"/>
     </application>
 
 </manifest>

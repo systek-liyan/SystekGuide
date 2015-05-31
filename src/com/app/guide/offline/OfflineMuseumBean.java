@@ -111,7 +111,7 @@ public class OfflineMuseumBean {
 	}
 
 	public void setImgList(String imgList) {
-		this.imgList = imgList;
+		this.imgList  = imgList;
 	}
 
 	public String getAudioUrl() {

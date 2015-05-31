@@ -12,6 +12,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 /**
+ * TODO 是否应该在启动app时就加载数据库，而非等到选择城市后
  * 管理已下载的离线数据包
  * @author joe_c
  *

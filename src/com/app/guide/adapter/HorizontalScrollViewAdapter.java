@@ -7,14 +7,14 @@ import android.content.Context;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.app.guide.R;
-import com.app.guide.bean.ImageBean;
+import com.app.guide.bean.ImageOption;
 import com.app.guide.utils.BitmapUtils;
 
-public class HorizontalScrollViewAdapter extends CommonAdapter<ImageBean> {
+public class HorizontalScrollViewAdapter extends CommonAdapter<ImageOption> {
 
 	private ImageLoader mImageLoader;
 
-	public HorizontalScrollViewAdapter(Context context, List<ImageBean> data,
+	public HorizontalScrollViewAdapter(Context context, List<ImageOption> data,
 			int layoutId) {
 		super(context, data, layoutId);
 		mImageLoader = BitmapUtils.getImageLoader(context);
@@ -23,7 +23,6 @@ public class HorizontalScrollViewAdapter extends CommonAdapter<ImageBean> {
 	// 如何回收bitmap
 	@Override
 	public void convert(ViewHolder holder, int position) {
-
 		NetworkImageView imageView = (NetworkImageView) holder
 				.getView(R.id.item_gallery_iv);
 		imageView.setDefaultImageResId(R.drawable.ic_launcher);

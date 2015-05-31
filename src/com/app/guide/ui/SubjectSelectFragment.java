@@ -7,6 +7,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -18,9 +19,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.Toast;
+import android.widget.RadioButton;
 
-import com.app.guide.AppContext;
 import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
@@ -81,6 +81,7 @@ public class SubjectSelectFragment extends Fragment {
 	/**
 	 * 完成按钮
 	 */
+	@SuppressWarnings("unused")
 	private Button btnFinish;
 
 	/**
@@ -105,10 +106,16 @@ public class SubjectSelectFragment extends Fragment {
 
 	private int page;
 
+	private int mMuseumId;
+
+	private Intent mIntent;
+
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		mContext = activity;
+		mIntent = activity.getIntent();
+		mMuseumId = mIntent.getIntExtra(Constant.EXTRA_MUSEUM_ID, 1);
 		// 初始化数据
 		initData();
 	}
@@ -149,9 +156,8 @@ public class SubjectSelectFragment extends Fragment {
 	private void getExhibitData() {
 		page = 0;
 		try {
-			exhibits = GetBeanFromSql.getExhibitBeans(mContext,
-					((AppContext) getActivity().getApplication()).museumId,
-					page);
+			exhibits = GetBeanFromSql
+					.getExhibitBeans(mContext, mMuseumId, page);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -237,8 +243,9 @@ public class SubjectSelectFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				Toast.makeText(mContext, position + "", Toast.LENGTH_SHORT)
-						.show();
+				mIntent.putExtra(Constant.EXTRA_EXHIBIT_ID, 
+						exhibits.get(position).getId());
+				((RadioButton)HomeActivity.mRadioGroup.findViewById(R.id.home_tab_follow)).setChecked(true);
 			}
 		});
 		lvExhibits.setOnLoadListener(new OnLoadListener() {
@@ -249,10 +256,8 @@ public class SubjectSelectFragment extends Fragment {
 				page++;
 				List<ExhibitBean> data = null;
 				try {
-					data = GetBeanFromSql
-							.getExhibitBeans(mContext,
-									((AppContext) getActivity()
-											.getApplication()).museumId, page);
+					data = GetBeanFromSql.getExhibitBeans(mContext, mMuseumId,
+							page);
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -268,7 +273,6 @@ public class SubjectSelectFragment extends Fragment {
 			}
 		});
 	}
-
 
 	/**
 	 * 实现 gridAdapter中定义的　itemClicker 接口，通过回调函数获取item的text内容，从而知道用户点击了哪个item
@@ -300,6 +304,5 @@ public class SubjectSelectFragment extends Fragment {
 			}
 		}
 	}
-
 
 }

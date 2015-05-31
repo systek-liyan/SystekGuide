@@ -6,6 +6,7 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -17,23 +18,26 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.RelativeLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
-import com.app.guide.AppContext;
 import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
 import com.app.guide.bean.ExhibitBean;
+import com.app.guide.bean.MuseumDetailBean;
 import com.app.guide.offline.GetBeanFromSql;
 import com.app.guide.utils.BitmapUtils;
 import com.app.guide.widget.AutoLoadListView;
@@ -41,7 +45,7 @@ import com.app.guide.widget.AutoLoadListView.OnLoadListener;
 import com.app.guide.widget.HeaderLayout;
 
 /**
- * 博物馆主页fragment
+ * 博物馆主页fragment 从博物馆选择页中获取博物馆的id
  * 
  * 修改为上拉加载更多以及数据库访问方式
  * 
@@ -49,20 +53,7 @@ import com.app.guide.widget.HeaderLayout;
  */
 public class MuseumIntroduceFragment extends Fragment {
 
-	private TextView tvTitle;
 	private ViewPager viewPager;
-
-	private static String[] urls = {
-			"http://img.my.csdn.net/uploads/201407/26/1406383299_1976.jpg",
-			"http://img.my.csdn.net/uploads/201407/26/1406383291_6518.jpg",
-			"http://img.my.csdn.net/uploads/201407/26/1406383291_8239.jpg",
-			"http://img.my.csdn.net/uploads/201407/26/1406383290_9329.jpg",
-			"http://img.my.csdn.net/uploads/201407/26/1406383290_1042.jpg",
-			"http://img.my.csdn.net/uploads/201407/26/1406383275_3977.jpg",
-			"http://img.my.csdn.net/uploads/201407/26/1406383264_3954.jpg",
-			"http://img.my.csdn.net/uploads/201407/26/1406383264_4787.jpg",
-			"http://img.my.csdn.net/uploads/201407/26/1406383264_8243.jpg",
-			"http://img.my.csdn.net/uploads/201407/26/1406383248_3693.jpg" };
 
 	private LayoutInflater mInflater;
 	private LinearLayout headerLayout;
@@ -70,7 +61,7 @@ public class MuseumIntroduceFragment extends Fragment {
 	/**
 	 * store the imageView which shows the pictures of museum
 	 */
-	private ArrayList<NetworkImageView> images;
+	private ArrayList<NetworkImageView> museumImages;
 
 	/**
 	 * store the imageview which shows the circles
@@ -84,20 +75,48 @@ public class MuseumIntroduceFragment extends Fragment {
 	private ExhibitAdapter exhibitAdapter;
 	private List<ExhibitBean> exhibits;
 	private int page;
-	
+
 	private DisplayMetrics dm;
+
+	private Intent mIntent;
+	
+	private int mMuseumId;
+
+	private MuseumDetailBean mMuseumDetailBean;
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+		//获取intent
+		mIntent = activity.getIntent();
+		// 获取museumId
+		mMuseumId = mIntent.getIntExtra(Constant.EXTRA_MUSEUM_ID, 1);
+		Log.w("Fragment", mMuseumId+"");
 		getScreenHeight();
-		// 获取数据
-		getImages();
+		// 初始化博物馆数据
+		initMuseumData();
+		// 获取博物馆精品展品数据
 		getExhibitData();
+		
 		exhibitAdapter = new ExhibitAdapter(activity, exhibits,
 				R.layout.item_exhibit);
-		
-		
+
+	}
+
+	/**
+	 * 获取该页面需要显示的博物馆数据
+	 */
+	private void initMuseumData() {
+		try {
+			mMuseumDetailBean = GetBeanFromSql.getMuseunDetailBean(
+					getActivity(), mMuseumId);
+			Log.w("Fragment", mMuseumDetailBean.getName());
+			// 初始化图片信息
+			initMuseumImages();
+			// 初始化音频信息
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void getScreenHeight() {
@@ -112,28 +131,27 @@ public class MuseumIntroduceFragment extends Fragment {
 	private void getExhibitData() {
 		page = 0;
 		try {
-			exhibits = GetBeanFromSql.getExhibitBeans(getActivity(),
-					((AppContext) getActivity().getApplication()).museumId,
+			exhibits = GetBeanFromSql.getExhibitBeans(getActivity(), mMuseumId,
 					page);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * 获取博物馆图片集，并将其放入imageView数组中
+	 * 获取博物馆图片集，并将其放入NetworkImageView数组中
 	 */
-	private void getImages() {
-		images = new ArrayList<NetworkImageView>();
+	private void initMuseumImages() {
+		museumImages = new ArrayList<NetworkImageView>();
 		NetworkImageView networkImageView;
-		for (int i = 0; i < urls.length; i++) {
+		for (int i = 0; i < mMuseumDetailBean.getImageList().size(); i++) {
 			networkImageView = new NetworkImageView(this.getActivity());
 			networkImageView.setErrorImageResId(R.drawable.icon);
 			networkImageView.setDefaultImageResId(R.drawable.pictures_no);
-			networkImageView.setImageUrl(urls[i],
-					BitmapUtils.getImageLoader(this.getActivity()));
-			images.add(networkImageView);
+			networkImageView.setImageUrl(mMuseumDetailBean.getImageList()
+					.get(i), BitmapUtils.getImageLoader(this.getActivity()));
+			networkImageView.setScaleType(ScaleType.CENTER_CROP);
+			museumImages.add(networkImageView);
 		}
 	}
 
@@ -143,7 +161,7 @@ public class MuseumIntroduceFragment extends Fragment {
 	private void getTips() {
 		tips = new ArrayList<ImageView>();
 		ImageView imageView;
-		for (int i = 0; i < urls.length; i++) {
+		for (int i = 0; i < mMuseumDetailBean.getImageList().size(); i++) {
 			imageView = new ImageView(this.getActivity());
 			imageView.setLayoutParams(new LayoutParams(10, 10));
 			tips.add(imageView);
@@ -172,14 +190,15 @@ public class MuseumIntroduceFragment extends Fragment {
 	}
 
 	/**
-	 * 将viewPager和其他view 作为header加入到listView中，使整个页面可滚动，且能复用list_item
+	 * 作为header加入到listView中，使整个页面可滚动，且能复用list_item
 	 */
 	@SuppressLint("InflateParams")
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		fragHeader = (HeaderLayout) view.findViewById(R.id.frag_header_main);
-		fragHeader.setTitle("XX博物馆");
+		// 设置博物馆名字
+		fragHeader.setTitle(mMuseumDetailBean.getName());
 
 		// 获取header layout
 		headerLayout = (LinearLayout) mInflater.inflate(
@@ -189,13 +208,10 @@ public class MuseumIntroduceFragment extends Fragment {
 		// 解决viewPager占满屏幕的问题,将viewPager嵌套在一个layout下，通过指定该layout的params来决定viewPager的params
 		viewPager = (ViewPager) headerLayout.findViewById(R.id.frag_main_pager);
 		// 获取屏幕宽高度，并将viewPager的高度设为屏幕高度的2/5
-		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, dm.heightPixels * 2 / 5);
-		//params.setMargins(0, 0, 0, 0);
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+				FrameLayout.LayoutParams.MATCH_PARENT, dm.heightPixels * 2 / 5);
+//		params.setMargins(20, 20, 20, 0);
 		viewPager.setLayoutParams(params);
-		
-		//TODO viewPager 宽度 无法占满？ 如何解决？
-		Toast.makeText(this.getActivity(), "width " + params.width,
-				Toast.LENGTH_SHORT).show();
 
 		// 加载提示小点点
 		tipsGroup = (LinearLayout) headerLayout
@@ -211,6 +227,9 @@ public class MuseumIntroduceFragment extends Fragment {
 		// 获取博物馆简介textView,并给textView尾部添加imageView(播放键)
 		tvIntroduction = (TextView) headerLayout
 				.findViewById(R.id.frag_main_tv_introduction);
+		// 设置博物馆简介
+		// tvIntroduction.setText(mMuseumDetailBean.getTextUrl());
+
 		// 获取播放按钮的bitmap
 		Bitmap bitmap = BitmapFactory.decodeResource(this.getActivity()
 				.getResources(), R.drawable.home_tab_subject_normal_img);
@@ -226,24 +245,28 @@ public class MuseumIntroduceFragment extends Fragment {
 		lvExhibit.addHeaderView(headerLayout);
 		// 设置adapter
 		lvExhibit.setAdapter(exhibitAdapter);
-		lvExhibit.setOnLoadListener(new OnLoadListener() {
+		initListView();
+		// 解决slidingMenu和viewPager 滑动冲突
+		HomeActivity.sm.addIgnoredView(viewPager);
+	}
 
+	private void initListView() {
+		lvExhibit.setOnLoadListener(new OnLoadListener() {
 			@Override
 			public void onLoad() {
 				// TODO Auto-generated method stub
 				page++;
 				List<ExhibitBean> data = null;
 				try {
-					data = GetBeanFromSql
-							.getExhibitBeans(getActivity(),
-									((AppContext) getActivity()
-											.getApplication()).museumId, page);
+					data = GetBeanFromSql.getExhibitBeans(getActivity(),
+							mMuseumId, page);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				if (data != null) {
-					exhibitAdapter.addData(data);
+					//TODO exhibitBean
+					exhibits.addAll(data);
 					if (data.size() < Constant.PAGE_COUNT) {
 						lvExhibit.setLoadFull();
 					}
@@ -253,9 +276,18 @@ public class MuseumIntroduceFragment extends Fragment {
 				lvExhibit.onLoadComplete();
 			}
 		});
+		
+		lvExhibit.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+					long arg3) {
+				mIntent.putExtra(Constant.EXTRA_EXHIBIT_ID, exhibits.get(position).getId());
+				//不能使用HomeActivity.mRadioGroup.check(R.id.home_tab_follow); 因为该方法会重复调用onCheckedChanged()方法  ，从而导致java.lang.IllegalStateException异常
+				//跳转到follow guide fragment
+				((RadioButton)HomeActivity.mRadioGroup.findViewById(R.id.home_tab_follow)).setChecked(true);
+			}
+		});
 
-		// 解决slidingMenu和viewPager 滑动冲突
-		HomeActivity.sm.addIgnoredView(viewPager);
 	}
 
 	private OnPageChangeListener createPagerChangedListener() {
@@ -303,12 +335,12 @@ public class MuseumIntroduceFragment extends Fragment {
 
 			@Override
 			public int getCount() {
-				return images.size();
+				return museumImages.size();
 			}
 
 			@Override
 			public Object instantiateItem(View container, int position) {
-				NetworkImageView image = images.get(position);
+				NetworkImageView image = museumImages.get(position);
 				((ViewGroup) container).addView(image, 0);
 				return image;
 
@@ -316,7 +348,7 @@ public class MuseumIntroduceFragment extends Fragment {
 
 			@Override
 			public void destroyItem(View container, int position, Object object) {
-				((ViewPager) container).removeView(images.get(position));
+				((ViewPager) container).removeView(museumImages.get(position));
 			}
 		};
 	}

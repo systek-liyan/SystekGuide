@@ -20,26 +20,26 @@
         android:paddingTop="2dp" >
 
         <RadioButton
-            android:id="@+id/home_tab_main"
+            android:id="@+id/home_tab_introduction"
             style="@style/style_main_tab"
 			android:drawableTop="@drawable/home_tab_main_bg"
             android:checked="true"
             android:text="@string/tab_main_one" />
 
         <RadioButton
-            android:id="@+id/home_tab_course"
+            android:id="@+id/home_tab_follow"
             style="@style/style_main_tab"
             android:drawableTop="@drawable/home_tab_follow_bg"
             android:text="@string/tab_main_two" />
 
         <RadioButton
-            android:id="@+id/home_tab_my"
+            android:id="@+id/home_tab_subject"
             style="@style/style_main_tab"
             android:drawableTop="@drawable/home_tab_subject_bg"
             android:text="@string/tab_main_three" />
 
         <RadioButton
-            android:id="@+id/home_tab_set"
+            android:id="@+id/home_tab_map"
             style="@style/style_main_tab"
             android:drawableTop="@drawable/home_tab_map_bg"
             android:text="@string/tab_main_four" />

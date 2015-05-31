@@ -15,6 +15,7 @@
              android:layout_height="wrap_content"/>
         <!-- 文字讲解 -->
         <FrameLayout
+            android:id="@+id/frag_follow_guide_lyric_container"
             android:layout_width="match_parent"
             android:layout_height="400dp">
             <com.android.volley.toolbox.NetworkImageView
@@ -31,7 +32,7 @@
         <ProgressBar 
             android:id="@+id/frag_follow_guide_progressbar"
             android:layout_width="match_parent"
-            android:layout_height="10dp"
+            android:layout_height="@dimen/progressbar_height"
             style="?android:attr/progressBarStyleHorizontal"/>
         <!-- 语音播放栏 -->
         <RelativeLayout
@@ -40,11 +41,12 @@
             android:layout_height="wrap_content"
             android:padding="10dp">
              <ImageView 
-                android:contentDescription="play/pause"
+                android:contentDescription="@string/play_pause"
                 android:id="@+id/frag_follow_guide_iv_start"
+                android:src="@drawable/play_btn_play"
                 android:layout_centerHorizontal="true"
-                android:layout_width="40dp"
-                android:layout_height="40dp"/>
+                android:layout_width="@dimen/icon_width"
+                android:layout_height="@dimen/icon_height"/>
         </RelativeLayout>
 		<!-- 多角度展示 -->
     	<LinearLayout 
@@ -53,7 +55,7 @@
     	    android:layout_height="wrap_content"
     	    android:paddingLeft="20dp">
     	    <TextView
-	        android:text="多角度展示"
+	        android:text="@string/gallery_title"
 	        android:id="@+id/frag_follow_guide_tv_title_pics"
 	        android:textSize="20sp"
 	        android:textColor="@color/title_textcolor"
@@ -88,7 +90,7 @@
     	    android:paddingLeft="20dp">
         <TextView
             android:id="@+id/frag_follow_guide_tv_title_exhibits"
-	        android:text="展品列表"
+	        android:text="@string/exhibit_list_title"
 	        android:textSize="20sp"
 	        android:textColor="@color/title_textcolor"
 	        android:layout_width="wrap_content"

@@ -20,4 +20,11 @@
     <string name="load_full">已加载全部</string>
     <string name="no_data">暂无数据</string>
     <string name="more">加载中</string>
+    
+    <string name="play_pause">播放或暂停</string>
+    <!-- 多角度展示title -->
+    <string name="gallery_title">多角度展示</string>
+    <!-- 展品列表 -->
+    <string name="exhibit_list_title">展品列表</string>
+    
 </resources>

@@ -10,7 +10,6 @@ import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.alibaba.fastjson.asm.Label;
 import com.app.guide.Constant;
 import com.app.guide.bean.DownloadBean;
 import com.app.guide.bean.Exhibit;
@@ -19,6 +18,7 @@ import com.app.guide.bean.ImageOption;
 import com.app.guide.bean.LabelBean;
 import com.app.guide.bean.MapExhibitBean;
 import com.app.guide.bean.MuseumBean;
+import com.app.guide.bean.MuseumDetailBean;
 import com.app.guide.bean.PointM;
 import com.app.guide.sql.DatabaseContext;
 import com.j256.ormlite.dao.Dao;
@@ -28,7 +28,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
  * 从本地数据库中获得数据信息
  * 
  * @author joe_c
- *
+ * 
  */
 public class GetBeanFromSql {
 	private static final String TAG = GetBeanFromSql.class.getSimpleName();
@@ -71,7 +71,7 @@ public class GetBeanFromSql {
 		builder.limit(Constant.PAGE_COUNT);
 		List<OfflineExhibitBean> offlineExhibitBeans = builder.query();
 		for (OfflineExhibitBean offlineExhibitBean : offlineExhibitBeans) {
-			ExhibitBean bean = new ExhibitBean(offlineExhibitBean.getName(),
+			ExhibitBean bean = new ExhibitBean(offlineExhibitBean.getId(),offlineExhibitBean.getName(),
 					offlineExhibitBean.getAddress(),
 					offlineExhibitBean.getIntroduce(),
 					offlineExhibitBean.getIconUrl());
@@ -104,7 +104,7 @@ public class GetBeanFromSql {
 		return map;
 	}
 
-	public Exhibit getExhibit(Context context, int museumId, int exhibitId)
+	public static Exhibit getExhibit(Context context, int museumId, int exhibitId)
 			throws SQLException {
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 				new DatabaseContext(context, FLOADER), museumId + ".db");
@@ -118,7 +118,7 @@ public class GetBeanFromSql {
 			exhibit.setId(exhibitId);
 			exhibit.setName(bean.getName());
 			exhibit.setBeaconUId(bean.getBeaconUId());
-			exhibit.setIconUrl(bean.getAudioUrl());
+			exhibit.setIconUrl(bean.getIconUrl());
 			exhibit.setAudioUrl(bean.getAudioUrl());
 			exhibit.setlExhibitBeanId(bean.getlExhibitBeanId());
 			exhibit.setrExhibitBeanId(bean.getrExhibitBeanId());
@@ -133,6 +133,27 @@ public class GetBeanFromSql {
 		return exhibit;
 	}
 
+	public static MuseumDetailBean getMuseunDetailBean(Context context,
+			int museumId) throws SQLException {
+		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
+				new DatabaseContext(context, FLOADER), museumId + ".db");
+		Dao<OfflineMuseumBean, Integer> oDao = helper.getOfflineMuseumDao();
+		QueryBuilder<OfflineMuseumBean, Integer> builder = oDao.queryBuilder();
+		builder.where().eq("id", museumId);
+		OfflineMuseumBean bean = builder.queryForFirst();
+		MuseumDetailBean museum = null;
+		if (bean != null) {
+			museum = new MuseumDetailBean();
+			museum.setName(bean.getName());
+			museum.setTextUrl(bean.getTextUrl());
+			museum.setAudioUrl(bean.getAudioUrl());
+			List<String> imaList = JSON.parseArray(bean.getImgList(),
+					String.class);
+			museum.setImageList(imaList);
+		}
+		return museum;
+	}
+
 	public static List<MuseumBean> getMuseumBeans(Context context)
 			throws SQLException {
 		DownloadManagerHelper helper = new DownloadManagerHelper(context);
@@ -141,6 +162,7 @@ public class GetBeanFromSql {
 		List<MuseumBean> museumBeans = new ArrayList<MuseumBean>();
 		for (DownloadBean bean : list) {
 			MuseumBean museumBean = new MuseumBean();
+			museumBean.setId(bean.getId());
 			museumBean.setAddress(bean.getAddress());
 			museumBean.setIconUrl(bean.getIconUrl());
 			museumBean.setLongitudX(bean.getLongitudX());

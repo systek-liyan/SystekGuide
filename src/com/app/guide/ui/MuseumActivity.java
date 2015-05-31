@@ -12,6 +12,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.CommonAdapter;
 import com.app.guide.adapter.ViewHolder;
@@ -22,7 +23,7 @@ import com.app.guide.offline.GetBeanFromSql;
  * 修改ListView数据加载方式为数据库
  * 
  * @author joe_c
- *
+ * 
  */
 public class MuseumActivity extends BaseActivity {
 
@@ -34,7 +35,9 @@ public class MuseumActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_museum);
+		//初始化数据
 		initData();
+		//初始化视图
 		initViews();
 	}
 
@@ -74,6 +77,8 @@ public class MuseumActivity extends BaseActivity {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(MuseumActivity.this,
 						HomeActivity.class);
+				intent.putExtra(Constant.EXTRA_MUSEUM_ID, mData.get(position)
+						.getId());
 				startActivity(intent);
 			}
 		});

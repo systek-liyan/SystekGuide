@@ -23,9 +23,11 @@ import com.app.guide.adapter.FragmentTabAdapter.OnRgsExtraCheckedChangedListener
 import com.app.guide.ui.MenuFragment.HomeClick;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
+import edu.xidian.NearestBeacon.BeaconSearcher;
+
 public class HomeActivity extends BaseActivity {
 
-	private RadioGroup mRadioGroup;
+	protected static RadioGroup mRadioGroup;
 	private int pressedCount;
 	private Timer timer;
 	private List<Fragment> fragments;
@@ -151,13 +153,11 @@ public class HomeActivity extends BaseActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		// if(requestCode == BeaconSearcher.REQUEST_ENABLE_BT){
-		// if(resultCode == RESULT_OK){
-		// FollowGuideFragment followGuideFragment =
-		// (FollowGuideFragment)fragments.get(1);
-		// followGuideFragment.onBluetoothResult(requestCode,resultCode);
-		// }//如果未打开则...
-		// }
+		if(requestCode == BeaconSearcher.REQUEST_ENABLE_BT){
+			FollowGuideFragment followGuideFragment = (FollowGuideFragment) fragments
+					.get(1);
+			followGuideFragment.onBluetoothResult(requestCode, resultCode);
+		}
 	}
 
 	public ActionBar getActivityActionBar() {

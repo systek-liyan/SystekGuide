@@ -1,6 +1,5 @@
 package com.app.guide.bean;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LabelBean {

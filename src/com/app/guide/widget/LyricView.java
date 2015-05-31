@@ -46,6 +46,8 @@ public class LyricView extends View {
 	Paint paintHL = new Paint(); // 画笔，用于画高亮的歌词，即当前唱到这句歌词
 	private MediaPlayer mediaPlayer;
 
+	private ShowLyricRunnable mShowLyricThread = null; 
+	
 	public LyricView(Context context) {
 		super(context);
 		init();
@@ -356,14 +358,31 @@ public class LyricView extends View {
 		offsetY = SIZE_TEXT_DISPLAY
 				- selectIndex(mediaPlayer.getCurrentPosition())
 				* (getSIZEWORD() + INTERVAL - 1);
-		new ShowLyricRunnable().start();
-//		new ListenPlayingRunnable().start();
-		
+		if(mShowLyricThread == null){
+			mShowLyricThread = new ShowLyricRunnable();
+			mShowLyricThread.start();
+		}
 	}
 
 	public void pause() {
 		if (mediaPlayer.isPlaying()) {
 			mediaPlayer.pause();
+		}
+	}
+	
+	/**
+	 * 释放资源
+	 */
+	public void destroy(){
+		if(paint!=null){
+			paint = null;
+		}
+		if(paintHL != null){
+			paintHL = null;
+		}
+		if(mediaPlayer != null) {
+			pause();
+			mediaPlayer = null;
 		}
 	}
 	
@@ -402,11 +421,12 @@ public class LyricView extends View {
 	}
 
 	private class ShowLyricRunnable extends Thread {
-
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
 			while (true) {
+				if(mediaPlayer == null) 
+					break;
 				if (mediaPlayer.isPlaying()) {
 					offsetY = offsetY - speedLrc();
 					selectIndex(mediaPlayer.getCurrentPosition());
@@ -414,9 +434,7 @@ public class LyricView extends View {
 					if(mProgressChangedListener!=null){
 						mProgressChangedListener.onProgressChanged(mediaPlayer.getCurrentPosition());
 					}
-				} else {
-					break;
-				}
+				} 
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {

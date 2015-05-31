@@ -48,6 +48,13 @@ public class OfflineDownloadHelper {
 			"http://img.my.csdn.net/uploads/201407/26/1406383264_8243.jpg",
 			"http://img.my.csdn.net/uploads/201407/26/1406383248_3693.jpg"));
 
+	//
+	List<String> audioData = new ArrayList<String>(Arrays.asList(
+			"",
+			"",
+			""
+			));
+	
 	public OfflineDownloadHelper(Context context, int museumId) {
 		super();
 		this.mContext = context;
@@ -89,11 +96,16 @@ public class OfflineDownloadHelper {
 			for (int j = 0; j < galleryData.size(); j++) {
 				ImageOption option = new ImageOption();
 				option.setImgUrl(galleryData.get(j));
-				option.setEndtime((j + 1) * 1000);
+				//TODO 
+				option.setStartTime(j *12 * 1000);
 				list.add(option);
 			}
 			bean.setImgJson(JSON.toJSONString(list));
 			bean.setFloor(1);
+			//补充  TODO id 是否应该改为 int
+			//bean.setAudioUrl(); 需要设置音频的url
+			bean.setrExhibitBeanId(i>0?i:1); 
+			bean.setlExhibitBeanId(i+2);
 			exhibitDao.createOrUpdate(bean);
 			i++;
 		}
@@ -122,6 +134,7 @@ public class OfflineDownloadHelper {
 		bean.setCity("北京");
 		bean.setFloorCount(1);
 		bean.setImgList(JSON.toJSONString(galleryData));
+		//audio url
 		bean.setLongtiudeX(0);
 		bean.setLongtiudeY(0);
 		bean.setIconUrl("http://img.my.csdn.net/uploads/201407/26/1406383299_1976.jpg");

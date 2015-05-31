@@ -1,7 +1,10 @@
 package com.app.guide.bean;
 
-
+/**
+ * 列表 展品信息 
+ */
 public class ExhibitBean {
+	private int id;	
 	private String name;// 展品名
 	private String address;// 展厅
 	private String introduction;// 展品介绍
@@ -9,13 +12,27 @@ public class ExhibitBean {
 
 	
 	
-	public ExhibitBean(String name, String address, String introduction,
+	public ExhibitBean(int id,String name, String address, String introduction,
 			String imgUrl) {
-		super();
+		this.id = id;
 		this.name = name;
 		this.address = address;
 		this.introduction = introduction;
 		this.imgUrl = imgUrl;
+	}
+	
+	/**
+	 * @return the id 
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	/**

@@ -17,8 +17,8 @@ public class Exhibit {
 	private String audioUrl;
 	private String textUrl;
 	private HashMap<String, String> labels;
-	private String lExhibitBeanId;
-	private String rExhibitBeanId;
+	private int lExhibitBeanId;
+	private int rExhibitBeanId;
 
 	public Exhibit() {
 		super();
@@ -26,9 +26,8 @@ public class Exhibit {
 
 	public Exhibit(int id, String name, String beaconUId, String iconUrl,
 			ArrayList<ImageOption> imgList, String audioUrl, String textUrl,
-			HashMap<String, String> labels, String lExhibitBeanId,
-			String rExhibitBeanId) {
-		super();
+			HashMap<String, String> labels, int lExhibitBeanId,
+			int rExhibitBeanId) {
 		this.id = id;
 		this.name = name;
 		this.beaconUId = beaconUId;
@@ -105,19 +104,19 @@ public class Exhibit {
 		this.labels = labels;
 	}
 
-	public String getlExhibitBeanId() {
+	public int getlExhibitBeanId() {
 		return lExhibitBeanId;
 	}
 
-	public void setlExhibitBeanId(String lExhibitBeanId) {
+	public void setlExhibitBeanId(int lExhibitBeanId) {
 		this.lExhibitBeanId = lExhibitBeanId;
 	}
 
-	public String getrExhibitBeanId() {
+	public int getrExhibitBeanId() {
 		return rExhibitBeanId;
 	}
 
-	public void setrExhibitBeanId(String rExhibitBeanId) {
+	public void setrExhibitBeanId(int rExhibitBeanId) {
 		this.rExhibitBeanId = rExhibitBeanId;
 	}
 }

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:descendantFocusability="blocksDescendants"
     android:paddingBottom="5dp" >
-
+	<!-- icon -->
     <com.android.volley.toolbox.NetworkImageView
         android:id="@+id/item_museum_iv_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="10dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
         android:src="@drawable/icon" />
-
+	<!-- name -->
     <TextView
         android:id="@+id/item_museum_tv_name"
         android:layout_width="wrap_content"
@@ -23,41 +23,44 @@
         android:text="name"
         android:textColor="@color/color_black"
         android:textSize="20sp" />
-
+	<!-- address -->
     <TextView
         android:id="@+id/item_museum_tv_address"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/item_museum_tv_name"
         android:layout_below="@id/item_museum_tv_name"
         android:text="address"
+        android:layout_marginRight="80dp"
         android:textColor="#222"
         android:textSize="16sp" />
-
-    <Button
-        android:id="@+id/item_museum_btn_isopen"
-        android:layout_width="wrap_content"
-        android:layout_height="25dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@id/item_museum_tv_name"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/btn_frag_subject_bg"
-        android:clickable="false"
-        android:text="闭馆"
-        android:textColor="@color/color_white"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/item_museum_tv_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="5dp"
-        android:text="open time -- close time "
-        android:textColor="#222"
-        android:textSize="12sp" />
-
+		<!-- isopen -->
+	    <Button
+	        android:layout_alignParentRight="true"
+	        android:id="@+id/item_museum_btn_isopen"
+	        android:layout_width="wrap_content"
+	        android:layout_height="25dp"
+	        android:layout_marginTop="10dp"
+	        android:layout_marginRight="10dp"
+	        android:background="@drawable/btn_frag_subject_bg"
+	        android:clickable="false"
+	        android:text="闭馆"
+	        android:textColor="@color/color_white"
+	        android:textSize="14sp" />
+		<!-- open time -->
+	
+	    <TextView
+	        android:layout_alignParentRight="true"
+	        android:layout_marginRight="10dp"
+	        android:layout_marginBottom="5dp"
+	        android:layout_marginTop="10dp"
+	        android:layout_alignTop="@id/item_museum_tv_address"
+	        android:layout_gravity="center"
+	        android:id="@+id/item_museum_tv_time"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="13:00--18:00"
+	        android:textColor="#222"
+	        android:textSize="12sp" />
+	    
 </RelativeLayout>

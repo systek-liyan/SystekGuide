@@ -1,18 +1,16 @@
 package com.app.guide.adapter;
 
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
-import com.app.guide.R;
-import com.app.guide.utils.BitmapUtils;
-
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+import com.app.guide.R;
+import com.app.guide.utils.BitmapUtils;
 
 /**
  * Created by yetwish on 2015-05-11
@@ -22,6 +20,7 @@ public class ViewHolder {
 
 	private SparseArray<View> mViews;
 	private View mConvertView;
+	@SuppressWarnings("unused")
 	private int mPosition;
 
 	/**
@@ -57,6 +56,7 @@ public class ViewHolder {
 	/**
 	 * get view
 	 */
+	@SuppressWarnings("unchecked")
 	public <T extends View> T getView(int viewId) {
 		View view = mViews.get(viewId);
 		if (view == null) {

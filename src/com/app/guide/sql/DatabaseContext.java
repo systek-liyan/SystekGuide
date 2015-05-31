@@ -3,15 +3,14 @@ package com.app.guide.sql;
 import java.io.File;
 import java.io.IOException;
 
-import com.app.guide.Constant;
-
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
-import android.os.Environment;
 import android.util.Log;
+
+import com.app.guide.Constant;
 
 /**
  * 用于支持对存储在SD卡上的数据库的访问

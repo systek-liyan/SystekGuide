@@ -1,6 +1,7 @@
 package com.app.guide.bean;
 
 public class MuseumBean {
+	private int id; // 博物馆id
 	private String name;// 博物馆名称
 	private String address;// 博物馆地址
 	private double longitudX;// 表示博物馆纬度坐标
@@ -8,6 +9,22 @@ public class MuseumBean {
 	private String opentime;// 博物馆开放时间
 	private boolean isOpen;// 当前博物馆是否开放
 	private String iconUrl;// icon的Url地址
+
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * @param id
+	 *           the id to set
+	 * 
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	/**
 	 * @return the name

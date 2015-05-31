@@ -37,9 +37,9 @@ public class OfflineExhibitBean {
 	@DatabaseField(columnName = "isBoutique")
 	private boolean isBoutique;
 	@DatabaseField(columnName = "lExhibitBeanId")
-	private String lExhibitBeanId;
+	private int lExhibitBeanId;
 	@DatabaseField(columnName = "rExhibitBeanId")
-	private String rExhibitBeanId;
+	private int rExhibitBeanId;
 	@DatabaseField(columnName = "version", useGetSet = true)
 	private int version;
 
@@ -268,19 +268,19 @@ public class OfflineExhibitBean {
 		this.isBoutique = isBoutique;
 	}
 
-	public String getlExhibitBeanId() {
+	public int getlExhibitBeanId() {
 		return lExhibitBeanId;
 	}
 
-	public void setlExhibitBeanId(String lExhibitBeanId) {
+	public void setlExhibitBeanId(int lExhibitBeanId) {
 		this.lExhibitBeanId = lExhibitBeanId;
 	}
 
-	public String getrExhibitBeanId() {
+	public int getrExhibitBeanId() {
 		return rExhibitBeanId;
 	}
 
-	public void setrExhibitBeanId(String rExhibitBeanId) {
+	public void setrExhibitBeanId(int rExhibitBeanId) {
 		this.rExhibitBeanId = rExhibitBeanId;
 	}
 
