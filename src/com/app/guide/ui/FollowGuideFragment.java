@@ -36,7 +36,6 @@ import com.app.guide.bean.Exhibit;
 import com.app.guide.bean.ImageOption;
 import com.app.guide.offline.GetBeanFromSql;
 import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
-import com.app.guide.ui.MenuFragment.HomeClick;
 import com.app.guide.utils.BitmapUtils;
 import com.app.guide.widget.HeaderLayout;
 import com.app.guide.widget.LyricView;
@@ -51,15 +50,13 @@ import com.app.guide.widget.MyHorizontalScrollView.OnLoadingMoreListener;
  * 两种进入该界面的方式，底部导航进入 和选择某一展品进入
  * 随身导游页面，包含与Beacon相关的操作，根据停留时间获取最近的beacon，并让相应的音频文件自动播放，并显示文字
  * 
- * map 点击展品 跳转  
- * 
  * 设置 距离
  * 
+ * FIXME 1.专题 finish 2.搜素   
+ * TODO 4.截图 	5.endTime  6.加载中  和 加载完了 		7.slidingMenu 取消滑动   
+ * TODO 8.监听蓝牙打开和关闭	9.监听WIFI、电话  	10.title 加图片标识+ - ,展开时滚动到相应位置 
+ * 
  * 搜索 根据名称做匹配
- * 
- * 
- * 需要加载的数据有 当前展品的数据 如名称，audio数据 ,gallery 数据, 左右两展品的数据， TODO 更多展品的数据从哪来？
- * 根据当前所在beaconId 获取一组exhibit? TODO 加入加载更多
  * 
  * @author yetwish
  * @date 2015-4-25
@@ -322,6 +319,9 @@ public class FollowGuideFragment extends Fragment implements onBeaconSearcherLis
 					
 				}
 				// 获取audio数据
+				if(!HomeActivity.isAutoGuide()){
+					HomeActivity.setBeaconSearcherListener(null);
+				}
 
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block

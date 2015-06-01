@@ -18,6 +18,7 @@ import com.app.guide.adapter.CommonAdapter;
 import com.app.guide.adapter.ViewHolder;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.widget.HeaderLayout;
 
 /**
  * 修改ListView数据加载方式为数据库
@@ -51,6 +52,8 @@ public class MuseumActivity extends BaseActivity {
 	}
 
 	private void initViews() {
+		//初始化头部
+		((HeaderLayout)findViewById(R.id.activity_museum_header)).setSearchingVisible(false);
 		lvMuseum = (ListView) findViewById(R.id.activity_museum_list);
 		lvMuseum.setAdapter(new CommonAdapter<MuseumBean>(this, mData,
 				R.layout.item_museum) {

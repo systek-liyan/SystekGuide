@@ -278,6 +278,7 @@ public class MuseumIntroduceFragment extends Fragment {
 				// 跳转到follow guide fragment
 				((RadioButton) HomeActivity.mRadioGroup
 						.findViewById(R.id.home_tab_follow)).setChecked(true);
+				HomeActivity.setAutoGuide(false);
 				
 			}
 		});

@@ -10,9 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -21,6 +21,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import com.app.guide.Constant;
 import com.app.guide.R;
@@ -58,6 +59,8 @@ public class SubjectSelectFragment extends Fragment {
 	 * 存储展品信息
 	 */
 	private List<ExhibitBean> exhibits;
+	
+	private List<ExhibitBean> selectedExhibits;
 
 	/**
 	 * 悬浮头部view
@@ -82,7 +85,6 @@ public class SubjectSelectFragment extends Fragment {
 	/**
 	 * 完成按钮
 	 */
-	@SuppressWarnings("unused")
 	private Button btnFinish;
 
 	/**
@@ -128,7 +130,7 @@ public class SubjectSelectFragment extends Fragment {
 		getSelectorData();
 		getSelectedData();
 		getExhibitData();
-		exhibitAdapter = new ExhibitAdapter(getActivity(), exhibits,
+		exhibitAdapter = new ExhibitAdapter(getActivity(), selectedExhibits,
 				R.layout.item_exhibit);
 	}
 
@@ -159,6 +161,7 @@ public class SubjectSelectFragment extends Fragment {
 		try {
 			exhibits = GetBeanFromSql
 					.getExhibitBeans(mContext, mMuseumId, page);
+			selectedExhibits = new ArrayList<ExhibitBean>(exhibits);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -211,7 +214,13 @@ public class SubjectSelectFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		btnFinish = (Button) view
 				.findViewById(R.id.frag_subject_select_btn_finish);
+		btnFinish.setOnClickListener(new OnClickListener() {
 
+			@Override
+			public void onClick(View v) {
+				Toast.makeText(mContext, "完成筛选，跳转到map", Toast.LENGTH_SHORT).show();
+			}
+		});
 		// get exhibit list
 		lvExhibits = (AutoLoadListView) view
 				.findViewById(R.id.frag_subject_lv_exhibits);
@@ -245,7 +254,8 @@ public class SubjectSelectFragment extends Fragment {
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
 				mIntent.putExtra(Constant.EXTRA_EXHIBIT_ID,
-						exhibits.get(position-invisItem-1).getId());
+						exhibits.get(position - invisItem - 1).getId());
+				HomeActivity.setAutoGuide(false);
 				((RadioButton) HomeActivity.mRadioGroup
 						.findViewById(R.id.home_tab_follow)).setChecked(true);
 			}
@@ -300,6 +310,23 @@ public class SubjectSelectFragment extends Fragment {
 				// Toast.LENGTH_SHORT).show();
 				selectedHeader.updateView(selectedData); // 更新已选择view 和悬浮头部
 				invisView.updateView(selectedData);
+				//根据selected data筛选list view
+				//TODO 会出现线程阻塞的情况
+				int j = 0;
+				selectedExhibits.clear();
+				for(int i = 0 ; i<exhibits.size();i++){
+					//匹配
+					for(j = 0; j< selectedData.size();j++){
+						if(!exhibits.get(i).getLabels().containsValue(selectedData.get(j))){
+							break;
+						}
+					}
+					if(j == selectedData.size()){
+						//表示该展品匹配
+						selectedExhibits.add(exhibits.get(i));
+					}
+				}
+				exhibitAdapter.notifyDataSetChanged();
 			}
 		}
 	}

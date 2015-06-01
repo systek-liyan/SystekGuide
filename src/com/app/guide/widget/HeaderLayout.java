@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.ui.SearchActivity;
 
@@ -85,6 +86,7 @@ public class HeaderLayout extends LinearLayout{
 					break;
 				case R.id.frag_header_iv_search:
 					Intent intent = new Intent(mContext,SearchActivity.class);
+					intent.putExtra(Constant.EXTRA_MUSEUM_ID, 1);
 					mContext.startActivity(intent);
 					break;
 			}

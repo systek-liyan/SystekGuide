@@ -1,5 +1,7 @@
 package com.app.guide.bean;
 
+import java.util.HashMap;
+
 /**
  * 列表 展品信息 
  */
@@ -9,16 +11,17 @@ public class ExhibitBean {
 	private String address;// 展厅
 	private String introduction;// 展品介绍
 	private String imgUrl;// 图标的Url地址
-
+	private HashMap<String, String> labels; //标签	
 	
 	
 	public ExhibitBean(int id,String name, String address, String introduction,
-			String imgUrl) {
+			String imgUrl,HashMap<String, String> labels) {
 		this.id = id;
 		this.name = name;
 		this.address = address;
 		this.introduction = introduction;
 		this.imgUrl = imgUrl;
+		this.labels = labels;
 	}
 	
 	/**
@@ -94,5 +97,21 @@ public class ExhibitBean {
 	public void setImgUrl(String imgUrl) {
 		this.imgUrl = imgUrl;
 	}
+
+	/**
+	 * @return	the labels 
+	 */
+	public HashMap<String, String> getLabels() {
+		return labels;
+	}
+
+	/**
+	 * @param labels the labels to set
+	 */
+	public void setLabels(HashMap<String, String> labels) {
+		this.labels = labels;
+	}
+
+		
 
 }

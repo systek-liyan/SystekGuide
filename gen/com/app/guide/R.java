@@ -1108,18 +1108,22 @@ containing a value of this type.
         public static final int play_btn_pause_prs=0x7f020098;
         public static final int play_btn_play=0x7f020099;
         public static final int play_btn_prew=0x7f02009a;
-        public static final int search_edittext_shape=0x7f02009b;
-        public static final int search_icon=0x7f02009c;
-        public static final int shadow=0x7f02009d;
-        public static final int sliding_menu_back=0x7f02009e;
-        public static final int sliding_menu_city=0x7f02009f;
-        public static final int sliding_menu_download=0x7f0200a0;
-        public static final int sliding_menu_more=0x7f0200a1;
-        public static final int sliding_menu_setting=0x7f0200a2;
-        public static final int test=0x7f0200a3;
-        public static final int toggle_btn_close=0x7f0200a4;
-        public static final int toggle_btn_open=0x7f0200a5;
-        public static final int toggle_btn_selector=0x7f0200a6;
+        public static final int search_clear_normal=0x7f02009b;
+        public static final int search_clear_pressed=0x7f02009c;
+        public static final int search_edittext_shape=0x7f02009d;
+        public static final int search_icon=0x7f02009e;
+        public static final int search_view_delete_bg=0x7f02009f;
+        public static final int search_view_tips_bg=0x7f0200a0;
+        public static final int shadow=0x7f0200a1;
+        public static final int sliding_menu_back=0x7f0200a2;
+        public static final int sliding_menu_city=0x7f0200a3;
+        public static final int sliding_menu_download=0x7f0200a4;
+        public static final int sliding_menu_more=0x7f0200a5;
+        public static final int sliding_menu_setting=0x7f0200a6;
+        public static final int test=0x7f0200a7;
+        public static final int toggle_btn_close=0x7f0200a8;
+        public static final int toggle_btn_open=0x7f0200a9;
+        public static final int toggle_btn_selector=0x7f0200aa;
     }
     public static final class id {
         public static final int abs__action_bar=0x7f0a0026;
@@ -1161,7 +1165,7 @@ containing a value of this type.
         public static final int abs__textButton=0x7f0a0019;
         public static final int abs__title=0x7f0a0021;
         public static final int abs__up=0x7f0a0001;
-        public static final int action_settings=0x7f0a008d;
+        public static final int action_settings=0x7f0a0090;
         public static final int activity_museum_header=0x7f0a0042;
         public static final int activity_museum_list=0x7f0a0043;
         public static final int city_btn_loacte=0x7f0a0038;
@@ -1252,15 +1256,18 @@ containing a value of this type.
         public static final int none=0x7f0a0015;
         public static final int normal=0x7f0a0009;
         public static final int right=0x7f0a0012;
-        public static final int search_header_btn=0x7f0a008a;
-        public static final int search_header_seach=0x7f0a0048;
+        public static final int search_btn_back=0x7f0a008c;
+        public static final int search_et_input=0x7f0a008a;
+        public static final int search_iv_delete=0x7f0a008b;
         public static final int search_lv_results=0x7f0a0049;
+        public static final int search_lv_tips=0x7f0a008d;
+        public static final int search_view=0x7f0a0048;
         public static final int selected_view=0x7f0a0006;
         public static final int showCustom=0x7f0a000d;
         public static final int showHome=0x7f0a000e;
         public static final int showTitle=0x7f0a000f;
-        public static final int sliding_container=0x7f0a008b;
-        public static final int slidingmenumain=0x7f0a008c;
+        public static final int sliding_container=0x7f0a008e;
+        public static final int slidingmenumain=0x7f0a008f;
         public static final int tabMode=0x7f0a000a;
         public static final int useLogo=0x7f0a0010;
         public static final int wrap_content=0x7f0a0007;
@@ -1373,31 +1380,36 @@ containing a value of this type.
         public static final int app_name=0x7f0b000d;
         /**  自动导游和手动导游 
          */
-        public static final int auto_guide=0x7f0b0021;
+        public static final int auto_guide=0x7f0b0024;
         public static final int city_location=0x7f0b0011;
         /**  展品列表 
          */
-        public static final int exhibit_list_title=0x7f0b0020;
-        public static final int frag_follow_tab_exhibitions=0x7f0b0019;
-        public static final int frag_follow_tab_pictures=0x7f0b0018;
+        public static final int exhibit_list_title=0x7f0b0023;
+        public static final int frag_follow_tab_exhibitions=0x7f0b001c;
+        public static final int frag_follow_tab_pictures=0x7f0b001b;
         /**  多角度展示title 
          */
-        public static final int gallery_title=0x7f0b001f;
+        public static final int gallery_title=0x7f0b0022;
         public static final int hello_world=0x7f0b000f;
         /**  用于上拉加载更多ListView 
          */
-        public static final int load_full=0x7f0b001b;
-        public static final int manally_guide=0x7f0b0022;
-        public static final int more=0x7f0b001d;
-        public static final int no_data=0x7f0b001c;
-        public static final int play_pause=0x7f0b001e;
+        public static final int load_full=0x7f0b001e;
+        public static final int manally_guide=0x7f0b0025;
+        public static final int more=0x7f0b0020;
+        public static final int no_data=0x7f0b001f;
+        public static final int play_pause=0x7f0b0021;
+        public static final int search_back=0x7f0b001a;
+        public static final int search_delect_descriction=0x7f0b0019;
+        public static final int search_hint=0x7f0b0018;
         public static final int tab_main_four=0x7f0b0016;
         public static final int tab_main_one=0x7f0b0013;
         public static final int tab_main_three=0x7f0b0015;
         public static final int tab_main_two=0x7f0b0014;
         public static final int title_activity_city=0x7f0b0010;
         public static final int title_activity_home=0x7f0b0012;
-        public static final int title_activity_museum=0x7f0b001a;
+        public static final int title_activity_museum=0x7f0b001d;
+        /**  搜索 
+         */
         public static final int title_activity_search=0x7f0b0017;
     }
     public static final class style {

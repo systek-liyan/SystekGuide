@@ -11,7 +11,12 @@
     <string name="tab_main_two">随行导游</string>
     <string name="tab_main_three">专题导游</string>
     <string name="tab_main_four">地图</string>
+	<!-- 搜索 -->
 	<string name="title_activity_search">搜索</string>
+	<string name="search_hint">请输入搜索内容</string>
+	<string name="search_delect_descriction">清除</string>
+	<string name="search_back">返回</string>
+	
     <string name="frag_follow_tab_pictures">图片讲解</string>
     <string name="frag_follow_tab_exhibitions">展品列表</string>
     <string name="title_activity_museum">选择博物馆</string>

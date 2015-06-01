@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    <include layout="@layout/search_layout"
-        android:id="@+id/search_header_seach"
+    <com.app.guide.widget.SearchView
+        android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-	<ListView 
+	<com.app.guide.widget.AutoLoadListView
 	    android:id="@+id/search_lv_results"
 	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"></ListView>
+	    android:layout_height="wrap_content"/>
 </LinearLayout>

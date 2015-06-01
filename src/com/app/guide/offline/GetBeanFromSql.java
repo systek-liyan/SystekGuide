@@ -71,10 +71,14 @@ public class GetBeanFromSql {
 		builder.limit(Constant.PAGE_COUNT);
 		List<OfflineExhibitBean> offlineExhibitBeans = builder.query();
 		for (OfflineExhibitBean offlineExhibitBean : offlineExhibitBeans) {
+			HashMap<String, String> map = JSON.parseObject(offlineExhibitBean.getLabelJson(),
+					new TypeReference<HashMap<String, String>>() {
+					});
 			ExhibitBean bean = new ExhibitBean(offlineExhibitBean.getId(),offlineExhibitBean.getName(),
 					offlineExhibitBean.getAddress(),
 					offlineExhibitBean.getIntroduce(),
-					offlineExhibitBean.getIconUrl());
+					offlineExhibitBean.getIconUrl(),
+					map);
 			list.add(bean);
 		}
 		offlineExhibitBeans.clear();
