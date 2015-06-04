@@ -119,6 +119,12 @@ public class MyMap extends SurfaceView implements SurfaceHolder.Callback {
 		this.locationY = y;
 		adjust(x, y);
 	}
+	
+	public void setLocation(float x, float y) {
+		this.locationX = x;
+		this.locationY = y;
+		draw();
+	}
 
 	/**
 	 * 为当前地图添加标记

@@ -60,7 +60,7 @@ public class GridAdapter extends BaseAdapter{
 				Button button = (Button)view;
 				if(itemListener!=null){
 					//响应点击事件，并将子控件(button)的text 传递出去
-					itemListener.onClick(button.getText().toString());
+					itemListener.onClick(button);
 				}
 			}
 		});
@@ -82,6 +82,6 @@ public class GridAdapter extends BaseAdapter{
 	 * @author yetwish
 	 */
 	public interface GridItemClickListener{
-		public void onClick(String itemName);
+		public void onClick(Button btnItem);
 	}
 }

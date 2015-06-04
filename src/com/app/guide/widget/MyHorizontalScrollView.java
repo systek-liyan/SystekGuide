@@ -35,6 +35,8 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 
 	private boolean isShowInCenter = false;
 
+	public static final int OFFSET = 5;
+	
 	public void setShowInCenter() {
 		this.isShowInCenter = true;
 	}
@@ -85,6 +87,10 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 
 	private boolean isFirst = false;
 
+	private boolean isSetByLyric = false;
+	
+	private boolean isClicked = false;
+	
 	/**
 	 * 加载更多回调接口 实例
 	 */
@@ -127,11 +133,12 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 	 * 
 	 * @param index
 	 */
-	public void setCurrentSelectedItem(int index) {
+	public void setCurrentSelectedItem(boolean isByLyric, int index) {
+		this.isSetByLyric = isByLyric;
 		if (index < 0)
-			index = 0;
+			return ;
 		if (index > mAdapter.getCount() - 1)
-			index = mAdapter.getCount() - 1;
+			return ;
 		// 如何获得view
 		for (View view : mViewPos.keySet()) {
 			if (mViewPos.get(view).equals(index)) {
@@ -139,6 +146,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 				break;
 			}
 		}
+		this.isSetByLyric = false;
 	}
 
 	/**
@@ -221,14 +229,16 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 	 * 通知当前item改变
 	 */
 	private void notifyCurrentItemChanged() {
-		for (int i = 0; i < mContainer.getChildCount(); i++) {
-			mContainer.getChildAt(i).setAlpha(0.5f);
+		if(!isClicked){
+			for (int i = 0; i < mContainer.getChildCount(); i++) {
+				mContainer.getChildAt(i).setAlpha(0.5f);
+			}
+			Log.w("TAG", "mFirstIndex:" + mFirstIndex + ", last: " + mLastIndex
+					+ "additional " + mAdditionalCount);
+			mCurrentSelectedItem = mFirstIndex;
+			mItemChangedListener.onCurrentImgChanged(mFirstIndex,
+					mContainer.getChildAt(0));
 		}
-		Log.w("TAG", "mFirstIndex:" + mFirstIndex + ", last: " + mLastIndex
-				+ "additional " + mAdditionalCount);
-		mCurrentSelectedItem = mFirstIndex;
-		mItemChangedListener.onCurrentImgChanged(mFirstIndex,
-				mContainer.getChildAt(0));
 	}
 
 	private int downX;
@@ -392,6 +402,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 	@Override
 	public void onClick(View view) {
 		Log.w("TAG", "onClick");
+		isClicked = true;
 		if (mItemClickListener != null) {
 			for (int i = 0; i < mContainer.getChildCount(); i++) {
 				mContainer.getChildAt(i).setAlpha(0.5f);
@@ -400,7 +411,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 		}
 		int itemCount = mViewPos.get(view) - mCurrentSelectedItem;
 		mCurrentSelectedItem = mViewPos.get(view);
-		mItemClickListener.onItemClick(view, mViewPos.get(view));
+		mItemClickListener.onItemClick(view, mViewPos.get(view),isSetByLyric);
 		// 获取选中的是在屏幕第几个
 		if (isShowInCenter) {
 //			// 只有三个
@@ -421,35 +432,35 @@ public class MyHorizontalScrollView extends HorizontalScrollView implements
 			for (int i = 0; i < itemCount; i++) {
 				loadNextImage();
 			}
-			smoothScrollTo(0, 0);
-
 		}
+		smoothScrollTo(OFFSET, 0);
+		isClicked = false;
 	}
 
-	private int getIndexOfViews(View view) {
-		int x = (int) view.getX();
-		int index = 0;
-		Log.w("TAG", "X: " + x);
-		switch (x) {
-		case 0:
-			index = 0;
-			break;
-		case 300:
-			index = 1;
-			break;
-		case 600:
-			index = 2;
-			break;
-		}
-		return index;
-	}
+//	private int getIndexOfViews(View view) {
+//		int x = (int) view.getX();
+//		int index = 0;
+//		Log.w("TAG", "X: " + x);
+//		switch (x) {
+//		case 0:
+//			index = 0;
+//			break;
+//		case 300:
+//			index = 1;
+//			break;
+//		case 600:
+//			index = 2;
+//			break;
+//		}
+//		return index;
+//	}
 
 	public interface CurrentImageChangedListener {
 		void onCurrentImgChanged(int position, View viewIndicator);
 	}
 
 	public interface OnItemClickListener {
-		void onItemClick(View view, int position);
+		void onItemClick(View view, int position, boolean isByLyric);
 	}
 
 	/**

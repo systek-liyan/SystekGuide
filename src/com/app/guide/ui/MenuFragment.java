@@ -21,12 +21,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.app.guide.AppContext;
+import com.app.guide.AppContext.OnGuideModeChangedListener;
 import com.app.guide.R;
 import com.app.guide.adapter.CommonAdapter;
 import com.app.guide.adapter.ViewHolder;
 import com.app.guide.bean.Menu;
 
-public class MenuFragment extends Fragment {
+public class MenuFragment extends Fragment implements OnGuideModeChangedListener{
 
 	private HomeClick homeClick;
 	private ListView lvMenu;
@@ -59,7 +61,8 @@ public class MenuFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		
 		tbAutoGuide = (ToggleButton) view.findViewById(R.id.frag_menu_tb_autoguide);
-		if(!HomeActivity.bleEnable){
+		AppContext.addGuideModeChangedListener(this);
+		if(!AppContext.isBleEnable){
 			tbAutoGuide.setChecked(false);
 			tbAutoGuide.setClickable(false);
 		}else{
@@ -72,11 +75,11 @@ public class MenuFragment extends Fragment {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				// TODO Auto-generated method stub
 				if(isChecked){
-					HomeActivity.setAutoGuide(true);
-					Toast.makeText(getActivity(), "进入自动导航模式", Toast.LENGTH_SHORT).show();
+					AppContext.setGuideMode(true);
+//					Toast.makeText(getActivity(), "进入自动导航模式", Toast.LENGTH_SHORT).show();
 				}else{
-					HomeActivity.setAutoGuide(false);
-					Toast.makeText(getActivity(), "进入手动导航模式", Toast.LENGTH_SHORT).show();
+					AppContext.setGuideMode(false);
+//					Toast.makeText(getActivity(), "进入手动导航模式", Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
@@ -139,6 +142,18 @@ public class MenuFragment extends Fragment {
 	
 	public interface HomeClick {
 		public void home();
+	}
+
+
+	@Override
+	public void onGuideModeChanged(boolean isAutoGuide) {
+		if(tbAutoGuide != null){
+			if(tbAutoGuide.isChecked() != isAutoGuide){
+				//当传入的状态与当前选中状态不同时，更新UI
+				tbAutoGuide.setChecked(isAutoGuide);
+			}
+		}
+		
 	}
 
 }

@@ -46,6 +46,7 @@ public class GetBeanFromSql {
 		Log.w(TAG, "" + offlineExhibitBeans.size());
 		for (OfflineExhibitBean offlineExhibitBean : offlineExhibitBeans) {
 			MapExhibitBean bean = new MapExhibitBean();
+			bean.setId(offlineExhibitBean.getId());
 			bean.setAddress(offlineExhibitBean.getAddress());
 			bean.setName(offlineExhibitBean.getName());
 			bean.setMapX(offlineExhibitBean.getMapX());

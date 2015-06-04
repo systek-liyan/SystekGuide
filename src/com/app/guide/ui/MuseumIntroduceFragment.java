@@ -33,6 +33,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.app.guide.AppContext;
 import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
@@ -247,7 +248,7 @@ public class MuseumIntroduceFragment extends Fragment {
 		lvExhibit.setAdapter(exhibitAdapter);
 		initListView();
 		// 解决slidingMenu和viewPager 滑动冲突
-		HomeActivity.sm.addIgnoredView(viewPager);
+		HomeActivity.getMenu().addIgnoredView(viewPager);
 	}
 
 	private void initListView() {
@@ -270,15 +271,15 @@ public class MuseumIntroduceFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				mIntent.putExtra(Constant.EXTRA_EXHIBIT_ID,
-						exhibits.get(position-1).getId());
+				AppContext.currentExhibitId = exhibits.get(position-1).getId();
+				AppContext.setGuideMode(false);
 				// 不能使用HomeActivity.mRadioGroup.check(R.id.home_tab_follow);
 				// 因为该方法会重复调用onCheckedChanged()方法
 				// ，从而导致java.lang.IllegalStateException异常
 				// 跳转到follow guide fragment
 				((RadioButton) HomeActivity.mRadioGroup
 						.findViewById(R.id.home_tab_follow)).setChecked(true);
-				HomeActivity.setAutoGuide(false);
+				
 				
 			}
 		});

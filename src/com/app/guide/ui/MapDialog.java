@@ -5,10 +5,13 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.app.guide.AppContext;
 import com.app.guide.R;
 import com.app.guide.bean.MapExhibitBean;
 
@@ -30,12 +33,24 @@ public class MapDialog extends PopupWindow {
 		titleTextView.setText(mapExhibitBean.getName());
 		mImageView.setImageBitmap(BitmapFactory.decodeResource(
 				context.getResources(), R.drawable.e1));
+		mImageView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				AppContext.setGuideMode(false);
+				AppContext.currentExhibitId = mapExhibitBean.getId();
+				dismiss();
+				((RadioButton) HomeActivity.mRadioGroup
+						.findViewById(R.id.home_tab_follow)).setChecked(true);
+				
+			}
+		});
 		this.setWidth(200);
 		this.setHeight(200);
 		setContentView(view);
-		this.setBackgroundDrawable(context.getResources().getDrawable(  
-                R.drawable.bg_popupwindow));
+		this.setBackgroundDrawable(context.getResources().getDrawable(
+				R.drawable.bg_popupwindow));
 		this.setOutsideTouchable(true);
+
 	}
 
 }

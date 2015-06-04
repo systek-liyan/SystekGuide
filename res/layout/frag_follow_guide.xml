@@ -39,12 +39,28 @@
             android:background="@color/lightgray"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp">
+            android:padding="5dp">
              <ImageView 
                 android:contentDescription="@string/play_pause"
                 android:id="@+id/frag_follow_guide_iv_start"
                 android:src="@drawable/play_btn_play"
                 android:layout_centerHorizontal="true"
+                android:layout_width="@dimen/icon_width"
+                android:layout_height="@dimen/icon_height"/>
+              <ImageView 
+                android:contentDescription="@string/play_pause"
+                android:id="@+id/frag_follow_guide_iv_pre"
+                android:src="@drawable/play_btn_prew"
+                android:layout_toLeftOf="@id/frag_follow_guide_iv_start"
+                android:layout_marginRight="20dp"
+                android:layout_width="@dimen/icon_width"
+                android:layout_height="@dimen/icon_height"/>
+               <ImageView 
+                android:contentDescription="@string/play_pause"
+                android:id="@+id/frag_follow_guide_iv_next"
+                android:src="@drawable/play_btn_next"
+                android:layout_toRightOf="@id/frag_follow_guide_iv_start"
+                android:layout_marginLeft="20dp"
                 android:layout_width="@dimen/icon_width"
                 android:layout_height="@dimen/icon_height"/>
         </RelativeLayout>
@@ -53,14 +69,24 @@
     	    android:background="@color/btn_pressed_color"
     	    android:layout_width="match_parent"
     	    android:layout_height="wrap_content"
-    	    android:paddingLeft="20dp">
+    	    android:orientation="horizontal"
+    	    android:paddingLeft="10dp"
+    	    android:paddingRight="10dp">
     	    <TextView
-	        android:text="@string/gallery_title"
-	        android:id="@+id/frag_follow_guide_tv_title_pics"
-	        android:textSize="20sp"
-	        android:textColor="@color/title_textcolor"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"/>
+		        android:text="@string/gallery_title"
+		        android:id="@+id/frag_follow_guide_tv_title_pics"
+		        android:textSize="20sp"
+		        android:textColor="@color/title_textcolor"
+		        android:layout_gravity="center_vertical"
+		        android:layout_weight="1"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"/>
+    	    <ImageView
+    	        android:id="@+id/frag_follow_guide_iv_gallery_expand"
+    	        android:layout_width="@dimen/icon_width"
+    	        android:layout_height="@dimen/icon_height"
+    	        android:contentDescription="@string/play_pause"
+    	        android:src="@drawable/title_expanded" />
     	</LinearLayout>
     	 <com.app.guide.widget.MyHorizontalScrollView
     	    android:visibility="gone"
@@ -83,18 +109,28 @@
     	
     	<!-- 展品列表 -->
         <LinearLayout 
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="2dp"
     	    android:background="@color/btn_pressed_color"
     	    android:layout_width="match_parent"
     	    android:layout_height="wrap_content"
-    	    android:paddingLeft="20dp">
+    	    android:paddingLeft="10dp"
+    	    android:paddingRight="10dp">
         <TextView
             android:id="@+id/frag_follow_guide_tv_title_exhibits"
 	        android:text="@string/exhibit_list_title"
 	        android:textSize="20sp"
 	        android:textColor="@color/title_textcolor"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"/>
+	        android:layout_gravity="center_vertical"
+			android:layout_weight="1"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"/>
+    	<ImageView
+    		android:id="@+id/frag_follow_guide_iv_exhibit_expand"
+    		android:layout_width="@dimen/icon_width"
+    		android:layout_height="@dimen/icon_height"
+    		android:contentDescription="@string/play_pause"
+    		android:src="@drawable/title_expanded" />
+        
         </LinearLayout>
          <com.app.guide.widget.MyHorizontalScrollView
              android:visibility="gone"

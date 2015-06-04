@@ -15,10 +15,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.Window;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.app.guide.AppContext;
 import com.app.guide.AppManager;
 import com.app.guide.R;
 import com.app.guide.adapter.FragmentTabAdapter;
@@ -41,34 +43,15 @@ public class HomeActivity extends BaseActivity implements
 	/**
 	 * 侧滑栏 TODO 考虑是否不能侧滑
 	 */
-	protected static SlidingMenu sm;
+	private static SlidingMenu sm;
 
-	public static boolean bleEnable = false;
+	/**
+	 * @return the instance of slidingMenu
+	 */
+	public static SlidingMenu getMenu(){
+		return sm;
+	}
 	
-	/**
-	 * 是否自动导游
-	 */
-	private static boolean isAutoGuide = true;
-
-	/**
-	 * 设置导游模式
-	 * 
-	 * @param autoGuide
-	 *            boolean
-	 */
-	public static void setAutoGuide(boolean autoGuide) {
-		isAutoGuide = autoGuide;
-	}
-
-	/**
-	 * 获取导游模式
-	 * 
-	 * @return boolean whether is auto guide mode or not.
-	 */
-	public static boolean isAutoGuide() {
-		return isAutoGuide;
-	}
-
 	private final static Class<?>[] fragmentClz = {
 			MuseumIntroduceFragment.class, FollowGuideFragment.class,
 			SubjectSelectFragment.class, MapFragment.class };
@@ -123,7 +106,18 @@ public class HomeActivity extends BaseActivity implements
 	protected boolean isFullScreen() {
 		return true;
 	}
+	
 
+	@Override
+	protected void onResume() {
+		if(AppContext.isSelectedInSearch){
+			((RadioButton) HomeActivity.mRadioGroup
+					.findViewById(R.id.home_tab_follow)).setChecked(true);
+			AppContext.isSelectedInSearch = false;
+		}
+		super.onResume();
+	}
+	
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
@@ -197,12 +191,12 @@ public class HomeActivity extends BaseActivity implements
 		if (requestCode == BeaconSearcher.REQUEST_ENABLE_BT) {
 			if (mBeaconSearcher.onBluetoothResult(requestCode, resultCode)){
 				mBeaconSearcher.openSearcher();
-				isAutoGuide = true;
-				bleEnable = true;
+				AppContext.setGuideMode(true);
+				AppContext.isBleEnable = true;
 			}
 			else{
-				isAutoGuide = false;
-				bleEnable = false;
+				AppContext.setGuideMode(false);
+				AppContext.isBleEnable = false;
 			}
 		}
 	}
@@ -278,8 +272,12 @@ public class HomeActivity extends BaseActivity implements
 		// 设置beacon监听器
 		mBeaconSearcher.setNearestBeaconListener(this);
 		// 当蓝牙打开时，打开beacon搜索器，开始搜索距离最近的Beacon
-		if (mBeaconSearcher.checkBLEEnable())
+		if (mBeaconSearcher.checkBLEEnable()){
 			mBeaconSearcher.openSearcher();
+			AppContext.isBleEnable= true;
+			AppContext.setGuideMode(true);
+		}
+			
 	}
 
 }

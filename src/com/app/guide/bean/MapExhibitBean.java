@@ -1,12 +1,27 @@
 package com.app.guide.bean;
 
 public class MapExhibitBean {
-	
+	private int id;		
 	private float mapX;
 	private float mapY;
 	private String name;
 	private String address;
 	private String iconUrl;
+	
+	/**
+	 * return the id;
+	 * @return
+	 */
+	public int getId() {
+		return id;
+	}
+	
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
 	/**
 	 * @return the mapX
 	 */

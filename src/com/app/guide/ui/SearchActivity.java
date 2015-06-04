@@ -5,15 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.app.guide.AppContext;
 import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
@@ -23,6 +26,11 @@ import com.app.guide.widget.AutoLoadListView;
 import com.app.guide.widget.AutoLoadListView.OnLoadListener;
 import com.app.guide.widget.SearchView;
 
+/**
+ * 搜索界面 TODO adapter
+ * @author yetwish
+ *
+ */
 public class SearchActivity extends BaseActivity implements
 		SearchView.SearchViewListener {
 
@@ -209,25 +217,25 @@ public class SearchActivity extends BaseActivity implements
 		} else {
 			resultData.clear();
 			shownResults.clear();
-			if ("".equals(text)) {
-				// 当text为空时
-				for (int i = 0, count = 0; i < exhibitsList.size(); i++) {
+			// if ("".equals(text)) {
+			// // 当text为空时
+			// for (int i = 0, count = 0; i < exhibitsList.size(); i++) {
+			// resultData.add(exhibitsList.get(i));
+			// if (count < Constant.PAGE_COUNT) {
+			// shownResults.add(exhibitsList.get(i));
+			// count++;
+			// }
+			// }
+			// } else
+			for (int i = 0, count = 0; i < exhibitsList.size(); i++) {
+				if (exhibitsList.get(i).getName().contains(text.trim())) {
 					resultData.add(exhibitsList.get(i));
 					if (count < Constant.PAGE_COUNT) {
 						shownResults.add(exhibitsList.get(i));
 						count++;
 					}
 				}
-			} else
-				for (int i = 0, count = 0; i < exhibitsList.size(); i++) {
-					if (exhibitsList.get(i).getName().contains(text.trim())) {
-						resultData.add(exhibitsList.get(i));
-						if (count < Constant.PAGE_COUNT) {
-							shownResults.add(exhibitsList.get(i));
-							count++;
-						}
-					}
-				}
+			}
 		}
 		if (resultAdapter == null) {
 			resultAdapter = new ExhibitAdapter(this, shownResults,
@@ -264,9 +272,13 @@ public class SearchActivity extends BaseActivity implements
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view,
 					int position, long l) {
-				Toast.makeText(SearchActivity.this, position + "",
-						Toast.LENGTH_SHORT).show();
-				//跳转到homeActivity follow?
+				// 跳转到随身导游界面
+				AppContext.currentExhibitId = shownResults.get(position)
+						.getId();
+				AppContext.setGuideMode(false);
+				AppContext.isSelectedInSearch = true;
+				finish();
+
 			}
 		});
 		lvResults.setOnLoadListener(new OnLoadListener() {
@@ -293,6 +305,8 @@ public class SearchActivity extends BaseActivity implements
 				&& i < resultData.size(); i++) {
 			shownResults.add(resultData.get(i));
 		}
+		if (resultData.size() == 0 || shownResults.size() == resultData.size())
+			lvResults.setLoadFull();
 		lvResults.onLoadComplete();
 	}
 
@@ -313,12 +327,7 @@ public class SearchActivity extends BaseActivity implements
 	 */
 	@Override
 	public void onSearch(String text) {
-		Toast.makeText(this, "start searching", Toast.LENGTH_SHORT).show();
 		getResultData(text);
-	}
-
-	@Override
-	public void onTipsItemClick(String text) {
 		lvResults.setVisibility(View.VISIBLE);
 		// 第一次获取结果 还未配置适配器
 		if (lvResults.getAdapter() == null) {
@@ -328,6 +337,15 @@ public class SearchActivity extends BaseActivity implements
 			// 更新搜索数据
 			resultAdapter.notifyDataSetChanged();
 		}
+		Toast.makeText(this, "完成搜索", Toast.LENGTH_SHORT).show();
+		// 隐藏软键盘
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+	}
+
+	@Override
+	public void onTipsItemClick(String text) {
+		
 	}
 
 	@Override

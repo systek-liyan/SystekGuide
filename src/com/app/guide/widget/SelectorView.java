@@ -1,6 +1,5 @@
 package com.app.guide.widget;
 
-import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
@@ -18,7 +17,7 @@ import com.app.guide.bean.LabelBean;
 
 /**
  * 选择器 view，包含一个textView(组标签) 和一个gridView(子标签集)
- * 
+ * TODO 设置选中时灰色
  * @author yetwish
  * @date 2015-4-26
  */
@@ -71,22 +70,11 @@ public class SelectorView extends LinearLayout {
 		gvItems.setStretchMode(GridView.NO_STRETCH);
 		adapter = new GridAdapter(mContext, getGridItems(), itemListener);
 		gvItems.setAdapter(adapter);
-		// gvItems.setOnItemClickListener(new OnItemClickListener() {
-		//
-		// @Override
-		// public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-		// long arg3) {
-		// // TODO Auto-generated method stub
-		//
-		// }
-		//
-		// });
 	}
 
 	// 更新gridView items的数据
 	public void updateView(List<String> items) {
 		this.item.setLabels(items);
-		;
 		setGridView();
 		adapter.notifyDataSetChanged();
 	}

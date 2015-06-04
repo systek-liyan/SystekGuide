@@ -19,17 +19,20 @@ import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.app.guide.AppContext;
+import com.app.guide.R;
 import com.app.guide.bean.LyricObject;
 
 public class LyricView extends View {
 
 	public static final int INTERVAL = 10;// 歌词每行的间隔
 	private static final int SIZE_LENGTH = 1600;// 显示歌词的高度
-	public final static int SIZE_TEXT_DISPLAY = 250;
+	public static int SIZE_TEXT_DISPLAY = 400;
 
 	private TreeMap<Integer, LyricObject> lrc_map;
 	private float mX; // 屏幕X轴的中点，此值固定，保持歌词在X中间显示
@@ -44,10 +47,16 @@ public class LyricView extends View {
 
 	Paint paint = new Paint();// 画笔，用于画不是高亮的歌词
 	Paint paintHL = new Paint(); // 画笔，用于画高亮的歌词，即当前唱到这句歌词
+	Paint paintTips = new Paint();// 画笔，用于画提示语
 	private MediaPlayer mediaPlayer;
 
-	private ShowLyricRunnable mShowLyricThread = null; 
-	
+	/**
+	 * 表示当前是否正在扫描beacon设备
+	 */
+	private boolean isBLEEnable = false;
+
+	private ShowLyricRunnable mShowLyricThread = null;
+
 	public LyricView(Context context) {
 		super(context);
 		init();
@@ -58,14 +67,28 @@ public class LyricView extends View {
 		init();
 	}
 
+	/**
+	 * 设置选中歌词的高度
+	 * 
+	 * @param height
+	 */
+	public void setTestDisplayHeight(int height) {
+		SIZE_TEXT_DISPLAY = height;
+	}
+
+	public void setIsScanning(boolean enable) {
+		this.isBLEEnable = enable;
+	}
+
 	@Override
 	protected void onDraw(Canvas canvas) {
 		if (blLrc) {
 			paintHL.setTextSize(wordSize);
 			paint.setTextSize(wordSize);
-			//TODO 
+			// TODO
 			LyricObject temp = lrc_map.get(lrcIndex);
-			if(temp == null) return ;
+			if (temp == null)
+				return;
 			canvas.drawText(temp.lrc, mX, offsetY + (wordSize + INTERVAL)
 					* lrcIndex, paintHL);
 			// 画当前歌词之前的歌词
@@ -86,13 +109,20 @@ public class LyricView extends View {
 				canvas.drawText(temp.lrc, mX, offsetY + (wordSize + INTERVAL)
 						* i, paint);
 			}
-		} else {
-			paint.setTextSize(35);
-			canvas.drawText("请打开自动导航或手动选取展品 ", mX, 310, paint);
+		} else if (!isBLEEnable) {
+			paintTips.setTextSize(35);
+			canvas.drawText(
+					getResources().getString(R.string.lyric_ble_unenable), mX,
+					310, paintTips);
+			return ;
+		}else {// 还为找到
+			paintTips.setTextSize(35);
+			canvas.drawText(getResources().getString(R.string.lyric_scanning),
+					mX, 310, paintTips);
 		}
 		super.onDraw(canvas);
 	}
-	
+
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -135,6 +165,15 @@ public class LyricView extends View {
 		paintHL.setColor(Color.RED);
 		paintHL.setAntiAlias(true);
 		paintHL.setAlpha(255);
+
+		paintTips = new Paint();
+		paintTips.setTextAlign(Paint.Align.CENTER);
+		paintTips.setColor(Color.BLACK);
+		paintTips.setAntiAlias(true);
+		paint.setAlpha(255);
+		
+		isBLEEnable = AppContext.isBleEnable;
+		
 	}
 
 	/**
@@ -146,7 +185,8 @@ public class LyricView extends View {
 			return;
 		}
 		DisplayMetrics dm = new DisplayMetrics();
-		WindowManager manager = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
+		WindowManager manager = (WindowManager) getContext().getSystemService(
+				Context.WINDOW_SERVICE);
 		manager.getDefaultDisplay().getMetrics(dm);
 		int width = dm.widthPixels;
 		int max = lrc_map.get(0).lrc.length();
@@ -156,7 +196,7 @@ public class LyricView extends View {
 				max = lrcStrLength.lrc.length();
 			}
 		}
-		wordSize = (int) (width / max /1.5);
+		wordSize = (int) (width / max / 1.5);
 	}
 
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -174,26 +214,26 @@ public class LyricView extends View {
 		speed = ((offsetY + (wordSize + INTERVAL) * lrcIndex - SIZE_TEXT_DISPLAY) / 20);
 		return speed;
 	}
-	
+
 	/**
 	 * 获取播放时间 msec
 	 */
-	public int getDuration(){
-		if(mediaPlayer!=null){
+	public int getDuration() {
+		if (mediaPlayer != null) {
 			return mediaPlayer.getDuration();
-		}
-		else return -1;
+		} else
+			return -1;
 	}
-	
-	
+
 	/**
-	 * 设置当前播放进度 
+	 * 设置当前播放进度
+	 * 
 	 * @param position
 	 */
-	public void setCurrentPosition(int position){
-		if(mediaPlayer!=null){
+	public void setCurrentPosition(int position) {
+		if (mediaPlayer != null) {
 			mediaPlayer.seekTo(position);
-			if(mProgressChangedListener != null){
+			if (mProgressChangedListener != null) {
 				mProgressChangedListener.onProgressChanged(position);
 			}
 		}
@@ -360,7 +400,7 @@ public class LyricView extends View {
 		offsetY = SIZE_TEXT_DISPLAY
 				- selectIndex(mediaPlayer.getCurrentPosition())
 				* (getSIZEWORD() + INTERVAL - 1);
-		if(mShowLyricThread == null){
+		if (mShowLyricThread == null) {
 			mShowLyricThread = new ShowLyricRunnable();
 			mShowLyricThread.start();
 		}
@@ -371,24 +411,24 @@ public class LyricView extends View {
 			mediaPlayer.pause();
 		}
 	}
-	
+
 	/**
 	 * 释放资源
 	 */
-	public void destroy(){
-		if(paint!=null){
+	public void destroy() {
+		if (paint != null) {
 			paint = null;
 		}
-		if(paintHL != null){
+		if (paintHL != null) {
 			paintHL = null;
 		}
-		if(mediaPlayer != null) {
+		if (mediaPlayer != null) {
 			pause();
 			mediaPlayer = null;
 		}
 	}
-	
-	public void stop(){
+
+	public void stop() {
 		if (mediaPlayer != null) {
 			mediaPlayer.stop();
 		}
@@ -427,16 +467,25 @@ public class LyricView extends View {
 		public void run() {
 			// TODO Auto-generated method stub
 			while (true) {
-				if(mediaPlayer == null) 
+				if (mediaPlayer == null)
 					break;
 				if (mediaPlayer.isPlaying()) {
 					offsetY = offsetY - speedLrc();
 					selectIndex(mediaPlayer.getCurrentPosition());
 					postInvalidate();
-					if(mProgressChangedListener!=null){
-						mProgressChangedListener.onProgressChanged(mediaPlayer.getCurrentPosition());
+					if (mProgressChangedListener != null) {
+						mProgressChangedListener.onProgressChanged(mediaPlayer
+								.getCurrentPosition());
 					}
-				} 
+				}else{
+					//播放完毕
+					Log.w("TAG",mediaPlayer.getCurrentPosition()+"" +mediaPlayer.getDuration());
+					if(mediaPlayer.getDuration()- mediaPlayer.getCurrentPosition() <= 300){
+						if(mProgressChangedListener !=null){
+							mProgressChangedListener.onMediaPlayCompleted();
+						}
+					}
+				}
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -446,14 +495,15 @@ public class LyricView extends View {
 			}
 		}
 	}
-	
-	public void setProgressChangedListener(onProgressChangedListener listener){
+
+	public void setProgressChangedListener(onProgressChangedListener listener) {
 		this.mProgressChangedListener = listener;
 	}
-	
+
 	private onProgressChangedListener mProgressChangedListener;
-	
-	public interface onProgressChangedListener{
+
+	public interface onProgressChangedListener {
 		void onProgressChanged(int progress);
+		void onMediaPlayCompleted();
 	}
 }

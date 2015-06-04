@@ -21,6 +21,10 @@
     <string name="frag_follow_tab_exhibitions">展品列表</string>
     <string name="title_activity_museum">选择博物馆</string>
     
+    <!-- 歌词view -->
+    <string name="lyric_ble_unenable">请打开自动导航或手动选取展品 </string>
+    <string name="lyric_scanning">正在搜索附近展品，请稍候~</string>
+    
     <!-- 用于上拉加载更多ListView -->
     <string name="load_full">已加载全部</string>
     <string name="no_data">暂无数据</string>

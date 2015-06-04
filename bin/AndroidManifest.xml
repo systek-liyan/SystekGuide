@@ -45,10 +45,12 @@
         </service>
 
         <activity
+            android:launchMode="singleTask"
             android:name="com.app.guide.ui.HomeActivity"
             android:label="@string/title_activity_home" >
         </activity>
         <activity
+            android:launchMode="singleInstance"
             android:name="com.app.guide.ui.SearchActivity"
             android:label="@string/title_activity_search" >
         </activity>

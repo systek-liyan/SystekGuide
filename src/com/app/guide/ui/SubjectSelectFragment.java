@@ -7,9 +7,9 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.app.guide.AppContext;
 import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
@@ -60,7 +61,12 @@ public class SubjectSelectFragment extends Fragment {
 	 */
 	private List<ExhibitBean> exhibits;
 	
+	/**
+	 * 选中的展品列表Id
+	 */
 	private List<ExhibitBean> selectedExhibits;
+	
+	private List<ExhibitBean> shownExhibits;
 
 	/**
 	 * 悬浮头部view
@@ -110,27 +116,28 @@ public class SubjectSelectFragment extends Fragment {
 	private int page;
 
 	private int mMuseumId;
+	
+	private List<Button> selectedViews =  new ArrayList<Button>();
 
-	private Intent mIntent;
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		mContext = activity;
-		mIntent = activity.getIntent();
-		mMuseumId = mIntent.getIntExtra(Constant.EXTRA_MUSEUM_ID, 1);
+		mMuseumId = AppContext.currentMuseumId;
 		// 初始化数据
 		initData();
 	}
 
 	/**
-	 * 初始化数据，获得筛选器数据和展品数据，并获得展品列表适配器
+	 * 加载数据时 弹出对话框 
+	 * 初始化数据，获得筛选器数据和展品数据，并获得展品列表适配器 
 	 */
 	private void initData() {
 		getSelectorData();
 		getSelectedData();
 		getExhibitData();
-		exhibitAdapter = new ExhibitAdapter(getActivity(), selectedExhibits,
+		exhibitAdapter = new ExhibitAdapter(getActivity(), shownExhibits,
 				R.layout.item_exhibit);
 	}
 
@@ -154,14 +161,29 @@ public class SubjectSelectFragment extends Fragment {
 	}
 
 	/**
+	 * TODO 采用异步加载？
 	 * get ExhibitData;
 	 */
 	private void getExhibitData() {
+		exhibits = new ArrayList<ExhibitBean>();
 		page = 0;
 		try {
-			exhibits = GetBeanFromSql
-					.getExhibitBeans(mContext, mMuseumId, page);
+			List<ExhibitBean> data = null;
+			do {
+				data = GetBeanFromSql.getExhibitBeans(mContext, mMuseumId, page);
+				if (data != null) {
+					for (int i = 0; i < data.size(); i++) {
+						exhibits.add(data.get(i));
+					}
+					page++;
+				}
+			} while (data != null && data.size() == Constant.PAGE_COUNT);
 			selectedExhibits = new ArrayList<ExhibitBean>(exhibits);
+			shownExhibits = new ArrayList<ExhibitBean>();
+			for (int i = 0; i < Constant.PAGE_COUNT && i < selectedExhibits.size(); i++) {
+				shownExhibits.add(selectedExhibits.get(i));
+			}
+			page = 0;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -204,7 +226,6 @@ public class SubjectSelectFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		// 缓存加载，避免多次加载
 		View view = inflater.inflate(R.layout.frag_subject_sellect, null);
 		return view;
 	}
@@ -215,9 +236,19 @@ public class SubjectSelectFragment extends Fragment {
 		btnFinish = (Button) view
 				.findViewById(R.id.frag_subject_select_btn_finish);
 		btnFinish.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
+				//获取selectedExhibit的id列表
+				String ids = "";
+				for(int i = 0 ; i< selectedExhibits.size();i++){
+					if(i== selectedExhibits.size()-1)
+						ids += selectedExhibits.get(i).getId();
+					else ids += selectedExhibits.get(i).getId()+",";
+				}
+				Log.w("TAG", ids);
+				AppContext.exhibitsIdList = ids;
+				((RadioButton) HomeActivity.mRadioGroup
+						.findViewById(R.id.home_tab_map)).setChecked(true);
 				Toast.makeText(mContext, "完成筛选，跳转到map", Toast.LENGTH_SHORT).show();
 			}
 		});
@@ -253,11 +284,11 @@ public class SubjectSelectFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				mIntent.putExtra(Constant.EXTRA_EXHIBIT_ID,
-						exhibits.get(position - invisItem - 1).getId());
-				HomeActivity.setAutoGuide(false);
+				AppContext.currentExhibitId = exhibits.get(position - invisItem - 1).getId();
+				AppContext.setGuideMode(false);
 				((RadioButton) HomeActivity.mRadioGroup
 						.findViewById(R.id.home_tab_follow)).setChecked(true);
+				
 			}
 		});
 		lvExhibits.setOnLoadListener(new OnLoadListener() {
@@ -278,20 +309,13 @@ public class SubjectSelectFragment extends Fragment {
 	}
 
 	private void loadOnPage() {
-		List<ExhibitBean> data = null;
-		try {
-			data = GetBeanFromSql.getExhibitBeans(mContext, mMuseumId, page);
-		} catch (SQLException e) {
-			e.printStackTrace();
+		for (int i = shownExhibits.size(); i < selectedExhibits.size()
+				+ Constant.PAGE_COUNT
+				&& i < selectedExhibits.size(); i++) {
+			shownExhibits.add(selectedExhibits.get(i));
 		}
-		if (data != null) {
-			exhibitAdapter.addData(data);
-			if (data.size() < Constant.PAGE_COUNT) {
-				lvExhibits.setLoadFull();
-			}
-		} else {
-			lvExhibits.setLoadFailed();
-		}
+		if(selectedExhibits.size() == 0 || shownExhibits.size() == selectedExhibits.size())
+			lvExhibits.setLoadFull();
 		lvExhibits.onLoadComplete();
 	}
 
@@ -302,43 +326,68 @@ public class SubjectSelectFragment extends Fragment {
 	 */
 	private class SelectorItemListener implements GridItemClickListener {
 		@Override
-		public void onClick(String itemName) {
+		public void onClick(Button btnItem) {
 			// 如果已选择view中不包含该item,则将其筛选标签集（即已选择view）
+			String itemName = btnItem.getText().toString();
 			if (!selectedData.contains(itemName)) {
+				//设置不可点击
+				btnItem.setBackgroundColor(getResources().getColor(R.color.darkgray));
+				btnItem.setClickable(false);
+				//将该view加到selectedViews中
+				selectedViews.add(btnItem);
+				
 				selectedData.add(itemName); // 更新data
 				// Toast.makeText(mContext, itemName,
 				// Toast.LENGTH_SHORT).show();
 				selectedHeader.updateView(selectedData); // 更新已选择view 和悬浮头部
 				invisView.updateView(selectedData);
 				//根据selected data筛选list view
-				//TODO 会出现线程阻塞的情况
-				int j = 0;
-				selectedExhibits.clear();
-				for(int i = 0 ; i<exhibits.size();i++){
-					//匹配
-					for(j = 0; j< selectedData.size();j++){
-						if(!exhibits.get(i).getLabels().containsValue(selectedData.get(j))){
-							break;
-						}
-					}
-					if(j == selectedData.size()){
-						//表示该展品匹配
-						selectedExhibits.add(exhibits.get(i));
-					}
-				}
+				updateSelectResult();
 				exhibitAdapter.notifyDataSetChanged();
 			}
 		}
+		
+	}
+	private void updateSelectResult() {
+		int j = 0;
+		selectedExhibits.clear();
+		for(int i = 0 ; i<exhibits.size();i++){
+			//匹配
+			for(j = 0; j< selectedData.size();j++){
+				if(!exhibits.get(i).getLabels().containsValue(selectedData.get(j))){
+					break;
+				}
+			}
+			if(j == selectedData.size()){
+				//表示该展品匹配
+				selectedExhibits.add(exhibits.get(i));
+			}
+		}
+		shownExhibits.clear();
+		loadOnPage();
 	}
 
 	private class SelectedItemListener implements GridItemClickListener {
 		@Override
-		public void onClick(String itemName) {
+		public void onClick(Button btnItem) {
+			String itemName = btnItem.getText().toString();
 			// 点击已选择view 中的item, 表示取消该标签的筛选
 			if (selectedData.contains(itemName)) {
+				//TODO 匹配 ，设置可点击
+				for(Button item: selectedViews){
+					if(item.getText().toString().equals(itemName)){
+						item.setClickable(true);
+						item.setBackgroundColor(getResources().getColor(R.color.btn_pressed_color));
+						selectedData.remove(item);
+						break;
+					}
+				}
+				btnItem.setClickable(true);
 				selectedData.remove(itemName);// 更新data
 				selectedHeader.updateView(selectedData);// 更新已选择view 和悬浮头部
 				invisView.updateView(selectedData);
+				updateSelectResult();
+				exhibitAdapter.notifyDataSetChanged();
 			}
 		}
 	}

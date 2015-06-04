@@ -69,7 +69,8 @@ public class AutoLoadListView extends ListView implements OnScrollListener {
 		});
 		loadIng = (TextView) footer.findViewById(R.id.footer_more);
 		progressBar = (ProgressBar) footer.findViewById(R.id.footer_loading);
-		addFooterView(footer);
+		//设置footer不可点击
+		addFooterView(footer,null,false);
 		setOnScrollListener(this);
 	}
 

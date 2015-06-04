@@ -3,6 +3,9 @@ package com.app.guide.ui;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.altbeacon.beacon.Beacon;
+
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -26,11 +29,14 @@ import com.app.guide.R;
 import com.app.guide.adapter.MapExhibitAdapter;
 import com.app.guide.bean.MapExhibitBean;
 import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
 import com.app.guide.widget.MarkObject;
 import com.app.guide.widget.MarkObject.MarkClickListener;
 import com.app.guide.widget.MyMap;
 
-public class MapFragment extends Fragment {
+import edu.xidian.NearestBeacon.NearestBeacon;
+
+public class MapFragment extends Fragment implements onBeaconSearcherListener{
 
 	private MyMap sceneMap;
 	private ImageView locaImageView;
@@ -40,7 +46,10 @@ public class MapFragment extends Fragment {
 	private Button loactionButton;
 	private MapExhibitAdapter adapter;
 	private List<MapExhibitBean> mapExhibitBeans;
+	private float personX;
+	private float personY;
 
+	@SuppressLint("InflateParams")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -62,7 +71,7 @@ public class MapFragment extends Fragment {
 		sceneMap.setShowMark(false);
 		try {
 			mapExhibitBeans = GetBeanFromSql.getMapExhibit(getActivity(),
-					((AppContext)getActivity().getApplication()).museumId, 1);
+					AppContext.currentMuseumId, 1);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,6 +90,7 @@ public class MapFragment extends Fragment {
 				int offsetX = (int) sceneMap.convertToScreenX(bean.getMapX());
 				int offsetY = (int) sceneMap.convertToScreenY(bean.getMapY());
 				dialog.showAsDropDown(locaImageView, offsetX, offsetY);
+				
 			}
 		});
 
@@ -104,7 +114,7 @@ public class MapFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				sceneMap.setLoactionPosition(0.5f, 0.5f);
+				sceneMap.setLoactionPosition(personX,personY);
 			}
 		});
 
@@ -121,6 +131,21 @@ public class MapFragment extends Fragment {
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		if(!AppContext.exhibitsIdList.equals("")){
+			//获取筛选的exhibits
+			String[] ids = AppContext.exhibitsIdList.split(",");
+			for(int i = 0, j = 0 ; i<ids.length;i++,j++){
+				if(Integer.parseInt(ids[i])!= mapExhibitBeans.get(j).getId()){
+					mapExhibitBeans.remove(j);
+					j++;
+				}
+			}
+			adapter.notifyDataSetChanged();
+		}
+		if(AppContext.isAutoGuide()){
+			HomeActivity.setBeaconLocateType(NearestBeacon.GET_LOCATION_BEACON);
+			HomeActivity.setBeaconSearcherListener(this);
+		}
 		bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test);
 		sceneMap.setBitmap(bitmap);
 		for (final MapExhibitBean bean : mapExhibitBeans) {
@@ -137,7 +162,7 @@ public class MapFragment extends Fragment {
 			});
 			sceneMap.addMark(object);
 		}
-		sceneMap.setLoactionPosition(0.5f, 0.5f);
+		sceneMap.setLoactionPosition(personX, personY);
 	}
 
 	@Override
@@ -146,5 +171,24 @@ public class MapFragment extends Fragment {
 		super.onDestroy();
 		sceneMap.onDestory();
 	}
+
+	@Override
+	public void onNearestBeaconDiscovered(int type, Beacon beacon) {
+		if (beacon == null)// 不做处理
+			return;
+		Log.w("BeaconSearcher", beacon.getId2().toString());
+		if (beacon.getId2().toString().contains("44")) {
+			personX = 0.9f;
+			personY = 0.9f;
+		} else if (beacon.getId2().toString().contains("47")) {
+			personX = 0.4f;
+			personY = 0.4f;
+		}else if(beacon.getId2().toString().contains("58")){
+			personX = 0.1f;
+			personY = 0.1f;
+		}
+		sceneMap.setLocation(personX,personY);
+	}
+
 
 }
