@@ -100,6 +100,7 @@ public class HomeActivity extends BaseActivity implements
 			}
 
 		});
+		sm = getSlidingMenu();
 	}
 
 	@Override
@@ -107,6 +108,11 @@ public class HomeActivity extends BaseActivity implements
 		return true;
 	}
 	
+	@Override
+	protected boolean isShowMenu() {
+		// TODO Auto-generated method stub
+		return true;
+	}
 
 	@Override
 	protected void onResume() {
@@ -142,36 +148,36 @@ public class HomeActivity extends BaseActivity implements
 		}
 	}
 
-	@SuppressLint("InflateParams")
-	@Override
-	protected void initSlidingMenu() {
-		// TODO Auto-generated method stub
-		sm = getSlidingMenu();
-		View view = getLayoutInflater().inflate(R.layout.sliding_menu_left,
-				null);
-		FragmentManager manager = getSupportFragmentManager();
-		FragmentTransaction transaction = manager.beginTransaction();
-		MenuFragment menuFragment = new MenuFragment();
-		menuFragment.setHomeClick(new HomeClick() {
-
-			@Override
-			public void home() {
-				// TODO Auto-generated method stub
-				sm.toggle();
-			}
-		});
-		transaction.replace(R.id.sliding_container, menuFragment);
-		transaction.commit();
-		setBehindContentView(view);
-		sm.setMode(SlidingMenu.LEFT);
-		sm.setSlidingEnabled(true);
-		sm.setShadowWidthRes(R.dimen.shadow_width);
-		sm.setFadeEnabled(true);
-		sm.setShadowDrawable(R.drawable.shadow);
-		sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-		sm.setFadeDegree(0.35f);
-		sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-	}
+//	@SuppressLint("InflateParams")
+//	@Override
+//	protected void initSlidingMenu() {
+//		// TODO Auto-generated method stub
+//		sm = getSlidingMenu();
+//		View view = getLayoutInflater().inflate(R.layout.sliding_menu_left,
+//				null);
+//		FragmentManager manager = getSupportFragmentManager();
+//		FragmentTransaction transaction = manager.beginTransaction();
+//		MenuFragment menuFragment = new MenuFragment();
+//		menuFragment.setHomeClick(new HomeClick() {
+//
+//			@Override
+//			public void home() {
+//				// TODO Auto-generated method stub
+//				sm.toggle();
+//			}
+//		});
+//		transaction.replace(R.id.sliding_container, menuFragment);
+//		transaction.commit();
+//		setBehindContentView(view);
+//		sm.setMode(SlidingMenu.LEFT);
+//		sm.setSlidingEnabled(true);
+//		sm.setShadowWidthRes(R.dimen.shadow_width);
+//		sm.setFadeEnabled(true);
+//		sm.setShadowDrawable(R.drawable.shadow);
+//		sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+//		sm.setFadeDegree(0.35f);
+//		sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+//	}
 
 	@Override
 	protected void onPause() {
@@ -188,17 +194,17 @@ public class HomeActivity extends BaseActivity implements
 		/**
 		 * 处理打开蓝牙请求
 		 */
-		if (requestCode == BeaconSearcher.REQUEST_ENABLE_BT) {
-			if (mBeaconSearcher.onBluetoothResult(requestCode, resultCode)){
-				mBeaconSearcher.openSearcher();
-				AppContext.setGuideMode(true);
-				AppContext.isBleEnable = true;
-			}
-			else{
-				AppContext.setGuideMode(false);
-				AppContext.isBleEnable = false;
-			}
-		}
+//		if (requestCode == BeaconSearcher.REQUEST_ENABLE_BT) {
+//			if (mBeaconSearcher.onBluetoothResult(requestCode, resultCode)){
+//				mBeaconSearcher.openSearcher();
+//				AppContext.setGuideMode(true);
+//				AppContext.isBleEnable = true;
+//			}
+//			else{
+//				AppContext.setGuideMode(false);
+//				AppContext.isBleEnable = false;
+//			}
+//		}
 	}
 
 	public ActionBar getActivityActionBar() {
@@ -272,11 +278,11 @@ public class HomeActivity extends BaseActivity implements
 		// 设置beacon监听器
 		mBeaconSearcher.setNearestBeaconListener(this);
 		// 当蓝牙打开时，打开beacon搜索器，开始搜索距离最近的Beacon
-		if (mBeaconSearcher.checkBLEEnable()){
-			mBeaconSearcher.openSearcher();
-			AppContext.isBleEnable= true;
-			AppContext.setGuideMode(true);
-		}
+//		if (mBeaconSearcher.checkBLEEnable()){
+//			mBeaconSearcher.openSearcher();
+//			AppContext.isBleEnable= true;
+//			AppContext.setGuideMode(true);
+//		}
 			
 	}
 

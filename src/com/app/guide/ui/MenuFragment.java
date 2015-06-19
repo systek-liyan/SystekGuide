@@ -28,132 +28,142 @@ import com.app.guide.adapter.CommonAdapter;
 import com.app.guide.adapter.ViewHolder;
 import com.app.guide.bean.Menu;
 
-public class MenuFragment extends Fragment implements OnGuideModeChangedListener{
+public class MenuFragment extends Fragment implements
+		OnGuideModeChangedListener {
 
 	private HomeClick homeClick;
 	private ListView lvMenu;
 	private List<Menu> mData;
-	
+
 	private static final int ITEM_CITY = 0;
 	private static final int ITEM_DOWNLOAD = 1;
 	private static final int ITEM_SETTING = 2;
 	private static final int ITEM_MORE = 3;
 	private static final int ITEM_BACK = 4;
-	
-	private ToggleButton tbAutoGuide ;
-	
+
+	private ToggleButton tbAutoGuide;
+
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		initData();
 	}
-	
+
 	@SuppressLint("InflateParams")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-			View view = inflater.inflate(R.layout.frag_menu, null);
+		View view = inflater.inflate(R.layout.frag_menu, null);
 		return view;
 	}
-	
+
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		
-		tbAutoGuide = (ToggleButton) view.findViewById(R.id.frag_menu_tb_autoguide);
+
+		tbAutoGuide = (ToggleButton) view
+				.findViewById(R.id.frag_menu_tb_autoguide);
 		AppContext.addGuideModeChangedListener(this);
-		if(!AppContext.isBleEnable){
+		if (!AppContext.isBleEnable) {
 			tbAutoGuide.setChecked(false);
 			tbAutoGuide.setClickable(false);
-		}else{
+		} else {
 			tbAutoGuide.setClickable(true);
 		}
-		
+
 		tbAutoGuide.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
+
 			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
 				// TODO Auto-generated method stub
-				if(isChecked){
+				if (isChecked) {
 					AppContext.setGuideMode(true);
-//					Toast.makeText(getActivity(), "进入自动导航模式", Toast.LENGTH_SHORT).show();
-				}else{
+					// Toast.makeText(getActivity(), "进入自动导航模式",
+					// Toast.LENGTH_SHORT).show();
+				} else {
 					AppContext.setGuideMode(false);
-//					Toast.makeText(getActivity(), "进入手动导航模式", Toast.LENGTH_SHORT).show();
+					// Toast.makeText(getActivity(), "进入手动导航模式",
+					// Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
-		lvMenu = (ListView)view.findViewById(R.id.frag_menu_lv_menu);
-		lvMenu.setAdapter(new CommonAdapter<Menu>(this.getActivity(),mData,R.layout.item_menu) {
+		lvMenu = (ListView) view.findViewById(R.id.frag_menu_lv_menu);
+		lvMenu.setAdapter(new CommonAdapter<Menu>(this.getActivity(), mData,
+				R.layout.item_menu) {
 			@Override
 			public void convert(ViewHolder holder, int position) {
-				TextView textView = (TextView)holder.getView(R.id.item_menu_tv_title);
-		        textView.setText(mData.get(position).getTitle());
-		        Drawable drawable = getActivity().getResources().getDrawable(mData.get(position).getIconResId());
-		        drawable.setBounds(0,0,drawable.getMinimumWidth(), drawable.getMinimumHeight());
-		        textView.setCompoundDrawables(drawable,null,null,null);
+				TextView textView = (TextView) holder
+						.getView(R.id.item_menu_tv_title);
+				textView.setText(mData.get(position).getTitle());
+				Drawable drawable = getActivity().getResources().getDrawable(
+						mData.get(position).getIconResId());
+				drawable.setBounds(0, 0, drawable.getMinimumWidth(),
+						drawable.getMinimumHeight());
+				textView.setCompoundDrawables(drawable, null, null, null);
 			}
-		
+
 		});
-		
+
 		lvMenu.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-					long arg3) {
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int position, long arg3) {
 				Intent intent = null;
 				switch (position) {
 				case ITEM_CITY:
-					//返回选择城市
-					 intent = new Intent(getActivity(),CityActivity.class);
+					// 返回选择城市
+					intent = new Intent(getActivity(), CityActivity.class);
 					break;
 				case ITEM_DOWNLOAD:
+					Intent downloadIntent = new Intent(getActivity(),
+							DownloadActivity.class);
+					startActivity(downloadIntent);
 					break;
 				case ITEM_SETTING:
 					break;
 				case ITEM_MORE:
 					break;
 				case ITEM_BACK:
-					//返回到博物馆
-					intent = new Intent(getActivity(),MuseumActivity.class);
+					// 返回到博物馆
+					intent = new Intent(getActivity(), MuseumActivity.class);
 					break;
 				}
-				if(intent != null){
+				if (intent != null) {
 					startActivity(intent);
 				}
 			}
 		});
 	}
-	
-	
-	private void initData(){
+
+	private void initData() {
 		String[] titles = { "城市选择", "下载中心", "设置", "更多", "返回" };
 		int[] iconResources = { R.drawable.sliding_menu_city,
-				R.drawable.sliding_menu_download, R.drawable.sliding_menu_setting,
-				R.drawable.sliding_menu_more, R.drawable.sliding_menu_back };
+				R.drawable.sliding_menu_download,
+				R.drawable.sliding_menu_setting, R.drawable.sliding_menu_more,
+				R.drawable.sliding_menu_back };
 		mData = new ArrayList<Menu>();
-		for(int i =0 ; i < titles.length;i++)
-			mData.add(new Menu(iconResources[i],titles[i]));
+		for (int i = 0; i < titles.length; i++)
+			mData.add(new Menu(iconResources[i], titles[i]));
 	}
-	
+
 	public void setHomeClick(HomeClick homeClick) {
 		this.homeClick = homeClick;
 	}
 
-	
 	public interface HomeClick {
 		public void home();
 	}
 
-
 	@Override
 	public void onGuideModeChanged(boolean isAutoGuide) {
-		if(tbAutoGuide != null){
-			if(tbAutoGuide.isChecked() != isAutoGuide){
-				//当传入的状态与当前选中状态不同时，更新UI
+		if (tbAutoGuide != null) {
+			if (tbAutoGuide.isChecked() != isAutoGuide) {
+				// 当传入的状态与当前选中状态不同时，更新UI
 				tbAutoGuide.setChecked(isAutoGuide);
 			}
 		}
-		
+
 	}
 
 }

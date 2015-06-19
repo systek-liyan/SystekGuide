@@ -112,6 +112,4 @@ public class ExhibitBean {
 		this.labels = labels;
 	}
 
-		
-
 }

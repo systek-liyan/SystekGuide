@@ -69,10 +69,7 @@ public class CityActivity extends BaseActivity {
 
 	private ArrayList<CityModel> getCityNames() {
 		CityDBManager dbManager = new CityDBManager(CityActivity.this);
-		dbManager.openDateBase();
-		dbManager.closeDatabase();
-		database = SQLiteDatabase.openOrCreateDatabase(CityDBManager.DB_PATH
-				+ "/" + CityDBManager.DB_NAME, null);
+		database = dbManager.openDateBase();;
 		ArrayList<CityModel> names = new ArrayList<CityModel>();
 		Cursor cursor = database.rawQuery(
 				"SELECT * FROM T_City ORDER BY NameSort", null);

@@ -45,32 +45,33 @@
         </service>
 
         <activity
-            android:launchMode="singleTask"
             android:name="com.app.guide.ui.HomeActivity"
-            android:label="@string/title_activity_home" >
+            android:label="@string/title_activity_home"
+            android:launchMode="singleTask" >
         </activity>
         <activity
-            android:launchMode="singleInstance"
             android:name="com.app.guide.ui.SearchActivity"
-            android:label="@string/title_activity_search" >
+            android:label="@string/title_activity_search"
+            android:launchMode="singleInstance" >
         </activity>
         <activity
             android:name="com.app.guide.ui.MuseumActivity"
             android:label="@string/title_activity_museum"
             android:launchMode="singleTask" >
         </activity>
+        <activity android:name="com.app.guide.ui.DownloadActivity" />
 
         <service android:name="com.app.guide.service.AppService" />
-        
-        <service android:enabled="true"
+        <service
+            android:name="org.altbeacon.beacon.service.BeaconService"
+            android:enabled="true"
             android:exported="false"
             android:isolatedProcess="false"
-            android:label="beacon"
-            android:name="org.altbeacon.beacon.service.BeaconService"/>
-        
-	    <service android:name="org.altbeacon.beacon.BeaconIntentProcessor"
-	            android:enabled="true"
-	            android:exported="false"/>
+            android:label="beacon" />
+        <service
+            android:name="org.altbeacon.beacon.BeaconIntentProcessor"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

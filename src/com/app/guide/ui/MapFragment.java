@@ -17,12 +17,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ToggleButton;
 
 import com.app.guide.AppContext;
 import com.app.guide.R;
@@ -33,21 +32,23 @@ import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
 import com.app.guide.widget.MarkObject;
 import com.app.guide.widget.MarkObject.MarkClickListener;
 import com.app.guide.widget.MyMap;
+import com.app.guide.widget.PopMapMenu;
 
 import edu.xidian.NearestBeacon.NearestBeacon;
 
-public class MapFragment extends Fragment implements onBeaconSearcherListener{
+public class MapFragment extends Fragment implements onBeaconSearcherListener {
 
-	private MyMap sceneMap;
+	private MyMap sceneMap;// 地图类
 	private ImageView locaImageView;
-	private Bitmap bitmap;
-	private ListView mListView;
-	private ToggleButton mToggleButton;
-	private Button loactionButton;
+	private Bitmap bitmap;// 显示地图的Bitmap
+	private ListView mListView;// 用于现实展品列表
+	private PopMapMenu mPopMapMenu;
+	private Button showMenuBtn;
 	private MapExhibitAdapter adapter;
 	private List<MapExhibitBean> mapExhibitBeans;
 	private float personX;
 	private float personY;
+	private int floorCount;
 
 	@SuppressLint("InflateParams")
 	@Override
@@ -59,15 +60,21 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener{
 	}
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
+	public void onViewCreated(View view, Bundle savedInstanceState) {// 初始化视图
 		// TODO Auto-generated method stub
 		super.onViewCreated(view, savedInstanceState);
 		sceneMap = (MyMap) view.findViewById(R.id.map_sceneMap);
 		mListView = (ListView) view.findViewById(R.id.map_list_exhibit);
-		mToggleButton = (ToggleButton) view.findViewById(R.id.map_tog_list);
-		loactionButton = (Button) view.findViewById(R.id.map_btn_location);
+		try {
+			floorCount = GetBeanFromSql.getFloorCount(getActivity(),
+					AppContext.currentMuseumId);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		mPopMapMenu = new PopMapMenu(getActivity(), floorCount);
+		showMenuBtn = (Button) view.findViewById(R.id.map_btn_showmenu);
 		locaImageView = (ImageView) view.findViewById(R.id.map_location);
-
 		sceneMap.setShowMark(false);
 		try {
 			mapExhibitBeans = GetBeanFromSql.getMapExhibit(getActivity(),
@@ -90,31 +97,43 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener{
 				int offsetX = (int) sceneMap.convertToScreenX(bean.getMapX());
 				int offsetY = (int) sceneMap.convertToScreenY(bean.getMapY());
 				dialog.showAsDropDown(locaImageView, offsetX, offsetY);
-				
+
 			}
 		});
 
-		mToggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		mPopMapMenu.toggleList
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				// TODO Auto-generated method stub
-				if (isChecked) {
-					mListView.setVisibility(View.VISIBLE);
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						// TODO Auto-generated method stub
+						if (isChecked) {
+							mListView.setVisibility(View.VISIBLE);
 
-				} else {
-					mListView.setVisibility(View.GONE);
-				}
-				sceneMap.setShowMark(isChecked);
-			}
-		});
-		loactionButton.setOnClickListener(new OnClickListener() {
+						} else {
+							mListView.setVisibility(View.GONE);
+						}
+						sceneMap.setShowMark(isChecked);
+					}
+				});
+		mPopMapMenu.locationButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				sceneMap.setLoactionPosition(personX,personY);
+				sceneMap.setLoactionPosition(personX, personY);
+			}
+		});
+		showMenuBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if (mPopMapMenu != null) {
+					mPopMapMenu.setHeight(v.getHeight());
+					mPopMapMenu.showAsDropDown(v, 0, -v.getHeight());
+				}
 			}
 		});
 
@@ -125,24 +144,26 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener{
 		// TODO Auto-generated method stub
 		super.onPause();
 		sceneMap.onPuase();
+		if (mPopMapMenu != null && mPopMapMenu.isShowing())
+			mPopMapMenu.dismiss();
 	}
 
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		if(!AppContext.exhibitsIdList.equals("")){
-			//获取筛选的exhibits
+		if (!AppContext.exhibitsIdList.equals("")) {
+			// 获取筛选的exhibits
 			String[] ids = AppContext.exhibitsIdList.split(",");
-			for(int i = 0, j = 0 ; i<ids.length;i++,j++){
-				if(Integer.parseInt(ids[i])!= mapExhibitBeans.get(j).getId()){
+			for (int i = 0, j = 0; i < ids.length; i++, j++) {
+				if (Integer.parseInt(ids[i]) != mapExhibitBeans.get(j).getId()) {
 					mapExhibitBeans.remove(j);
 					j++;
 				}
 			}
 			adapter.notifyDataSetChanged();
 		}
-		if(AppContext.isAutoGuide()){
+		if (AppContext.isAutoGuide()) {
 			HomeActivity.setBeaconLocateType(NearestBeacon.GET_LOCATION_BEACON);
 			HomeActivity.setBeaconSearcherListener(this);
 		}
@@ -153,7 +174,7 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener{
 			object.setMapX(bean.getMapX());
 			object.setMapY(bean.getMapY());
 			object.setMarkListener(new MarkClickListener() {
-				
+
 				@Override
 				public void onMarkClick(MarkObject object, int x, int y) {
 					// TODO Auto-generated method stub
@@ -183,12 +204,11 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener{
 		} else if (beacon.getId2().toString().contains("47")) {
 			personX = 0.4f;
 			personY = 0.4f;
-		}else if(beacon.getId2().toString().contains("58")){
+		} else if (beacon.getId2().toString().contains("58")) {
 			personX = 0.1f;
 			personY = 0.1f;
 		}
-		sceneMap.setLocation(personX,personY);
+		sceneMap.setLocation(personX, personY);
 	}
-
 
 }

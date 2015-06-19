@@ -38,14 +38,15 @@ public class MuseumActivity extends BaseActivity {
 	private List<MuseumBean> mData;
 
 	private SlidingMenu sm;
+
 	@Override
 	@SuppressLint("InlinedApi")
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_museum);
-		//初始化数据
+		// 初始化数据
 		initData();
-		//初始化视图
+		// 初始化视图
 		initViews();
 	}
 
@@ -59,18 +60,28 @@ public class MuseumActivity extends BaseActivity {
 	}
 
 	private void initViews() {
-		//初始化头部
-		HeaderLayout headerLayout = (HeaderLayout)findViewById(R.id.activity_museum_header);
+		// 初始化头部
+		HeaderLayout headerLayout = (HeaderLayout) findViewById(R.id.activity_museum_header);
 		headerLayout.setSearchingVisible(false);
-		headerLayout.setTitle(getResources().getString(R.string.title_activity_museum));
+		headerLayout.setTitle(getResources().getString(
+				R.string.title_activity_museum));
 		headerLayout.setTitleShowAtLeft();
-		headerLayout.findViewById(R.id.frag_header_iv_menu).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				sm.toggle();
-			}
-		});
+		headerLayout.findViewById(R.id.frag_header_iv_menu).setOnClickListener(
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						sm.toggle();
+					}
+				});
 		lvMuseum = (ListView) findViewById(R.id.activity_museum_list);
+
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		initData();
 		lvMuseum.setAdapter(new CommonAdapter<MuseumBean>(this, mData,
 				R.layout.item_museum) {
 			@Override
@@ -96,7 +107,7 @@ public class MuseumActivity extends BaseActivity {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(MuseumActivity.this,
 						HomeActivity.class);
-				AppContext.currentMuseumId = mData.get(position).getId();
+				AppContext.currentMuseumId = mData.get(position).getMuseumId();
 				startActivity(intent);
 			}
 		});
@@ -106,36 +117,11 @@ public class MuseumActivity extends BaseActivity {
 	protected boolean isFullScreen() {
 		return true;
 	}
-	
-	@SuppressLint("InflateParams")
-	@Override
-	protected void initSlidingMenu() {
-		// TODO Auto-generated method stub
-		sm = getSlidingMenu();
-		View view = getLayoutInflater().inflate(R.layout.sliding_menu_left,
-				null);
-		FragmentManager manager = getSupportFragmentManager();
-		FragmentTransaction transaction = manager.beginTransaction();
-		MenuFragment menuFragment = new MenuFragment();
-		menuFragment.setHomeClick(new HomeClick() {
 
-			@Override
-			public void home() {
-				// TODO Auto-generated method stub
-				sm.toggle();
-			}
-		});
-		transaction.replace(R.id.sliding_container, menuFragment);
-		transaction.commit();
-		setBehindContentView(view);
-		sm.setMode(SlidingMenu.LEFT);
-		sm.setSlidingEnabled(true);
-		sm.setShadowWidthRes(R.dimen.shadow_width);
-		sm.setFadeEnabled(true);
-		sm.setShadowDrawable(R.drawable.shadow);
-		sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-		sm.setFadeDegree(0.35f);
-		sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+	@Override
+	protected boolean isShowMenu() {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 	@Override

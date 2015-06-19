@@ -11,7 +11,6 @@ import android.util.Log;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.app.guide.Constant;
-import com.app.guide.bean.DownloadBean;
 import com.app.guide.bean.Exhibit;
 import com.app.guide.bean.ExhibitBean;
 import com.app.guide.bean.ImageOption;
@@ -20,6 +19,7 @@ import com.app.guide.bean.MapExhibitBean;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.bean.MuseumDetailBean;
 import com.app.guide.bean.PointM;
+import com.app.guide.download.DownloadBean;
 import com.app.guide.sql.DatabaseContext;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -32,21 +32,20 @@ import com.j256.ormlite.stmt.QueryBuilder;
  */
 public class GetBeanFromSql {
 	private static final String TAG = GetBeanFromSql.class.getSimpleName();
-	private static final String FLOADER = "Guide/Test";
 
 	public static List<MapExhibitBean> getMapExhibit(Context context,
 			int museumid, int floor) throws SQLException {
 		List<MapExhibitBean> list = new ArrayList<MapExhibitBean>();
 
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
-				new DatabaseContext(context, FLOADER), museumid + ".db");
+				new DatabaseContext(context, Constant.FLODER + museumid),
+				museumid + ".db");
 		Dao<OfflineExhibitBean, Integer> oDao = helper.getOfflineExhibitDao();
 		QueryBuilder<OfflineExhibitBean, Integer> builder = oDao.queryBuilder();
 		List<OfflineExhibitBean> offlineExhibitBeans = builder.query();
 		Log.w(TAG, "" + offlineExhibitBeans.size());
 		for (OfflineExhibitBean offlineExhibitBean : offlineExhibitBeans) {
 			MapExhibitBean bean = new MapExhibitBean();
-			bean.setId(offlineExhibitBean.getId());
 			bean.setAddress(offlineExhibitBean.getAddress());
 			bean.setName(offlineExhibitBean.getName());
 			bean.setMapX(offlineExhibitBean.getMapX());
@@ -65,21 +64,23 @@ public class GetBeanFromSql {
 		List<ExhibitBean> list = new ArrayList<ExhibitBean>();
 
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
-				new DatabaseContext(context, FLOADER), muesumid + ".db");
+				new DatabaseContext(context, Constant.FLODER + muesumid),
+				muesumid + ".db");
 		Dao<OfflineExhibitBean, Integer> oDao = helper.getOfflineExhibitDao();
 		QueryBuilder<OfflineExhibitBean, Integer> builder = oDao.queryBuilder();
 		builder.offset(Constant.PAGE_COUNT * page);
 		builder.limit(Constant.PAGE_COUNT);
 		List<OfflineExhibitBean> offlineExhibitBeans = builder.query();
 		for (OfflineExhibitBean offlineExhibitBean : offlineExhibitBeans) {
-			HashMap<String, String> map = JSON.parseObject(offlineExhibitBean.getLabelJson(),
+			HashMap<String, String> map = JSON.parseObject(
+					offlineExhibitBean.getLabelJson(),
 					new TypeReference<HashMap<String, String>>() {
 					});
-			ExhibitBean bean = new ExhibitBean(offlineExhibitBean.getId(),offlineExhibitBean.getName(),
+			ExhibitBean bean = new ExhibitBean(offlineExhibitBean.getId(),
+					offlineExhibitBean.getName(),
 					offlineExhibitBean.getAddress(),
 					offlineExhibitBean.getIntroduce(),
-					offlineExhibitBean.getIconUrl(),
-					map);
+					offlineExhibitBean.getIconUrl(), map);
 			list.add(bean);
 		}
 		offlineExhibitBeans.clear();
@@ -91,7 +92,8 @@ public class GetBeanFromSql {
 			int museumid, int floor) throws SQLException {
 		HashMap<String, PointM> map = new HashMap<String, PointM>();
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
-				new DatabaseContext(context, FLOADER), museumid + ".db");
+				new DatabaseContext(context, Constant.FLODER + museumid),
+				museumid + ".db");
 		Dao<OfflineBeaconBean, Integer> beaconDao = helper
 				.getOfflineBeaconDao();
 		QueryBuilder<OfflineBeaconBean, Integer> builder = beaconDao
@@ -109,10 +111,11 @@ public class GetBeanFromSql {
 		return map;
 	}
 
-	public static Exhibit getExhibit(Context context, int museumId, int exhibitId)
-			throws SQLException {
+	public static Exhibit getExhibit(Context context, int museumId,
+			int exhibitId) throws SQLException {
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
-				new DatabaseContext(context, FLOADER), museumId + ".db");
+				new DatabaseContext(context, Constant.FLODER + museumId),
+				museumId + ".db");
 		Dao<OfflineExhibitBean, Integer> oDao = helper.getOfflineExhibitDao();
 		QueryBuilder<OfflineExhibitBean, Integer> builder = oDao.queryBuilder();
 		builder.where().eq("id", exhibitId);
@@ -123,7 +126,7 @@ public class GetBeanFromSql {
 			exhibit.setId(exhibitId);
 			exhibit.setName(bean.getName());
 			exhibit.setBeaconUId(bean.getBeaconUId());
-			exhibit.setIconUrl(bean.getIconUrl());
+			exhibit.setIconUrl(bean.getAudioUrl());
 			exhibit.setAudioUrl(bean.getAudioUrl());
 			exhibit.setlExhibitBeanId(bean.getlExhibitBeanId());
 			exhibit.setrExhibitBeanId(bean.getrExhibitBeanId());
@@ -138,10 +141,43 @@ public class GetBeanFromSql {
 		return exhibit;
 	}
 
+	public static List<MuseumBean> getMuseumBeans(Context context)
+			throws SQLException {
+		DownloadManagerHelper helper = new DownloadManagerHelper(context);
+		Dao<MuseumBean, Integer> downloaDao = helper.getDownloadedDao();
+		List<MuseumBean> list = new ArrayList<MuseumBean>();
+		List<DownloadBean> downloadBeans = helper.getBeanDao().queryForAll();
+		for (DownloadBean downloadBean : downloadBeans) {
+			if (downloadBean.isCompleted()) {
+				MuseumBean bean = downloaDao.queryForId(downloadBean
+						.getMuseumId());
+				list.add(bean);
+			}
+		}
+		return list;
+	}
+
+	public static List<LabelBean> getLabelBeans(Context context, int museumId)
+			throws SQLException {
+		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
+				new DatabaseContext(context, Constant.FLODER + museumId),
+				museumId + ".db");
+		Dao<OfflineLabelBean, Integer> oDao = helper.getOfflineLabelDao();
+		List<OfflineLabelBean> list = oDao.queryForAll();
+		List<LabelBean> labels = new ArrayList<LabelBean>();
+		for (OfflineLabelBean offlineLabelBean : list) {
+			LabelBean bean = new LabelBean(offlineLabelBean.getName(),
+					JSON.parseArray(offlineLabelBean.getLabels(), String.class));
+			labels.add(bean);
+		}
+		return labels;
+	}
+
 	public static MuseumDetailBean getMuseunDetailBean(Context context,
 			int museumId) throws SQLException {
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
-				new DatabaseContext(context, FLOADER), museumId + ".db");
+				new DatabaseContext(context, Constant.FLODER + museumId),
+				museumId + ".db");
 		Dao<OfflineMuseumBean, Integer> oDao = helper.getOfflineMuseumDao();
 		QueryBuilder<OfflineMuseumBean, Integer> builder = oDao.queryBuilder();
 		builder.where().eq("id", museumId);
@@ -158,42 +194,34 @@ public class GetBeanFromSql {
 		}
 		return museum;
 	}
+	
+	public static int getFloorCount(Context context, int museumId) throws SQLException{
+		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
+				new DatabaseContext(context, Constant.FLODER + museumId),
+				museumId + ".db");
+		OfflineMuseumBean bean = helper.getOfflineMuseumDao().queryForId(museumId);
+		if (bean != null) {
+			return bean.getFloorCount();
+		}
+		else {
+			return 1;
+		}
+	}
+	
 
-	public static List<MuseumBean> getMuseumBeans(Context context)
+	public static List<DownloadBean> getDownloadingBeans(Context context)
 			throws SQLException {
 		DownloadManagerHelper helper = new DownloadManagerHelper(context);
-		Dao<DownloadBean, Integer> downloaDao = helper.getDownloadDao();
-		List<DownloadBean> list = downloaDao.queryForAll();
-		List<MuseumBean> museumBeans = new ArrayList<MuseumBean>();
-		for (DownloadBean bean : list) {
-			MuseumBean museumBean = new MuseumBean();
-			museumBean.setId(bean.getId());
-			museumBean.setAddress(bean.getAddress());
-			museumBean.setIconUrl(bean.getIconUrl());
-			museumBean.setLongitudX(bean.getLongitudX());
-			museumBean.setLongitudY(bean.getLongitudY());
-			museumBean.setName(bean.getName());
-			museumBean.setOpen(bean.isOpen());
-			museumBean.setOpentime(bean.getOpentime());
-			museumBeans.add(museumBean);
-		}
-		list.clear();
-		list = null;
-		return museumBeans;
+		List<DownloadBean> list = helper.getBeanDao().queryBuilder().where()
+				.eq("isCompleted", false).query();
+		return list;
 	}
 
-	public static List<LabelBean> getLabelBeans(Context context, int museumId)
+	public static List<DownloadBean> getDownloadCompletedBeans(Context context)
 			throws SQLException {
-		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
-				new DatabaseContext(context, FLOADER), museumId + ".db");
-		Dao<OfflineLabelBean, Integer> oDao = helper.getOfflineLabelDao();
-		List<OfflineLabelBean> list = oDao.queryForAll();
-		List<LabelBean> labels = new ArrayList<LabelBean>();
-		for (OfflineLabelBean offlineLabelBean : list) {
-			LabelBean bean = new LabelBean(offlineLabelBean.getName(),
-					JSON.parseArray(offlineLabelBean.getLabels(), String.class));
-			labels.add(bean);
-		}
-		return labels;
+		DownloadManagerHelper helper = new DownloadManagerHelper(context);
+		List<DownloadBean> list = helper.getBeanDao().queryBuilder().where()
+				.eq("isCompleted", true).query();
+		return list;
 	}
 }

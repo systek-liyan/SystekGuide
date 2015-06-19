@@ -1,45 +1,50 @@
 package com.app.guide.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import android.app.IntentService;
+import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import android.os.IBinder;
 
-import com.app.guide.Constant;
-import com.app.guide.offline.OfflineDownloadHelper;
+import com.app.guide.download.DownloadClient;
 
-public class AppService extends IntentService {
+public class AppService extends Service {
 	private static final String TAG = AppService.class.getSimpleName();
 
+	public static Map<Integer, DownloadClient> map;
+
 	public AppService() {
-		super(AppService.class.getSimpleName());
-		// TODO Auto-generated constructor stub
+		map = new ConcurrentHashMap<Integer, DownloadClient>();
 	}
 
 	@Override
-	protected void onHandleIntent(Intent intent) {
+	public void onStart(Intent intent, int startId) {
 		// TODO Auto-generated method stub
-		Log.w(TAG, "start_service");
-		File file = new File(Constant.ROOT_SDCARD + "/Gudie");
-		if (!file.exists()) {
-			file.mkdir();
-		}
-		OfflineDownloadHelper downloadHelper = new OfflineDownloadHelper(
-				getApplicationContext(), 1);
-		try {
-			downloadHelper.download();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		super.onStart(intent, startId);
 	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static DownloadClient getDownloadClient(Context context, int museumId) {
+		if (map == null) {
+			map = new ConcurrentHashMap<Integer, DownloadClient>();
+		}
+		DownloadClient client = map.get(museumId);
+		if (client == null) {
+			client = new DownloadClient(context, museumId);
+			map.put(museumId, client);
+		}
+		return client;
+	}
+
+	public static void remove(int museumId) {
+		map.remove(museumId);
+	}
+
 }

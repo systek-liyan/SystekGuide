@@ -412,7 +412,10 @@ public class FileUtils {
 				try {
 					for (int i = 0; i < listfile.length; i++) {
 						File deletedFile = new File(newPath.toString() + "/"
-								+ listfile[i].toString());
+								+ listfile[i]);
+						if (deletedFile.isDirectory()) {
+							deleteDirectory(fileName + "/" + listfile[i]);
+						}
 						deletedFile.delete();
 					}
 					status = true;
@@ -421,12 +424,14 @@ public class FileUtils {
 					status = false;
 				}
 
-			} else
-				status = false;
+			}
+			newPath.delete();
+			status = true;
 		} else
 			status = false;
 		return status;
 	}
+
 
 	/**
 	 * 删除文件

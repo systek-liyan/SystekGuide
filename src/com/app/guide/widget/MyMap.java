@@ -24,31 +24,40 @@ public class MyMap extends SurfaceView implements SurfaceHolder.Callback {
 
 	private static final long DOUBLE_CLICK_TIME_SPACE = 300;
 
-	private float mCurrentScaleMax;
-	private float mCurrentScale;
-	private float mCurrentScaleMin;
+	private float mCurrentScaleMax;//最大缩放比例
+	private float mCurrentScale;//当前缩放比例
+	private float mCurrentScaleMin;//最小缩放比例
 
-	private float windowWidth, windowHeight;
+	private float windowWidth, windowHeight;//地图的宽和高
 
-	private Bitmap mBitmap;
-	private Paint mPaintMark;
-	private Paint mPaintLocation;
+	private Bitmap mBitmap;//地图显示的Bitmap
+	private Paint mPaintMark;//绘制标记的Paint
+	private Paint mPaintLocation;//绘制定位点的Pain个
 
 	private PointF mStartPoint;
 	private volatile PointF mapCenter;// mapCenter表示地图中心在屏幕上的坐标
-	private DrawThread mDrawThread;
+	private DrawThread mDrawThread;//绘制图形的异步线程
 
-	private float locationX, locationY;
-	private float radius = 5;
+	private float locationX, locationY;//定位坐标
+	private float radius = 5;//标记点的半径大小
 	private long lastClickTime;// 记录上一次点击屏幕的时间，以判断双击事件
-	private Status mStatus = Status.NONE;
+	private Status mStatus = Status.NONE;//记录地图状态
 
 	private float oldRate = 1;
 	private float oldDist = 1;
 
 	private boolean isShu = true;
-	private boolean isShowMark = false;
+	private boolean isShowMark = false;//是否显示地图标记
 
+	/**
+	 * 
+	 * 表示地图状态的枚举类
+	 * none表示无任何操作
+	 * zoom表示正在进行缩放操作
+	 * drag表示正在进行拖拽操作
+	 * @author joe_c
+	 *
+	 */
 	private enum Status {
 		NONE, ZOOM, DRAG
 	};
@@ -90,6 +99,10 @@ public class MyMap extends SurfaceView implements SurfaceHolder.Callback {
 		mDrawThread.start();
 	}
 
+	/**
+	 * 设置地图显示的图片
+	 * @param bitmap
+	 */
 	public void setBitmap(Bitmap bitmap) {
 		if (mBitmap != null) {
 			mBitmap.recycle();
@@ -114,12 +127,22 @@ public class MyMap extends SurfaceView implements SurfaceHolder.Callback {
 		draw();
 	}
 
+	/**
+	 * 设置地图定位到的人的坐标并将地图定位到该点
+	 * @param x
+	 * @param y
+	 */
 	public void setLoactionPosition(float x, float y) {
 		this.locationX = x;
 		this.locationY = y;
 		adjust(x, y);
 	}
 	
+	/**
+	 * 设置定位到的人的地图坐标，不移动地图
+	 * @param x
+	 * @param y
+	 */
 	public void setLocation(float x, float y) {
 		this.locationX = x;
 		this.locationY = y;
@@ -202,12 +225,18 @@ public class MyMap extends SurfaceView implements SurfaceHolder.Callback {
 		draw();
 	}
 
+	/**
+	 * 在Activity的onPause方法中调用此方法
+	 */
 	public void onPuase() {
 		if (mBitmap != null) {
 			mBitmap.recycle();
 		}
 	}
 
+	/**
+	 * 在Activity的onDestroy方法中调用此方法
+	 */
 	public void onDestory() {
 
 		if (mDrawThread != null && mDrawThread.looper != null) {
@@ -226,6 +255,11 @@ public class MyMap extends SurfaceView implements SurfaceHolder.Callback {
 		mStartPoint = currentPoint;
 	}
 
+	/**
+	 * 通过所给的偏移量进行地图的偏移
+	 * @param offsetX
+	 * @param offsetY
+	 */
 	private void adjustByOffset(float offsetX, float offsetY) {
 		// 以下是进行判断，防止出现图片拖拽离开屏幕
 		if (offsetX > 0
@@ -448,20 +482,38 @@ public class MyMap extends SurfaceView implements SurfaceHolder.Callback {
 		}
 	}
 
+	/**
+	 * 是否绘制标记
+	 * @return
+	 */
 	public boolean isShowMark() {
 		return isShowMark;
 	}
 
+	/**
+	 * 设置是否显示标记
+	 * @param isShowMark
+	 */
 	public void setShowMark(boolean isShowMark) {
 		this.isShowMark = isShowMark;
 		draw();
 	}
 
+	/**
+	 * 将地图x坐标转换为屏幕x坐标
+	 * @param mapX
+	 * @return
+	 */
 	public float convertToScreenX(float mapX) {
 		return mapCenter.x  - mBitmap.getWidth() * mCurrentScale / 2
 				+ mBitmap.getWidth() * mapX * mCurrentScale;
 	}
 
+	/**
+	 * 将地图y坐标转换为屏幕y坐标
+	 * @param mapY
+	 * @return
+	 */
 	public float convertToScreenY(float mapY) {
 		return mapCenter.y - mBitmap.getHeight() * mCurrentScale / 2
 				+ mBitmap.getHeight() * mapY * mCurrentScale;

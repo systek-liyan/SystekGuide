@@ -23,56 +23,12 @@
         android:visibility="gone" >
     </ListView>
 
-    <LinearLayout
-        android:layout_width="80dp"
+    <Button
+        android:id="@+id/map_btn_showmenu"
+        android:layout_width="30dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="60dp"
-        android:orientation="vertical" >
-
-        <Button
-            android:id="@+id/map_btn_location"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="loca" />
-
-        <Button
-            android:id="@+id/map_btn_friend"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="frie" />
-
-        <ToggleButton
-            android:id="@+id/map_tog_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="ToggleButton" />
-
-        <RadioGroup
-            android:id="@+id/map_group_floor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <RadioButton
-                android:id="@+id/map_radio_one"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="One" />
-
-            <RadioButton
-                android:id="@+id/map_radio_two"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Two" />
-
-            <RadioButton
-                android:id="@+id/map_radio_three"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Three" />
-        </RadioGroup>
-    </LinearLayout>
+        android:layout_gravity="left|bottom"
+        android:background="@color/mywhite"
+        android:text=">" />
 
 </FrameLayout>

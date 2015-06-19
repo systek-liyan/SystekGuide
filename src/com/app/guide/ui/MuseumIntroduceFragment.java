@@ -132,7 +132,7 @@ public class MuseumIntroduceFragment extends Fragment {
 	private void getExhibitData() {
 		page = 0;
 		try {
-			exhibits = GetBeanFromSql.getExhibitBeans(getActivity(), mMuseumId,
+			exhibits = GetBeanFromSql.getExhibitBeans(getActivity(), 1,
 					page);
 		} catch (SQLException e) {
 			e.printStackTrace();

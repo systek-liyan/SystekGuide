@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mywhite" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/map_menu_location"
+            style="@style/MapMenuStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/map_menu_loca" />
+
+        <Button
+            android:id="@+id/map_menu_friend"
+            style="@style/MapMenuStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/map_menu_friend" />
+
+        <ToggleButton
+            android:id="@+id/map_menu_tog_list"
+            style="@style/MapMenuStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/map_menu_toggle_list" />
+
+        <RadioGroup
+            android:id="@+id/map_menu_group_floor"
+            style="@style/MapMenuStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:orientation="horizontal" >
+        </RadioGroup>
+        <Button
+            android:id="@+id/map_menu_dismiss"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:background="@color/mywhite"
+            android:text="&lt;" />
+    </LinearLayout>
+
+</FrameLayout>
