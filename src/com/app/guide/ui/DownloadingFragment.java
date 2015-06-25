@@ -3,23 +3,22 @@ package com.app.guide.ui;
 import java.sql.SQLException;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 
 import com.app.guide.R;
 import com.app.guide.adapter.DownloadingAdapter;
 import com.app.guide.download.DownloadBean;
-import com.app.guide.exception.DeleteDownloadingException;
 import com.app.guide.offline.DownloadManagerHelper;
 import com.app.guide.offline.GetBeanFromSql;
-import com.app.guide.offline.OfflineDeleteHelper;
 
 public class DownloadingFragment extends Fragment {
 
@@ -29,7 +28,7 @@ public class DownloadingFragment extends Fragment {
 	private DownloadingAdapter adapter;
 	private Button addButton;
 
-	@Override
+	@SuppressLint("InflateParams") @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub

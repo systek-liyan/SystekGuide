@@ -6,8 +6,6 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -16,13 +14,11 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.app.guide.AppContext;
-import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.CommonAdapter;
 import com.app.guide.adapter.ViewHolder;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.offline.GetBeanFromSql;
-import com.app.guide.ui.MenuFragment.HomeClick;
 import com.app.guide.widget.HeaderLayout;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
@@ -107,7 +103,7 @@ public class MuseumActivity extends BaseActivity {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(MuseumActivity.this,
 						HomeActivity.class);
-				AppContext.currentMuseumId = mData.get(position).getMuseumId();
+				((AppContext)getApplication()).currentMuseumId = mData.get(position).getMuseumId();
 				startActivity(intent);
 			}
 		});

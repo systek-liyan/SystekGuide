@@ -37,7 +37,7 @@ public class OfflineDownloadHelper {
 	private Context mContext;
 	private int museumId;
 
-	List<String> galleryData = new ArrayList<String>(Arrays.asList(
+	public static List<String> galleryData = new ArrayList<String>(Arrays.asList(
 			"http://img.my.csdn.net/uploads/201407/26/1406383299_1976.jpg",
 			"http://img.my.csdn.net/uploads/201407/26/1406383291_6518.jpg",
 			"http://img.my.csdn.net/uploads/201407/26/1406383291_8239.jpg",

@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import com.app.guide.AppContext;
 import com.app.guide.Constant;
@@ -24,12 +25,14 @@ import com.app.guide.bean.ExhibitBean;
 import com.app.guide.offline.GetBeanFromSql;
 import com.app.guide.widget.AutoLoadListView;
 import com.app.guide.widget.AutoLoadListView.OnLoadListener;
+import com.app.guide.widget.DialogManagerHelper;
 import com.app.guide.widget.SearchView;
 
 /**
  * 搜索界面 TODO adapter
+ * 
  * @author yetwish
- *
+ * 
  */
 public class SearchActivity extends BaseActivity implements
 		SearchView.SearchViewListener {
@@ -120,6 +123,8 @@ public class SearchActivity extends BaseActivity implements
 
 	private List<ExhibitBean> shownResults;
 
+	private SweetAlertDialog pDialog;
+
 	@Override
 	@SuppressLint("InlinedApi")
 	public void onCreate(Bundle savedInstanceState) {
@@ -127,7 +132,12 @@ public class SearchActivity extends BaseActivity implements
 		setContentView(R.layout.activity_search);
 		mIntent = getIntent();
 		mMuseumId = mIntent.getIntExtra(Constant.EXTRA_MUSEUM_ID, 1);
+		// 加载数据时耗费时间较长
+		pDialog = new DialogManagerHelper(this).showLoadingProgressDialog();
+		// 初始化数据
 		initData();
+		pDialog.dismiss();
+		pDialog = null;
 		initViews();
 	}
 
@@ -273,10 +283,10 @@ public class SearchActivity extends BaseActivity implements
 			public void onItemClick(AdapterView<?> adapterView, View view,
 					int position, long l) {
 				// 跳转到随身导游界面
-				AppContext.currentExhibitId = shownResults.get(position)
+				((AppContext)getApplication()).currentExhibitId = shownResults.get(position)
 						.getId();
-				AppContext.setGuideMode(false);
-				AppContext.isSelectedInSearch = true;
+				((AppContext)getApplication()).setGuideMode(false);
+				((AppContext)getApplication()).isSelectedInSearch = true;
 				finish();
 
 			}
@@ -345,7 +355,7 @@ public class SearchActivity extends BaseActivity implements
 
 	@Override
 	public void onTipsItemClick(String text) {
-		
+
 	}
 
 	@Override

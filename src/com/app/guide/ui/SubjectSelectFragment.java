@@ -23,6 +23,8 @@ import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 import com.app.guide.AppContext;
 import com.app.guide.Constant;
 import com.app.guide.R;
@@ -33,6 +35,7 @@ import com.app.guide.bean.LabelBean;
 import com.app.guide.offline.GetBeanFromSql;
 import com.app.guide.widget.AutoLoadListView;
 import com.app.guide.widget.AutoLoadListView.OnLoadListener;
+import com.app.guide.widget.DialogManagerHelper;
 import com.app.guide.widget.SelectorView;
 
 /**
@@ -60,12 +63,12 @@ public class SubjectSelectFragment extends Fragment {
 	 * 存储展品信息
 	 */
 	private List<ExhibitBean> exhibits;
-	
+
 	/**
 	 * 选中的展品列表Id
 	 */
 	private List<ExhibitBean> selectedExhibits;
-	
+
 	private List<ExhibitBean> shownExhibits;
 
 	/**
@@ -116,22 +119,26 @@ public class SubjectSelectFragment extends Fragment {
 	private int page;
 
 	private int mMuseumId;
-	
-	private List<Button> selectedViews =  new ArrayList<Button>();
 
+	private List<Button> selectedViews = new ArrayList<Button>();
+
+	private SweetAlertDialog pDialog;
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		mContext = activity;
-		mMuseumId = AppContext.currentMuseumId;
+		mMuseumId = ((AppContext)activity.getApplication()).currentMuseumId;
+		//加载数据时耗费时间较长
+		pDialog = new DialogManagerHelper(mContext).showLoadingProgressDialog();
 		// 初始化数据
 		initData();
+		pDialog.dismiss();
+		pDialog= null;
 	}
 
 	/**
-	 * 加载数据时 弹出对话框 
-	 * 初始化数据，获得筛选器数据和展品数据，并获得展品列表适配器 
+	 * 加载数据时 弹出对话框 初始化数据，获得筛选器数据和展品数据，并获得展品列表适配器
 	 */
 	private void initData() {
 		getSelectorData();
@@ -161,8 +168,7 @@ public class SubjectSelectFragment extends Fragment {
 	}
 
 	/**
-	 * TODO 采用异步加载？
-	 * get ExhibitData;
+	 * TODO 采用异步加载？ get ExhibitData;
 	 */
 	private void getExhibitData() {
 		exhibits = new ArrayList<ExhibitBean>();
@@ -170,7 +176,8 @@ public class SubjectSelectFragment extends Fragment {
 		try {
 			List<ExhibitBean> data = null;
 			do {
-				data = GetBeanFromSql.getExhibitBeans(mContext, mMuseumId, page);
+				data = GetBeanFromSql
+						.getExhibitBeans(mContext, mMuseumId, page);
 				if (data != null) {
 					for (int i = 0; i < data.size(); i++) {
 						exhibits.add(data.get(i));
@@ -180,7 +187,8 @@ public class SubjectSelectFragment extends Fragment {
 			} while (data != null && data.size() == Constant.PAGE_COUNT);
 			selectedExhibits = new ArrayList<ExhibitBean>(exhibits);
 			shownExhibits = new ArrayList<ExhibitBean>();
-			for (int i = 0; i < Constant.PAGE_COUNT && i < selectedExhibits.size(); i++) {
+			for (int i = 0; i < Constant.PAGE_COUNT
+					&& i < selectedExhibits.size(); i++) {
 				shownExhibits.add(selectedExhibits.get(i));
 			}
 			page = 0;
@@ -229,7 +237,7 @@ public class SubjectSelectFragment extends Fragment {
 		View view = inflater.inflate(R.layout.frag_subject_sellect, null);
 		return view;
 	}
-
+	
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
@@ -238,18 +246,20 @@ public class SubjectSelectFragment extends Fragment {
 		btnFinish.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//获取selectedExhibit的id列表
+				// 获取selectedExhibit的id列表
 				String ids = "";
-				for(int i = 0 ; i< selectedExhibits.size();i++){
-					if(i== selectedExhibits.size()-1)
+				for (int i = 0; i < selectedExhibits.size(); i++) {
+					if (i == selectedExhibits.size() - 1)
 						ids += selectedExhibits.get(i).getId();
-					else ids += selectedExhibits.get(i).getId()+",";
+					else
+						ids += selectedExhibits.get(i).getId() + ",";
 				}
 				Log.w("TAG", ids);
-				AppContext.exhibitsIdList = ids;
+				((AppContext)getActivity().getApplication()).exhibitsIdList = ids;
 				((RadioButton) HomeActivity.mRadioGroup
 						.findViewById(R.id.home_tab_map)).setChecked(true);
-				Toast.makeText(mContext, "完成筛选，跳转到map", Toast.LENGTH_SHORT).show();
+				Toast.makeText(mContext, "完成筛选，跳转到map", Toast.LENGTH_SHORT)
+						.show();
 			}
 		});
 		// get exhibit list
@@ -284,11 +294,12 @@ public class SubjectSelectFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				AppContext.currentExhibitId = exhibits.get(position - invisItem - 1).getId();
-				AppContext.setGuideMode(false);
+				((AppContext)getActivity().getApplication()).currentExhibitId = exhibits.get(
+						position - invisItem - 1).getId();
+				((AppContext)getActivity().getApplication()).setGuideMode(false);
 				((RadioButton) HomeActivity.mRadioGroup
 						.findViewById(R.id.home_tab_follow)).setChecked(true);
-				
+
 			}
 		});
 		lvExhibits.setOnLoadListener(new OnLoadListener() {
@@ -314,7 +325,8 @@ public class SubjectSelectFragment extends Fragment {
 				&& i < selectedExhibits.size(); i++) {
 			shownExhibits.add(selectedExhibits.get(i));
 		}
-		if(selectedExhibits.size() == 0 || shownExhibits.size() == selectedExhibits.size())
+		if (selectedExhibits.size() == 0
+				|| shownExhibits.size() == selectedExhibits.size())
 			lvExhibits.setLoadFull();
 		lvExhibits.onLoadComplete();
 	}
@@ -330,36 +342,39 @@ public class SubjectSelectFragment extends Fragment {
 			// 如果已选择view中不包含该item,则将其筛选标签集（即已选择view）
 			String itemName = btnItem.getText().toString();
 			if (!selectedData.contains(itemName)) {
-				//设置不可点击
-				btnItem.setBackgroundColor(getResources().getColor(R.color.darkgray));
+				// 设置不可点击
+				btnItem.setBackgroundColor(getResources().getColor(
+						R.color.darkgray));
 				btnItem.setClickable(false);
-				//将该view加到selectedViews中
+				// 将该view加到selectedViews中
 				selectedViews.add(btnItem);
-				
+
 				selectedData.add(itemName); // 更新data
 				// Toast.makeText(mContext, itemName,
 				// Toast.LENGTH_SHORT).show();
 				selectedHeader.updateView(selectedData); // 更新已选择view 和悬浮头部
 				invisView.updateView(selectedData);
-				//根据selected data筛选list view
+				// 根据selected data筛选list view
 				updateSelectResult();
 				exhibitAdapter.notifyDataSetChanged();
 			}
 		}
-		
+
 	}
+
 	private void updateSelectResult() {
 		int j = 0;
 		selectedExhibits.clear();
-		for(int i = 0 ; i<exhibits.size();i++){
-			//匹配
-			for(j = 0; j< selectedData.size();j++){
-				if(!exhibits.get(i).getLabels().containsValue(selectedData.get(j))){
+		for (int i = 0; i < exhibits.size(); i++) {
+			// 匹配
+			for (j = 0; j < selectedData.size(); j++) {
+				if (!exhibits.get(i).getLabels()
+						.containsValue(selectedData.get(j))) {
 					break;
 				}
 			}
-			if(j == selectedData.size()){
-				//表示该展品匹配
+			if (j == selectedData.size()) {
+				// 表示该展品匹配
 				selectedExhibits.add(exhibits.get(i));
 			}
 		}
@@ -373,11 +388,12 @@ public class SubjectSelectFragment extends Fragment {
 			String itemName = btnItem.getText().toString();
 			// 点击已选择view 中的item, 表示取消该标签的筛选
 			if (selectedData.contains(itemName)) {
-				//TODO 匹配 ，设置可点击
-				for(Button item: selectedViews){
-					if(item.getText().toString().equals(itemName)){
+				// TODO 匹配 ，设置可点击
+				for (Button item : selectedViews) {
+					if (item.getText().toString().equals(itemName)) {
 						item.setClickable(true);
-						item.setBackgroundColor(getResources().getColor(R.color.btn_pressed_color));
+						item.setBackgroundColor(getResources().getColor(
+								R.color.btn_pressed_color));
 						selectedData.remove(item);
 						break;
 					}

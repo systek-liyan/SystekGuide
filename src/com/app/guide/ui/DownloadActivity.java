@@ -5,15 +5,16 @@ import android.support.v4.app.FragmentTabHost;
 import android.widget.TabHost.TabSpec;
 
 import com.app.guide.R;
+import com.app.guide.widget.DialogManagerHelper;
 
 public class DownloadActivity extends BaseActivity {
 
 	private FragmentTabHost mTabHost;
-	private static final Class[] fragments = { DownloadingFragment.class,
+	private static final Class<?>[] fragments = { DownloadingFragment.class,
 			DownloadCompletedFragment.class };
 	private static final int[] title = { R.string.download_text_ing,
 			R.string.download_text_completed };
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -23,6 +24,10 @@ public class DownloadActivity extends BaseActivity {
 		if (savedInstanceState != null) {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
 		}
+		// 添加对话框
+		new DialogManagerHelper(this).showWifiDialog(this.getResources()
+				.getString(R.string.dialog_download_wifi));
+		
 	}
 
 	private void initViews() {

@@ -21,9 +21,8 @@
     <string name="frag_follow_tab_exhibitions">展品列表</string>
     <string name="title_activity_museum">选择博物馆</string>
     
-    <!-- 歌词view -->
+    <!-- 歌词view tips -->
     <string name="lyric_ble_unenable">请打开自动导航或手动选取展品 </string>
-    <string name="lyric_scanning">正在搜索附近展品，请稍候~</string>
     
     <!-- 用于上拉加载更多ListView -->
     <string name="load_full">已加载全部</string>
@@ -45,4 +44,26 @@
     <string name="map_menu_friend">frie</string>
     <string name="map_menu_toggle_list">toggle</string>
     
+    <!-- 对话框 -->
+    <string name="dialog_setting">设置</string>
+    <string name="dialog_cancel">取消</string>
+    <string name="dialog_confirm">确定</string>
+    <string name="dialog_open">开启</string>
+    <string name="dialog_success">操作成功</string>
+    <string name="dialog_error">出错辣~</string>
+    
+    <string name="dialog_loading">正在加载,请稍后</string>
+    <string name="dialog_searching">正在搜索附近展品,请稍后</string>
+    
+    <string name="dialog_bluetooth">设置蓝牙</string>
+   	<string name="dialog_not_support_ble">您的设备不支持蓝牙4.0,将无法使用自动导航模式,请手动选择展品</string>
+   	<string name="dialog_open_bluetooth">是否开启蓝牙？\n\n注：不开启蓝牙无法进入自动导航模式\n</string>
+    
+   	<string name="dialog_wifi">设置Wi-Fi</string>
+   	<string name="dialog_location_wifi">检测到您当前未开启Wi-Fi\n\n是否需要开启Wi-Fi以提高定位精准度\n</string>
+   	<string name="dialog_download_wifi">检测到您当前未开启Wi-Fi,该操作将消耗大量移动流量\n\n请前往设置Wi-Fi或继续使用移动流量下载\n</string>	
+   
+   	<string name="dialog_gps">设置GPS</string>
+   	<string name="dialog_open_gps">\n如需提高定位精准度，在位置设置中打开GPS\n</string>
+   	
 </resources>

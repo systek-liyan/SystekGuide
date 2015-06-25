@@ -4,10 +4,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,7 +70,7 @@ public class DownloadingAdapter extends BaseAdapter {
 		notifyDataSetChanged();
 	}
 
-	@Override
+	@SuppressLint("InflateParams") @Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		final ViewHolder holder;

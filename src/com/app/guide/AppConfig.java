@@ -25,5 +25,7 @@ public class AppConfig {
 		
 		return singleInstance;
 	}
+	
+	public boolean isAutoCheckSetting = true;
 
 }

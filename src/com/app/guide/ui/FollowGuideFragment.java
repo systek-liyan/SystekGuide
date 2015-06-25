@@ -26,38 +26,42 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.app.guide.AppContext;
 import com.app.guide.R;
-import com.app.guide.AppContext.OnGuideModeChangedListener;
 import com.app.guide.adapter.HorizontalScrollViewAdapter;
 import com.app.guide.bean.Exhibit;
 import com.app.guide.bean.ImageOption;
 import com.app.guide.offline.GetBeanFromSql;
 import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
 import com.app.guide.utils.BitmapUtils;
+import com.app.guide.widget.DialogManagerHelper;
 import com.app.guide.widget.HeaderLayout;
 import com.app.guide.widget.LyricView;
 import com.app.guide.widget.LyricView.onProgressChangedListener;
 import com.app.guide.widget.MyHorizontalScrollView;
-import com.app.guide.widget.MyHorizontalScrollView.CurrentImageChangedListener;
 import com.app.guide.widget.MyHorizontalScrollView.OnItemClickListener;
 import com.app.guide.widget.MyHorizontalScrollView.OnLoadingMoreListener;
+
+import edu.xidian.NearestBeacon.NearestBeacon;
 
 /**
  * 两种进入该界面的方式，底部导航进入 和选择某一展品进入
  * 随身导游页面，包含与Beacon相关的操作，根据停留时间获取最近的beacon，并让相应的音频文件自动播放，并显示文字
  * 
- * FIXME 2.搜素 TODO 4.截图 5.endTime 6.加载中 对话框 8.监听蓝牙打开和关闭 9.监听WIFI、电话
- * TODO 播放下一个展品
- * TODO 设置声音
+ * TODO 监听 电话    设置声音
+ * TODO bug 对话框 没自动dismiss  follow header 
+ * TODO 博物馆音频
+ * TODO 博物馆选择界面 对话框 
+ * TODO 设置Activity
  * 
  * @author yetwish
  * @date 2015-4-25
  */
 public class FollowGuideFragment extends Fragment implements
-		onBeaconSearcherListener, OnGuideModeChangedListener {
+		onBeaconSearcherListener {
 
 	private static final String TAG = FollowGuideFragment.class.getSimpleName();
 
@@ -65,6 +69,8 @@ public class FollowGuideFragment extends Fragment implements
 	 * 上下文对象
 	 */
 	private Context mContext;
+
+	private SweetAlertDialog pDialog;
 
 	/**
 	 * 存储屏幕像素信息
@@ -215,6 +221,9 @@ public class FollowGuideFragment extends Fragment implements
 
 	private boolean isFirst = true;
 
+	private boolean isChosed = false;
+
+		
 	/**
 	 * defined several file path of media resources
 	 */
@@ -228,6 +237,8 @@ public class FollowGuideFragment extends Fragment implements
 	private static final int MSG_PROGRESS_CHANGED = 0x200;
 	private static final int MSG_EXHIBIT_CHANGED = 0x201;
 	private static final int MSG_MEDIA_PLAY_COMPLETE = 0x202;
+
+	private DialogManagerHelper mDialogHelper;
 
 	@SuppressLint("HandlerLeak")
 	private Handler mHandler = new Handler() {
@@ -253,9 +264,17 @@ public class FollowGuideFragment extends Fragment implements
 				}
 				break;
 			case MSG_MEDIA_PLAY_COMPLETE:
-				//TODO
+				// TODO
 				// 播放完，进入下一首
-				//notifyExhibitChanged(rExhibit.getId());
+				// notifyExhibitChanged(rExhibit.getId());
+				if (isChosed)
+					isChosed = false;
+				else {
+					// 循环
+					int id = mCurrentExhibitId;
+					mCurrentExhibitId = -1;
+					notifyExhibitChanged(id);
+				}
 				break;
 			case MSG_EXHIBIT_CHANGED:
 				// 若当前beacon改变了
@@ -276,16 +295,17 @@ public class FollowGuideFragment extends Fragment implements
 		mContext = activity;
 		// 获取屏幕信息
 		getScreenDisplayMetrix();
-		AppContext.addGuideModeChangedListener(this);
 		// 获取intent
-		mMuseumId = AppContext.currentMuseumId;
+		mMuseumId = ((AppContext)getActivity().getApplication()).currentMuseumId;
 		// 获取exhibit id
-		mCurrentExhibitId = AppContext.currentExhibitId;
+		mCurrentExhibitId = ((AppContext)getActivity().getApplication()).currentExhibitId;
 		// 根据exhibit id 获取数据
 		initData(mCurrentExhibitId);
 		// initGalleryData();
 		// 初始化clickListener
 		mClickListener = new MyClickListener();
+
+		mDialogHelper = new DialogManagerHelper(activity);
 
 	}
 
@@ -309,23 +329,30 @@ public class FollowGuideFragment extends Fragment implements
 						mMuseumId, id);
 				mCurrentExhibitId = id;
 				// 更新appContext中的id
-				AppContext.currentExhibitId = id;
+				((AppContext)getActivity().getApplication()).currentExhibitId = id;
 				if (mCurrentExhibit != null) {
 					// 获取展品图片数据
 					mGalleryList = mCurrentExhibit.getImgList();
 					// 获取展品图片数据
+					// TODO
+					int left = 1;
+					if (mCurrentExhibitId - 1 > 1)
+						left = mCurrentExhibitId - 1;
 					lExhibit = GetBeanFromSql.getExhibit(mContext, mMuseumId,
-							mCurrentExhibit.getlExhibitBeanId());
+							left);
 					rExhibit = GetBeanFromSql.getExhibit(mContext, mMuseumId,
-							mCurrentExhibit.getrExhibitBeanId());
+							mCurrentExhibitId + 1);
 					// 将展品添加到展品数组中
 					mExhibitsList.clear();
 					mExhibitImages.clear();
+					// if(lExhibit!=null)
 					mExhibitsList.add(lExhibit);
 					mExhibitsList.add(mCurrentExhibit);
+					// if(rExhibit !=null)
 					mExhibitsList.add(rExhibit);
 					// 初始化 列表 获取展品icon
 					for (int i = 0; i < mExhibitsList.size(); i++) {
+						Log.w(TAG, mExhibitsList.get(i).getIconUrl() + "");
 						mExhibitImages.add(new ImageOption(mExhibitsList.get(i)
 								.getIconUrl(), 0));
 					}
@@ -419,10 +446,8 @@ public class FollowGuideFragment extends Fragment implements
 			notifyStartPlaying();
 		}
 
-		// notifyViewchange();
-
 	}
-
+	
 	/**
 	 * when the fragment is on the top of the stack ,start ranging the beacon
 	 */
@@ -430,16 +455,21 @@ public class FollowGuideFragment extends Fragment implements
 	public void onResume() {
 		super.onResume();
 		// 从AppContext中获取全局exhibit id
-		if (AppContext.isAutoGuide()) {
+		if (((AppContext)getActivity().getApplication()).isAutoGuide() && !isChosed) {
+			if (pDialog == null)
+				pDialog = mDialogHelper.showSearchingProgressDialog();
+			// 设置beacon监听
 			HomeActivity.setBeaconSearcherListener(this);
-		} else {
-			HomeActivity.setBeaconSearcherListener(null);
+			HomeActivity.setBeaconLocateType(NearestBeacon.GET_EXHIBIT_BEACON);
 		}
-		notifyExhibitChanged(AppContext.currentExhibitId);
+		notifyExhibitChanged(((AppContext)getActivity().getApplication()).currentExhibitId);
 	}
 
 	private void notifyExhibitChanged(int exhibitId) {
 		if (mCurrentExhibitId != exhibitId && exhibitId != -1) {
+			if (((AppContext)getActivity().getApplication()).isAutoGuide() && isChosed) {
+				return;
+			}
 			if (mLyricView != null)
 				mLyricView.stop();
 			initData(exhibitId);
@@ -451,9 +481,9 @@ public class FollowGuideFragment extends Fragment implements
 					// 已初始化
 					mExhibitGallery.initData(mExhibitAdapter);
 				}
+				mPicGallery.initData(mGalleryAdapter);
 				mPicGallery.setBackToBegin();
 				notifyStartPlaying();
-
 			}
 		}
 	}
@@ -531,23 +561,23 @@ public class FollowGuideFragment extends Fragment implements
 
 		HomeActivity.getMenu().addIgnoredView(mExhibitGallery);
 
-		mPicGallery
-				.setCurrentImageChangedListener(new CurrentImageChangedListener() {
-
-					@Override
-					public void onCurrentImgChanged(int position,
-							View viewIndicator) {
-						ivLyricBg.setErrorImageResId(R.drawable.icon);
-						ivLyricBg.setDefaultImageResId(R.drawable.icon);
-						ivLyricBg.setImageUrl(mGalleryList.get(position)
-								.getImgUrl(), BitmapUtils
-								.getImageLoader(mContext));
-						viewIndicator.setAlpha(1f);
-						mLyricView.setCurrentPosition(mGalleryList
-								.get(position).getStartTime());
-//						updatePlayBar();
-					}
-				});
+		// mPicGallery
+		// .setCurrentImageChangedListener(new CurrentImageChangedListener() {
+		//
+		// @Override
+		// public void onCurrentImgChanged(int position,
+		// View viewIndicator) {
+		// ivLyricBg.setErrorImageResId(R.drawable.icon);
+		// ivLyricBg.setDefaultImageResId(R.drawable.icon);
+		// ivLyricBg.setImageUrl(mGalleryList.get(position)
+		// .getImgUrl(), BitmapUtils
+		// .getImageLoader(mContext));
+		// viewIndicator.setAlpha(1f);
+		// mLyricView.setCurrentPosition(mGalleryList
+		// .get(position).getStartTime());
+		// // updatePlayBar();
+		// }
+		// });
 
 		mPicGallery.setOnItemClickListener(new OnItemClickListener() {
 
@@ -559,7 +589,7 @@ public class FollowGuideFragment extends Fragment implements
 					mLyricView.setCurrentPosition(mGalleryList.get(position)
 							.getStartTime());
 				}
-//				updatePlayBar();
+				// updatePlayBar();
 			}
 		});
 
@@ -567,6 +597,7 @@ public class FollowGuideFragment extends Fragment implements
 			mGalleryAdapter = new HorizontalScrollViewAdapter(mContext,
 					mGalleryList, R.layout.item_gallery);
 		mPicGallery.initData(mGalleryAdapter);
+		mPicGallery.setCurrentSelectedItem(false, 0);
 
 		/**
 		 * 设置tvPic可点击
@@ -582,20 +613,21 @@ public class FollowGuideFragment extends Fragment implements
 			public void onItemClick(View view, int position, boolean isByLyric) {
 				// 切换展品
 				notifyExhibitChanged(mExhibitsList.get(position).getId());
+				isChosed = true;
 			}
 		});
 		mExhibitGallery.seOnLoadingMoreListener(new OnLoadingMoreListener() {
 			@Override
 			public int onRightLoadingMore() {
 				// TODO Auto-generated method stub
-				mExhibitsList.add(mExhibitsList.get(0));
+				mExhibitsList.add(mExhibitsList.get(2));
 				mExhibitImages.add(mGalleryList.get(4));
 				return 1;
 			}
 
 			@Override
 			public int onLeftLoadingMore() {
-				mExhibitsList.add(0, mExhibitsList.get(2));
+				mExhibitsList.add(0, mExhibitsList.get(0));
 				mExhibitImages.add(0, mGalleryList.get(6));
 				return 1;
 			}
@@ -613,14 +645,6 @@ public class FollowGuideFragment extends Fragment implements
 		tvTitleExhibits.setOnClickListener(mClickListener);
 		ivExhibitExpand.setOnClickListener(mClickListener);
 	}
-
-//	/**
-//	 * 更新播放栏
-//	 */
-//	private void updatePlayBar() {
-//		int index = mPicGallery.getCurrentSelectedIndex();
-//		Log.w("TAG", "index " + index + " size " + mGalleryAdapter.getCount());
-//	}
 
 	private void changeCurrentExhibitById(int i) {
 		if (mCurrentExhibitId != i) {
@@ -727,6 +751,9 @@ public class FollowGuideFragment extends Fragment implements
 	public void onNearestBeaconDiscovered(int type, Beacon beacon) {
 		if (beacon == null)// 不做处理
 			return;
+		if (pDialog != null) {
+			pDialog.dismiss();
+		}
 		Log.w("BeaconSearcher", beacon.getId2().toString());
 		if (beacon.getId2().toString().contains("44")) {
 			changeCurrentExhibitById(1);
@@ -737,12 +764,4 @@ public class FollowGuideFragment extends Fragment implements
 		}
 	}
 
-	@Override
-	public void onGuideModeChanged(boolean isAutoGuide) {
-		if (isAutoGuide) {
-			HomeActivity.setBeaconSearcherListener(this);
-		} else {
-			HomeActivity.setBeaconSearcherListener(null);
-		}
-	}
 }

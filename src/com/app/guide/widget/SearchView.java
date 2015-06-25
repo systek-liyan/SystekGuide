@@ -146,16 +146,15 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-            if (!"".equals(charSequence + "")) {
+        	if (!"".equals(charSequence.toString())) {
                 ivDelete.setVisibility(VISIBLE);
                 lvTips.setVisibility(VISIBLE);
                 if (mAutoCompleteAdapter != null && lvTips.getAdapter() != mAutoCompleteAdapter) {
                     lvTips.setAdapter(mAutoCompleteAdapter);
-                } else {
-                    //更新autoComplete数据
-                    if (mListener != null) {
-                        mListener.onRefreshAutoComplete(charSequence + "");
-                    }
+                }
+                //更新autoComplete数据
+                if (mListener != null) {
+                    mListener.onRefreshAutoComplete(charSequence + "");
                 }
             } else {
                 ivDelete.setVisibility(GONE);

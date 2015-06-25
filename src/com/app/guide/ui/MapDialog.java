@@ -20,9 +20,10 @@ public class MapDialog extends PopupWindow {
 	private TextView titleTextView;
 	private ImageView mImageView;
 	private MapExhibitBean mapExhibitBean;
-
+	
+	
 	@SuppressLint("InflateParams")
-	public MapDialog(Context context, MapExhibitBean exhibitBean) {
+	public MapDialog(final Context context, MapExhibitBean exhibitBean) {
 		super(context);
 		// TODO Auto-generated constructor stub
 		this.mapExhibitBean = exhibitBean;
@@ -36,8 +37,8 @@ public class MapDialog extends PopupWindow {
 		mImageView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				AppContext.setGuideMode(false);
-				AppContext.currentExhibitId = mapExhibitBean.getId();
+				((AppContext)context.getApplicationContext()).setGuideMode(false);
+				((AppContext)context.getApplicationContext()).currentExhibitId = mapExhibitBean.getId();
 				dismiss();
 				((RadioButton) HomeActivity.mRadioGroup
 						.findViewById(R.id.home_tab_follow)).setChecked(true);

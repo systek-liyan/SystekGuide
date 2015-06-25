@@ -19,12 +19,10 @@ import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.app.guide.AppContext;
 import com.app.guide.R;
 import com.app.guide.bean.LyricObject;
 
@@ -50,10 +48,6 @@ public class LyricView extends View {
 	Paint paintTips = new Paint();// 画笔，用于画提示语
 	private MediaPlayer mediaPlayer;
 
-	/**
-	 * 表示当前是否正在扫描beacon设备
-	 */
-	private boolean isBLEEnable = false;
 
 	private ShowLyricRunnable mShowLyricThread = null;
 
@@ -76,9 +70,6 @@ public class LyricView extends View {
 		SIZE_TEXT_DISPLAY = height;
 	}
 
-	public void setIsScanning(boolean enable) {
-		this.isBLEEnable = enable;
-	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
@@ -109,16 +100,12 @@ public class LyricView extends View {
 				canvas.drawText(temp.lrc, mX, offsetY + (wordSize + INTERVAL)
 						* i, paint);
 			}
-		} else if (!isBLEEnable) {
+		} else {
 			paintTips.setTextSize(35);
 			canvas.drawText(
 					getResources().getString(R.string.lyric_ble_unenable), mX,
 					310, paintTips);
 			return ;
-		}else {// 还为找到
-			paintTips.setTextSize(35);
-			canvas.drawText(getResources().getString(R.string.lyric_scanning),
-					mX, 310, paintTips);
 		}
 		super.onDraw(canvas);
 	}
@@ -172,7 +159,6 @@ public class LyricView extends View {
 		paintTips.setAntiAlias(true);
 		paint.setAlpha(255);
 		
-		isBLEEnable = AppContext.isBleEnable;
 		
 	}
 
@@ -479,7 +465,6 @@ public class LyricView extends View {
 					}
 				}else{
 					//播放完毕
-					Log.w("TAG",mediaPlayer.getCurrentPosition()+"" +mediaPlayer.getDuration());
 					if(mediaPlayer.getDuration()- mediaPlayer.getCurrentPosition() <= 300){
 						if(mProgressChangedListener !=null){
 							mProgressChangedListener.onMediaPlayCompleted();

@@ -7,13 +7,13 @@ import java.util.TimerTask;
 
 import org.altbeacon.beacon.Beacon;
 
-import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.view.Window;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -23,9 +23,10 @@ import com.actionbarsherlock.app.ActionBar;
 import com.app.guide.AppContext;
 import com.app.guide.AppManager;
 import com.app.guide.R;
+import com.app.guide.AppContext.OnGuideModeChangedListener;
 import com.app.guide.adapter.FragmentTabAdapter;
 import com.app.guide.adapter.FragmentTabAdapter.OnRgsExtraCheckedChangedListener;
-import com.app.guide.ui.MenuFragment.HomeClick;
+import com.app.guide.widget.DialogManagerHelper;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 import edu.xidian.NearestBeacon.BeaconSearcher;
@@ -33,25 +34,25 @@ import edu.xidian.NearestBeacon.BeaconSearcher.OnNearestBeaconListener;
 import edu.xidian.NearestBeacon.NearestBeacon;
 
 public class HomeActivity extends BaseActivity implements
-		OnNearestBeaconListener {
+		OnNearestBeaconListener, OnGuideModeChangedListener {
 
 	protected static RadioGroup mRadioGroup;
 	private int pressedCount;
 	private Timer timer;
 	private List<Fragment> fragments;
-
+	
 	/**
-	 * 侧滑栏 TODO 考虑是否不能侧滑
+	 * 侧滑栏
 	 */
 	private static SlidingMenu sm;
 
 	/**
 	 * @return the instance of slidingMenu
 	 */
-	public static SlidingMenu getMenu(){
+	public static SlidingMenu getMenu() {
 		return sm;
 	}
-	
+
 	private final static Class<?>[] fragmentClz = {
 			MuseumIntroduceFragment.class, FollowGuideFragment.class,
 			SubjectSelectFragment.class, MapFragment.class };
@@ -61,7 +62,8 @@ public class HomeActivity extends BaseActivity implements
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
-		//初始化beacon搜索器
+		
+		// 初始化beacon搜索器
 		initBeaconSearcher();
 		timer = new Timer();
 		fragments = new ArrayList<Fragment>();
@@ -94,20 +96,56 @@ public class HomeActivity extends BaseActivity implements
 				case 2:
 					break;
 				default:
-
 					break;
 				}
 			}
 
 		});
 		sm = getSlidingMenu();
+		if (((AppContext)getApplication()).isAutoGuide()) {
+			mBeaconSearcher.openSearcher();
+		} else {
+			((RadioButton) mRadioGroup.findViewById(R.id.home_tab_follow))
+					.setEnabled(false);
+		}
+		// 注册广播监听器
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter
+				.addAction("android.bluetooth.adapter.action.STATE_CHANGED");
+		registerReceiver(mBluetoothReceiver, intentFilter);
+		// 添加导游模式切换监听
+		((AppContext)getApplication()).addGuideModeChangedListener(this);
 	}
+
+	/**
+	 * 设置蓝牙监听
+	 */
+	private final BroadcastReceiver mBluetoothReceiver = new BroadcastReceiver() {
+
+		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter
+				.getDefaultAdapter();
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+				switch (mBluetoothAdapter.getState()) {
+				case BluetoothAdapter.STATE_ON:
+					((AppContext)getApplication()).setBleEnable(true);
+					break;
+				case BluetoothAdapter.STATE_OFF:
+					((AppContext)getApplication()).setBleEnable(false);
+					break;
+				}
+			}
+		}
+	};
 
 	@Override
 	protected boolean isFullScreen() {
 		return true;
 	}
-	
+
 	@Override
 	protected boolean isShowMenu() {
 		// TODO Auto-generated method stub
@@ -116,14 +154,18 @@ public class HomeActivity extends BaseActivity implements
 
 	@Override
 	protected void onResume() {
-		if(AppContext.isSelectedInSearch){
+		if (!((AppContext)getApplication()).isAutoGuide() && ((AppContext)getApplication()).currentExhibitId == -1) {
+			((RadioButton) mRadioGroup.findViewById(R.id.home_tab_follow))
+					.setEnabled(false);
+		}
+		if (((AppContext)getApplication()).isSelectedInSearch) {
 			((RadioButton) HomeActivity.mRadioGroup
 					.findViewById(R.id.home_tab_follow)).setChecked(true);
-			AppContext.isSelectedInSearch = false;
+			((AppContext)getApplication()).isSelectedInSearch = false;
 		}
 		super.onResume();
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
@@ -148,36 +190,36 @@ public class HomeActivity extends BaseActivity implements
 		}
 	}
 
-//	@SuppressLint("InflateParams")
-//	@Override
-//	protected void initSlidingMenu() {
-//		// TODO Auto-generated method stub
-//		sm = getSlidingMenu();
-//		View view = getLayoutInflater().inflate(R.layout.sliding_menu_left,
-//				null);
-//		FragmentManager manager = getSupportFragmentManager();
-//		FragmentTransaction transaction = manager.beginTransaction();
-//		MenuFragment menuFragment = new MenuFragment();
-//		menuFragment.setHomeClick(new HomeClick() {
-//
-//			@Override
-//			public void home() {
-//				// TODO Auto-generated method stub
-//				sm.toggle();
-//			}
-//		});
-//		transaction.replace(R.id.sliding_container, menuFragment);
-//		transaction.commit();
-//		setBehindContentView(view);
-//		sm.setMode(SlidingMenu.LEFT);
-//		sm.setSlidingEnabled(true);
-//		sm.setShadowWidthRes(R.dimen.shadow_width);
-//		sm.setFadeEnabled(true);
-//		sm.setShadowDrawable(R.drawable.shadow);
-//		sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-//		sm.setFadeDegree(0.35f);
-//		sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-//	}
+	// @SuppressLint("InflateParams")
+	// @Override
+	// protected void initSlidingMenu() {
+	// // TODO Auto-generated method stub
+	// sm = getSlidingMenu();
+	// View view = getLayoutInflater().inflate(R.layout.sliding_menu_left,
+	// null);
+	// FragmentManager manager = getSupportFragmentManager();
+	// FragmentTransaction transaction = manager.beginTransaction();
+	// MenuFragment menuFragment = new MenuFragment();
+	// menuFragment.setHomeClick(new HomeClick() {
+	//
+	// @Override
+	// public void home() {
+	// // TODO Auto-generated method stub
+	// sm.toggle();
+	// }
+	// });
+	// transaction.replace(R.id.sliding_container, menuFragment);
+	// transaction.commit();
+	// setBehindContentView(view);
+	// sm.setMode(SlidingMenu.LEFT);
+	// sm.setSlidingEnabled(true);
+	// sm.setShadowWidthRes(R.dimen.shadow_width);
+	// sm.setFadeEnabled(true);
+	// sm.setShadowDrawable(R.drawable.shadow);
+	// sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+	// sm.setFadeDegree(0.35f);
+	// sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+	// }
 
 	@Override
 	protected void onPause() {
@@ -191,26 +233,13 @@ public class HomeActivity extends BaseActivity implements
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		/**
-		 * 处理打开蓝牙请求
-		 */
-//		if (requestCode == BeaconSearcher.REQUEST_ENABLE_BT) {
-//			if (mBeaconSearcher.onBluetoothResult(requestCode, resultCode)){
-//				mBeaconSearcher.openSearcher();
-//				AppContext.setGuideMode(true);
-//				AppContext.isBleEnable = true;
-//			}
-//			else{
-//				AppContext.setGuideMode(false);
-//				AppContext.isBleEnable = false;
-//			}
-//		}
+
 	}
 
 	public ActionBar getActivityActionBar() {
 		return getSupportActionBar();
 	}
-	
+
 	private static onBeaconSearcherListener mBeaconListener;
 
 	/**
@@ -218,7 +247,8 @@ public class HomeActivity extends BaseActivity implements
 	 * 
 	 * @param listener
 	 */
-	public static void setBeaconSearcherListener(onBeaconSearcherListener listener) {
+	public static void setBeaconSearcherListener(
+			onBeaconSearcherListener listener) {
 		mBeaconListener = listener;
 	}
 
@@ -229,7 +259,7 @@ public class HomeActivity extends BaseActivity implements
 	 */
 	public interface onBeaconSearcherListener {
 
-		void onNearestBeaconDiscovered(int type,Beacon beacon);
+		void onNearestBeaconDiscovered(int type, Beacon beacon);
 	}
 
 	@Override
@@ -238,24 +268,26 @@ public class HomeActivity extends BaseActivity implements
 		if (mBeaconSearcher != null) {
 			mBeaconSearcher.closeSearcher();
 		}
+		unregisterReceiver(mBluetoothReceiver);
 	}
-	
+
 	/**
 	 * store BeaconSearcher instance, we use it to range beacon,and get the
 	 * minBeacon from it.
 	 */
 	private static BeaconSearcher mBeaconSearcher;
-	
-	public static void setBeaconLocateType(int type){
-		if(type == NearestBeacon.GET_EXHIBIT_BEACON || type == NearestBeacon.GET_LOCATION_BEACON)
+
+	public static void setBeaconLocateType(int type) {
+		if (type == NearestBeacon.GET_EXHIBIT_BEACON
+				|| type == NearestBeacon.GET_LOCATION_BEACON)
 			mBeaconSearcher.setNearestBeaconType(type);
 	}
-	
+
 	@Override
 	public void getNearestBeacon(int type, Beacon beacon) {
 		// TODO Auto-generated method stub
-		if(mBeaconListener!=null){
-			mBeaconListener.onNearestBeaconDiscovered(type,beacon);
+		if (mBeaconListener != null) {
+			mBeaconListener.onNearestBeaconDiscovered(type, beacon);
 		}
 	}
 
@@ -278,12 +310,23 @@ public class HomeActivity extends BaseActivity implements
 		// 设置beacon监听器
 		mBeaconSearcher.setNearestBeaconListener(this);
 		// 当蓝牙打开时，打开beacon搜索器，开始搜索距离最近的Beacon
-//		if (mBeaconSearcher.checkBLEEnable()){
-//			mBeaconSearcher.openSearcher();
-//			AppContext.isBleEnable= true;
-//			AppContext.setGuideMode(true);
-//		}
-			
+		new DialogManagerHelper(this).showBLESettingDialog(mBeaconSearcher);
+	}
+
+	@Override
+	public void onGuideModeChanged(boolean isAutoGuide) {
+		if (mBeaconSearcher == null)
+			return;
+		if (isAutoGuide) {
+			mBeaconSearcher.openSearcher();
+			((RadioButton) mRadioGroup.findViewById(R.id.home_tab_follow))
+					.setEnabled(true);
+		} else {
+			mBeaconSearcher.closeSearcher();
+			if (((AppContext)getApplication()).currentExhibitId == -1)
+				((RadioButton) mRadioGroup.findViewById(R.id.home_tab_follow))
+						.setEnabled(false);
+		}
 	}
 
 }

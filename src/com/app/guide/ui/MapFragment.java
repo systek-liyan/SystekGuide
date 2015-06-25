@@ -67,7 +67,7 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 		mListView = (ListView) view.findViewById(R.id.map_list_exhibit);
 		try {
 			floorCount = GetBeanFromSql.getFloorCount(getActivity(),
-					AppContext.currentMuseumId);
+					((AppContext)getActivity().getApplication()).currentMuseumId);
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -78,7 +78,7 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 		sceneMap.setShowMark(false);
 		try {
 			mapExhibitBeans = GetBeanFromSql.getMapExhibit(getActivity(),
-					AppContext.currentMuseumId, 1);
+					((AppContext)getActivity().getApplication()).currentMuseumId, 1);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -152,9 +152,9 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		if (!AppContext.exhibitsIdList.equals("")) {
+		if (!((AppContext)getActivity().getApplication()).exhibitsIdList.equals("")) {
 			// 获取筛选的exhibits
-			String[] ids = AppContext.exhibitsIdList.split(",");
+			String[] ids = ((AppContext)getActivity().getApplication()).exhibitsIdList.split(",");
 			for (int i = 0, j = 0; i < ids.length; i++, j++) {
 				if (Integer.parseInt(ids[i]) != mapExhibitBeans.get(j).getId()) {
 					mapExhibitBeans.remove(j);
@@ -163,7 +163,7 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 			}
 			adapter.notifyDataSetChanged();
 		}
-		if (AppContext.isAutoGuide()) {
+		if (((AppContext)getActivity().getApplication()).isAutoGuide()) {
 			HomeActivity.setBeaconLocateType(NearestBeacon.GET_LOCATION_BEACON);
 			HomeActivity.setBeaconSearcherListener(this);
 		}

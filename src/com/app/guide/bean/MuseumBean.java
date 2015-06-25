@@ -1,7 +1,5 @@
 package com.app.guide.bean;
 
-import android.R.transition;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 

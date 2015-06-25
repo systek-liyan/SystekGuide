@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -23,17 +24,19 @@ import android.widget.ToggleButton;
 
 import com.app.guide.AppContext;
 import com.app.guide.AppContext.OnGuideModeChangedListener;
+import com.app.guide.AppContext.onBluetoothStateChangedListener;
 import com.app.guide.R;
 import com.app.guide.adapter.CommonAdapter;
 import com.app.guide.adapter.ViewHolder;
 import com.app.guide.bean.Menu;
 
 public class MenuFragment extends Fragment implements
-		OnGuideModeChangedListener {
+		OnGuideModeChangedListener, onBluetoothStateChangedListener {
 
 	private HomeClick homeClick;
 	private ListView lvMenu;
 	private List<Menu> mData;
+	private Context mContext;
 
 	private static final int ITEM_CITY = 0;
 	private static final int ITEM_DOWNLOAD = 1;
@@ -46,6 +49,7 @@ public class MenuFragment extends Fragment implements
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+		mContext = activity;
 		initData();
 	}
 
@@ -63,14 +67,8 @@ public class MenuFragment extends Fragment implements
 
 		tbAutoGuide = (ToggleButton) view
 				.findViewById(R.id.frag_menu_tb_autoguide);
-		AppContext.addGuideModeChangedListener(this);
-		if (!AppContext.isBleEnable) {
-			tbAutoGuide.setChecked(false);
-			tbAutoGuide.setClickable(false);
-		} else {
-			tbAutoGuide.setClickable(true);
-		}
-
+		((AppContext)mContext.getApplicationContext()).addGuideModeChangedListener(this);
+		((AppContext)mContext.getApplicationContext()).setBleListener(this);
 		tbAutoGuide.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override
@@ -78,13 +76,13 @@ public class MenuFragment extends Fragment implements
 					boolean isChecked) {
 				// TODO Auto-generated method stub
 				if (isChecked) {
-					AppContext.setGuideMode(true);
-					// Toast.makeText(getActivity(), "进入自动导航模式",
-					// Toast.LENGTH_SHORT).show();
+					((AppContext)mContext.getApplicationContext()).setGuideMode(true);
+					Toast.makeText(mContext, "进入自动导航模式",
+							Toast.LENGTH_SHORT).show();
 				} else {
-					AppContext.setGuideMode(false);
-					// Toast.makeText(getActivity(), "进入手动导航模式",
-					// Toast.LENGTH_SHORT).show();
+					((AppContext)mContext.getApplicationContext()).setGuideMode(false);
+					Toast.makeText(mContext, "进入手动导航模式",
+							Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
@@ -164,6 +162,20 @@ public class MenuFragment extends Fragment implements
 			}
 		}
 
+	}
+
+	/**
+	 * 当蓝牙状态改变时的回调方法
+	 */
+	@Override
+	public void onBluetoothStateChanged(boolean isEnable) {
+
+		if (!isEnable) {
+			tbAutoGuide.setChecked(false);
+			tbAutoGuide.setEnabled(false);
+		} else {
+			tbAutoGuide.setEnabled(true);
+		}
 	}
 
 }

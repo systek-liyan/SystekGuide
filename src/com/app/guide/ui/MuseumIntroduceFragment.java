@@ -271,8 +271,8 @@ public class MuseumIntroduceFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				AppContext.currentExhibitId = exhibits.get(position-1).getId();
-				AppContext.setGuideMode(false);
+				((AppContext)getActivity().getApplication()).currentExhibitId = exhibits.get(position-1).getId();
+				((AppContext)getActivity().getApplication()).setGuideMode(false);
 				// 不能使用HomeActivity.mRadioGroup.check(R.id.home_tab_follow);
 				// 因为该方法会重复调用onCheckedChanged()方法
 				// ，从而导致java.lang.IllegalStateException异常

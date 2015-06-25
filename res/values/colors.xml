@@ -24,4 +24,6 @@
     <color name="text_color">#ff545454</color>
     
     <color name="separator_color">#a7a7a7</color>
+    
+      <color name="process_color">#AEDEF4</color>
 </resources>

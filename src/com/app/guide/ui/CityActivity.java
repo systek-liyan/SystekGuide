@@ -20,6 +20,7 @@ import com.app.guide.R;
 import com.app.guide.adapter.CityAdapter;
 import com.app.guide.bean.CityModel;
 import com.app.guide.sql.CityDBManager;
+import com.app.guide.widget.DialogManagerHelper;
 import com.app.guide.widget.QuicLocationBar;
 import com.app.guide.widget.QuicLocationBar.OnTouchLetterChangedListener;
 import com.baidu.location.BDLocation;
@@ -30,6 +31,7 @@ import com.baidu.location.LocationClientOption.LocationMode;
 
 public class CityActivity extends BaseActivity {
 
+	
 	private LocationClient mLocationClient;
 	private Button loacteButton;
 
@@ -43,10 +45,12 @@ public class CityActivity extends BaseActivity {
 	@Override
 	@SuppressLint("InlinedApi")
 	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_city);
-
+		
+		//检测gps是否打开 
+		new DialogManagerHelper(this).showGPSSettingDialog();
+		
 		mQuicLocationBar = (QuicLocationBar) findViewById(R.id.city_loactionbar);
 		mQuicLocationBar
 				.setOnTouchLitterChangedListener(new LetterListViewListener());
@@ -130,6 +134,7 @@ public class CityActivity extends BaseActivity {
 				if (city == null) {
 					loacteButton.setText("定位失败");
 					loacteButton.setEnabled(false);
+					Toast.makeText(CityActivity.this, "定位失败，请手动选择城市", Toast.LENGTH_SHORT).show();
 				} else {
 					loacteButton.setText(city);
 				}

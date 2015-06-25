@@ -126,7 +126,7 @@ public class GetBeanFromSql {
 			exhibit.setId(exhibitId);
 			exhibit.setName(bean.getName());
 			exhibit.setBeaconUId(bean.getBeaconUId());
-			exhibit.setIconUrl(bean.getAudioUrl());
+			exhibit.setIconUrl(bean.getIconUrl());
 			exhibit.setAudioUrl(bean.getAudioUrl());
 			exhibit.setlExhibitBeanId(bean.getlExhibitBeanId());
 			exhibit.setrExhibitBeanId(bean.getrExhibitBeanId());
