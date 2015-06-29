@@ -22,8 +22,9 @@ import com.app.guide.R;
 import com.app.guide.download.DownloadBean;
 import com.app.guide.download.DownloadClient;
 import com.app.guide.download.DownloadClient.OnProgressListener;
-import com.app.guide.download.DownloadClient.STATE;
 import com.app.guide.service.AppService;
+import com.app.guide.widget.DialogManagerHelper;
+import com.app.guide.widget.DialogManagerHelper.OnClickedListener;
 
 public class DownloadingAdapter extends BaseAdapter {
 
@@ -31,13 +32,17 @@ public class DownloadingAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	private Context mContext;
 	private Map<Integer, ProgressBar> progressMap;
-
+	
+	private DialogManagerHelper dialogHelper ; 
+	
 	public DownloadingAdapter(Context context, List<DownloadBean> data) {
 		// TODO Auto-generated constructor stub
 		this.data = data;
 		this.mContext = context;
 		this.mInflater = LayoutInflater.from(context);
 		progressMap = new HashMap<Integer, ProgressBar>();
+		// 添加对话框
+		dialogHelper = new DialogManagerHelper(mContext);
 	}
 
 	@Override
@@ -136,7 +141,29 @@ public class DownloadingAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if (client.getState() == STATE.NONE) {
+				if(dialogHelper.showDownloadDialog(new OnClickedListener() {
+					
+					@Override
+					public void onClickedPositiveBtn() {
+						// TODO Auto-generated method stub
+						Toast.makeText(mContext,"download !", Toast.LENGTH_SHORT).show();
+						holder.message.setText("准备中...");
+						try {
+							client.start();
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						holder.start.setText("暂停");
+					}
+					
+					@Override
+					public void onClickedNegativeBtn() {
+						// TODO Auto-generated method stub
+						Toast.makeText(mContext,"cancel download !", Toast.LENGTH_SHORT).show();
+						
+					}
+				})){
 					holder.message.setText("准备中...");
 					try {
 						client.start();
@@ -145,17 +172,14 @@ public class DownloadingAdapter extends BaseAdapter {
 						e.printStackTrace();
 					}
 					holder.start.setText("暂停");
-				} else if (client.getState() == STATE.DOWNLOADING) {
-					client.pause();
-					holder.start.setText("开始");
-				} else if (client.getState() == STATE.PAUSE) {
-					client.resume();
-					holder.start.setText("暂停");
 				}
 			}
 		});
 		return convertView;
 	}
+	
+	
+
 
 	private class ViewHolder {
 		private TextView name;

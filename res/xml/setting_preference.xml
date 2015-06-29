@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	
+    <PreferenceCategory android:title="@string/setting_locate"> 
+        <CheckBoxPreference 
+            android:title="@string/pref_gps" 
+            android:key="@string/pref_gps" 
+            android:summary="定位时自动检测是否打开GPS" 
+            android:defaultValue="true" />
+            
+        <CheckBoxPreference 
+            android:title="@string/pref_auto_enter" 
+            android:key="@string/pref_auto_enter" 
+            android:summary="自动进入定位到的博物馆" 
+            android:defaultValue="true" />    
+    </PreferenceCategory>
+    
+     <PreferenceCategory android:title="@string/setting_network">	
+        <CheckBoxPreference 
+            android:title="@string/network_picture" 
+            android:key="@string/network_picture" 
+            android:summary="2G,3G网络下自动接收并显示图片" 
+            android:defaultValue="false" />
+           
+        <CheckBoxPreference 
+            android:title="@string/network_wifi" 
+            android:key="@string/network_wifi" 
+            android:summary="自动更新已下载的离线数据包" 
+            android:defaultValue="false" />    
+        
+    </PreferenceCategory>
+   
+    <PreferenceCategory android:title="@string/setting_system">
+        <PreferenceScreen 
+            android:title="@string/sys_about" 
+            android:key="@string/sys_about"
+            android:summary="关于导游通">
+            <!-- 弹出dialog / activity -->
+        </PreferenceScreen>
+        
+        <PreferenceScreen 
+            android:title="@string/sys_update" 
+            android:key="@string/sys_update" >
+        </PreferenceScreen>
+        
+        <PreferenceScreen 
+            android:title="@string/sys_introduction" 
+            android:key="@string/sys_introduction"
+            android:summary="打开导游通使用向导">
+        </PreferenceScreen>
+    </PreferenceCategory>
+    
+   
+</PreferenceScreen>

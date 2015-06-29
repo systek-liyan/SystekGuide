@@ -69,6 +69,7 @@ public class MuseumActivity extends BaseActivity {
 						sm.toggle();
 					}
 				});
+		sm = getSlidingMenu();
 		lvMuseum = (ListView) findViewById(R.id.activity_museum_list);
 
 	}

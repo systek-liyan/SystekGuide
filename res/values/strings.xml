@@ -61,9 +61,24 @@
     
    	<string name="dialog_wifi">设置Wi-Fi</string>
    	<string name="dialog_location_wifi">检测到您当前未开启Wi-Fi\n\n是否需要开启Wi-Fi以提高定位精准度\n</string>
-   	<string name="dialog_download_wifi">检测到您当前未开启Wi-Fi,该操作将消耗大量移动流量\n\n请前往设置Wi-Fi或继续使用移动流量下载\n</string>	
+   	<string name="dialog_download_wifi">当前不是WiFi网络，下载博物馆离线数据包将产生流量费用（具体资费情况咨询当地运营商），确认是否继续下载</string>	
    
    	<string name="dialog_gps">设置GPS</string>
    	<string name="dialog_open_gps">\n如需提高定位精准度，在位置设置中打开GPS\n</string>
+   	
+   	
+   	<!-- 设置 -->
+   	<string name="setting_locate">定位设置</string>
+   	<string name="pref_gps">自动检测GPS</string>
+   	<string name="pref_auto_enter">自动进入定位到的博物馆</string>
+   	
+   	<string name="setting_network">网络设置</string>
+   	<string name="network_picture">自动接收图片</string>
+   	<string name="network_wifi">WiFi下自动更新</string>
+   	
+   	<string name="setting_system">系统设置</string>
+   	<string name="sys_about">关于</string>
+   	<string name="sys_update">检查更新</string>
+   	<string name="sys_introduction">使用向导</string>
    	
 </resources>

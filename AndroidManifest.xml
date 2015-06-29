@@ -71,7 +71,9 @@
             android:launchMode="singleTask" >
         </activity>
         <activity android:name="com.app.guide.ui.DownloadActivity" />
-
+		<activity 
+		    android:name="com.app.guide.ui.SettingActivity" 
+		    android:icon="@drawable/back"/>
         <service android:name="com.app.guide.service.AppService" />
         <service
             android:name="org.altbeacon.beacon.service.BeaconService"

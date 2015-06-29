@@ -2,7 +2,6 @@ package com.app.guide.widget;
 
 import org.altbeacon.beacon.BleNotAvailableException;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -39,14 +38,49 @@ public class DialogManagerHelper {
 		this.mResources = mContext.getResources();
 	}
 
+	//mResources.getString(R.string.dialog_download_wifi)
+	
+	
+	public boolean showDownloadDialog(final OnClickedListener listener){
+		WifiManager wm = (WifiManager) mContext
+				.getSystemService(Context.WIFI_SERVICE);
+		if (!wm.isWifiEnabled()) {
+			//检测当前网络环境为非Wifi 是否继续下载
+			final SweetAlertDialog sa = new SweetAlertDialog(mContext,SweetAlertDialog.SHOW_MESSAGE);
+			sa.setTitleText(mResources
+					.getString(R.string.dialog_download_wifi));
+			sa.setCancelable(true);
+			sa.setConfirmText(mResources.getString(R.string.dialog_setting))
+					.setConfirmClickListener(new OnSweetClickListener() {
+						@Override
+						public void onClick(SweetAlertDialog sweetAlertDialog) {
+							if(listener!=null){
+								listener.onClickedPositiveBtn();
+							}
+							sa.dismiss();
+						}
+					});
+			sa.setCancelText(mResources.getString(R.string.dialog_cancel))
+					.setCancelClickListener(new OnSweetClickListener() {
+				@Override
+				public void onClick(SweetAlertDialog sweetAlertDialog) {
+					if(listener!=null){
+						listener.onClickedNegativeBtn();
+					}
+					sa.dismiss();
+				}
+			});
+			sa.show();
+			return false;
+		}
+		return true;
+	}
+	
 	/**
-	 * 根据当前Wifi状态，若未开启则弹出Wifi设置对话框
-	 * 
-	 * @param contentText
-	 *            对话框内容
+	 * 设置定位wifi dialog
 	 */
-	public void showWifiDialog(String contentText) {
-		if(!AppConfig.getAppConfig(mContext).isAutoCheckSetting) return;
+	public void showWifiLocateDialog() {
+		if(!AppConfig.getAppConfig(mContext).autoCheckGPS) return;
 		WifiManager wm = (WifiManager) mContext
 				.getSystemService(Context.WIFI_SERVICE);
 		if (!wm.isWifiEnabled()) {
@@ -54,12 +88,13 @@ public class DialogManagerHelper {
 					new OnCheckedChangedListener() {
 				@Override
 				public void oncheckedChanged(boolean isChecked) {
-					AppConfig.getAppConfig(mContext).isAutoCheckSetting = !isChecked;
+					AppConfig.getAppConfig(mContext).autoCheckGPS = !isChecked;
 					
 				}
 			});
 			sa.setTitleText(mResources.getString(R.string.dialog_wifi));
-			sa.setContentText(contentText);
+			sa.setContentText(mResources
+					.getString(R.string.dialog_location_wifi));
 			sa.setCancelable(true);
 			sa.setConfirmText(mResources.getString(R.string.dialog_setting))
 					.setConfirmClickListener(new OnSweetClickListener() {
@@ -83,11 +118,12 @@ public class DialogManagerHelper {
 		}
 	}
 
+
 	/**
 	 * 根据当前GPS状态，若未开启则弹出GPS设置对话框
 	 */
 	public void showGPSSettingDialog() {
-		if(!AppConfig.getAppConfig(mContext).isAutoCheckSetting) return;
+		if(!AppConfig.getAppConfig(mContext).autoCheckGPS) return;
 		LocationManager lm = (LocationManager) mContext
 				.getSystemService(Context.LOCATION_SERVICE);
 		if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -97,7 +133,7 @@ public class DialogManagerHelper {
 						
 						@Override
 						public void oncheckedChanged(boolean isChecked) {
-							AppConfig.getAppConfig(mContext).isAutoCheckSetting = !isChecked;
+							AppConfig.getAppConfig(mContext).autoCheckGPS = !isChecked;
 							
 						}
 					});
@@ -122,8 +158,7 @@ public class DialogManagerHelper {
 						public void onClick(SweetAlertDialog sweetAlertDialog) {
 							sa.dismiss();
 							// 若当前未开启Wifi，则设置wifi
-							showWifiDialog(mResources
-									.getString(R.string.dialog_location_wifi));
+							showWifiLocateDialog();
 						}
 					});
 			sa.show();
@@ -243,6 +278,13 @@ public class DialogManagerHelper {
 				});
 	}
 
+	public interface OnClickedListener{
+		
+		void onClickedPositiveBtn();
+		
+		void onClickedNegativeBtn();
+	}
+	
 	// public interface onWifiSettingListener{
 	// void onWifiSettingComplete();
 	// }

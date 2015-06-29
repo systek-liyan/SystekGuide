@@ -157,6 +157,10 @@ public class CityActivity extends BaseActivity {
 		if (mLocationClient != null) {
 			mLocationClient.stop();
 		}
+		
 	}
 
+
+	
+	
 }

@@ -18,6 +18,18 @@ public class Constant {
 			.getExternalStorageDirectory().getAbsolutePath();
 	public static final String FLODER = "Guide/Test";
 
+	/**
+	 * sharedPreferences 相关
+	 */
+	public static final String SP_DIR = "preferences";
+	
+	public static final String AUTO_CHECKE_GPS = "auto check gps"; 
+	public static final String AUTO_ENTER_MUSEUM = "auto enter museum"; 
+	public static final String AUTO_RECEIVE_PIC = "auto receive picture"; 
+	public static final String AUTO_UPDATE_IN_WIFI= "auto update in wifi"; 
+	
+	
+	
 	public static String getCachePath(int museumId, String url) {
 		return getImgCacheDir(museumId) + "/" + getCacheFilename(url);
 	}
@@ -25,7 +37,7 @@ public class Constant {
 	public static String getImgCacheDir(int museumId) {
 		return ROOT_SDCARD + "/" + FLODER + museumId + "/img";
 	}
-
+	
 	public static String getCacheFilename(String url) {
 		String name = URLEncoder.encode(url.substring(7));
 		name = name.substring(0, name.lastIndexOf("."));

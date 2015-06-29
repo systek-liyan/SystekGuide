@@ -114,11 +114,10 @@ public class MenuFragment extends Fragment implements
 					intent = new Intent(getActivity(), CityActivity.class);
 					break;
 				case ITEM_DOWNLOAD:
-					Intent downloadIntent = new Intent(getActivity(),
-							DownloadActivity.class);
-					startActivity(downloadIntent);
+					intent = new Intent(getActivity(),DownloadActivity.class);
 					break;
 				case ITEM_SETTING:
+					intent = new Intent(getActivity(),SettingActivity.class);
 					break;
 				case ITEM_MORE:
 					break;

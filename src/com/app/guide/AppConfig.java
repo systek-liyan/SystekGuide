@@ -26,6 +26,13 @@ public class AppConfig {
 		return singleInstance;
 	}
 	
-	public boolean isAutoCheckSetting = true;
-
+	public boolean autoCheckGPS= true;
+	
+	public boolean autoEnterMuseum = true;
+	
+	public boolean autoReceivePic = false;
+	
+	public boolean autoUpdateInWifi = false;
+	
+	
 }

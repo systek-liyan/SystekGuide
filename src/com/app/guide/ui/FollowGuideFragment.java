@@ -55,7 +55,6 @@ import edu.xidian.NearestBeacon.NearestBeacon;
  * TODO bug 对话框 没自动dismiss  follow header 
  * TODO 博物馆音频
  * TODO 博物馆选择界面 对话框 
- * TODO 设置Activity
  * 
  * @author yetwish
  * @date 2015-4-25

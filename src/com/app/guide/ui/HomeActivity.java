@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.Window;
@@ -20,8 +21,10 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.app.guide.AppConfig;
 import com.app.guide.AppContext;
 import com.app.guide.AppManager;
+import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.AppContext.OnGuideModeChangedListener;
 import com.app.guide.adapter.FragmentTabAdapter;
@@ -190,36 +193,6 @@ public class HomeActivity extends BaseActivity implements
 		}
 	}
 
-	// @SuppressLint("InflateParams")
-	// @Override
-	// protected void initSlidingMenu() {
-	// // TODO Auto-generated method stub
-	// sm = getSlidingMenu();
-	// View view = getLayoutInflater().inflate(R.layout.sliding_menu_left,
-	// null);
-	// FragmentManager manager = getSupportFragmentManager();
-	// FragmentTransaction transaction = manager.beginTransaction();
-	// MenuFragment menuFragment = new MenuFragment();
-	// menuFragment.setHomeClick(new HomeClick() {
-	//
-	// @Override
-	// public void home() {
-	// // TODO Auto-generated method stub
-	// sm.toggle();
-	// }
-	// });
-	// transaction.replace(R.id.sliding_container, menuFragment);
-	// transaction.commit();
-	// setBehindContentView(view);
-	// sm.setMode(SlidingMenu.LEFT);
-	// sm.setSlidingEnabled(true);
-	// sm.setShadowWidthRes(R.dimen.shadow_width);
-	// sm.setFadeEnabled(true);
-	// sm.setShadowDrawable(R.drawable.shadow);
-	// sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-	// sm.setFadeDegree(0.35f);
-	// sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-	// }
 
 	@Override
 	protected void onPause() {
@@ -269,7 +242,10 @@ public class HomeActivity extends BaseActivity implements
 			mBeaconSearcher.closeSearcher();
 		}
 		unregisterReceiver(mBluetoothReceiver);
+		
 	}
+	
+	
 
 	/**
 	 * store BeaconSearcher instance, we use it to range beacon,and get the

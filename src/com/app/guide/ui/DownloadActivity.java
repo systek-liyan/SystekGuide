@@ -5,7 +5,6 @@ import android.support.v4.app.FragmentTabHost;
 import android.widget.TabHost.TabSpec;
 
 import com.app.guide.R;
-import com.app.guide.widget.DialogManagerHelper;
 
 public class DownloadActivity extends BaseActivity {
 
@@ -24,9 +23,6 @@ public class DownloadActivity extends BaseActivity {
 		if (savedInstanceState != null) {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
 		}
-		// 添加对话框
-		new DialogManagerHelper(this).showWifiDialog(this.getResources()
-				.getString(R.string.dialog_download_wifi));
 		
 	}
 
