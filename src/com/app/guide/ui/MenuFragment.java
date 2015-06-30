@@ -19,7 +19,6 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.app.guide.AppContext;
@@ -77,12 +76,12 @@ public class MenuFragment extends Fragment implements
 				// TODO Auto-generated method stub
 				if (isChecked) {
 					((AppContext)mContext.getApplicationContext()).setGuideMode(true);
-					Toast.makeText(mContext, "进入自动导航模式",
-							Toast.LENGTH_SHORT).show();
+//					Toast.makeText(mContext, "进入自动导航模式",
+//							Toast.LENGTH_SHORT).show();
 				} else {
 					((AppContext)mContext.getApplicationContext()).setGuideMode(false);
-					Toast.makeText(mContext, "进入手动导航模式",
-							Toast.LENGTH_SHORT).show();
+//					Toast.makeText(mContext, "进入手动导航模式",
+//							Toast.LENGTH_SHORT).show();
 				}
 			}
 		});

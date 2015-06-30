@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:fillViewport="true"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
+   	<com.app.guide.widget.HeaderLayout
+		android:paddingRight="60dp"
+		android:background="@color/myred"
+		android:id="@+id/frag_header_follow_guide"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"/>
+	<ScrollView
+	    android:fillViewport="true"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:orientation="vertical">
-        <com.app.guide.widget.HeaderLayout
-             android:paddingRight="60dp"
-             android:background="@color/myred"
-             android:id="@+id/frag_header_follow_guide"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"/>
+        android:layout_width="match_parent">
+        <LinearLayout  
+            android:orientation="vertical"
+    		android:layout_width="match_parent"
+    		android:layout_height="wrap_content">
         <!-- 文字讲解 -->
         <FrameLayout
             android:id="@+id/frag_follow_guide_lyric_container"
@@ -148,6 +152,7 @@
 	            android:layout_gravity="center_vertical"
 	            android:orientation="horizontal" >
 	        </LinearLayout>
-    </com.app.guide.widget.MyHorizontalScrollView>
-     </LinearLayout>
-</ScrollView>
+    	</com.app.guide.widget.MyHorizontalScrollView>
+    </LinearLayout>
+	</ScrollView>
+</LinearLayout>

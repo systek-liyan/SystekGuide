@@ -297,9 +297,10 @@ public class SubjectSelectFragment extends Fragment {
 				((AppContext)getActivity().getApplication()).currentExhibitId = exhibits.get(
 						position - invisItem - 1).getId();
 				((AppContext)getActivity().getApplication()).setGuideMode(false);
-				((RadioButton) HomeActivity.mRadioGroup
-						.findViewById(R.id.home_tab_follow)).setChecked(true);
-
+				RadioButton rb = (RadioButton) HomeActivity.mRadioGroup
+						.findViewById(R.id.home_tab_follow);
+				rb.setEnabled(true);
+				rb.setChecked(true);
 			}
 		});
 		lvExhibits.setOnLoadListener(new OnLoadListener() {

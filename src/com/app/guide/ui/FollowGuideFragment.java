@@ -25,11 +25,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.app.guide.AppContext;
+import com.app.guide.AppContext.OnGuideModeChangedListener;
 import com.app.guide.R;
 import com.app.guide.adapter.HorizontalScrollViewAdapter;
 import com.app.guide.bean.Exhibit;
@@ -51,16 +53,14 @@ import edu.xidian.NearestBeacon.NearestBeacon;
  * 两种进入该界面的方式，底部导航进入 和选择某一展品进入
  * 随身导游页面，包含与Beacon相关的操作，根据停留时间获取最近的beacon，并让相应的音频文件自动播放，并显示文字
  * 
- * TODO 监听 电话    设置声音
- * TODO bug 对话框 没自动dismiss  follow header 
- * TODO 博物馆音频
- * TODO 博物馆选择界面 对话框 
+ * TODO 监听 电话 设置声音 TODO bug 对话框 没自动dismiss TODO view visible gone 不会绘制 无法加载后面的
+ * TODO 博物馆选择界面 对话框
  * 
  * @author yetwish
  * @date 2015-4-25
  */
 public class FollowGuideFragment extends Fragment implements
-		onBeaconSearcherListener {
+		onBeaconSearcherListener, OnGuideModeChangedListener {
 
 	private static final String TAG = FollowGuideFragment.class.getSimpleName();
 
@@ -68,6 +68,7 @@ public class FollowGuideFragment extends Fragment implements
 	 * 上下文对象
 	 */
 	private Context mContext;
+
 
 	private SweetAlertDialog pDialog;
 
@@ -174,7 +175,7 @@ public class FollowGuideFragment extends Fragment implements
 	/**
 	 * 标识多角度图片列表是否展开
 	 */
-	private boolean picFlag = false;
+	private boolean picFlag = true;
 
 	/**
 	 * 标识展品图片列表是否展开
@@ -220,15 +221,17 @@ public class FollowGuideFragment extends Fragment implements
 
 	private boolean isFirst = true;
 
+	/**
+	 * 自动导航时 手动选择展品 优先播放完选择的展品，再返回自动导航
+	 */
 	private boolean isChosed = false;
 
-		
 	/**
 	 * defined several file path of media resources
 	 */
-	private static final String FILE_PATH = Environment
+	public static final String FILE_PATH = Environment
 			.getExternalStorageDirectory().getAbsolutePath() + "/Test/";
-	private static final String[] MP3_NAMES = { "3201.mp3", "3203.mp3",
+	public static final String[] MP3_NAMES = { "3201.mp3", "3203.mp3",
 			"3205.mp3" };
 	private static final String[] LYRIC_NAMES = { "3201.lrc", "3203.lrc",
 			"3205.lrc" };
@@ -255,9 +258,9 @@ public class FollowGuideFragment extends Fragment implements
 					}
 				}
 				if (index != mPicGallery.getCurrentSelectedIndex() || isFirst) {
-					Log.w("TAG",
-							"SET START TIME" + " index " + index + " current "
-									+ mPicGallery.getCurrentSelectedIndex());
+//					Log.w("TAG",
+//							"SET START TIME" + " index " + index + " current "
+//									+ mPicGallery.getCurrentSelectedIndex());
 					mPicGallery.setCurrentSelectedItem(true, index);
 					isFirst = false;
 				}
@@ -295,9 +298,9 @@ public class FollowGuideFragment extends Fragment implements
 		// 获取屏幕信息
 		getScreenDisplayMetrix();
 		// 获取intent
-		mMuseumId = ((AppContext)getActivity().getApplication()).currentMuseumId;
+		mMuseumId = ((AppContext) getActivity().getApplication()).currentMuseumId;
 		// 获取exhibit id
-		mCurrentExhibitId = ((AppContext)getActivity().getApplication()).currentExhibitId;
+		mCurrentExhibitId = ((AppContext) getActivity().getApplication()).currentExhibitId;
 		// 根据exhibit id 获取数据
 		initData(mCurrentExhibitId);
 		// initGalleryData();
@@ -306,6 +309,9 @@ public class FollowGuideFragment extends Fragment implements
 
 		mDialogHelper = new DialogManagerHelper(activity);
 
+		HomeActivity.setBeaconLocateType(NearestBeacon.GET_EXHIBIT_BEACON);
+		
+		((AppContext) getActivity().getApplication()).addGuideModeChangedListener(this);
 	}
 
 	/**
@@ -328,7 +334,7 @@ public class FollowGuideFragment extends Fragment implements
 						mMuseumId, id);
 				mCurrentExhibitId = id;
 				// 更新appContext中的id
-				((AppContext)getActivity().getApplication()).currentExhibitId = id;
+				((AppContext) getActivity().getApplication()).currentExhibitId = id;
 				if (mCurrentExhibit != null) {
 					// 获取展品图片数据
 					mGalleryList = mCurrentExhibit.getImgList();
@@ -351,7 +357,7 @@ public class FollowGuideFragment extends Fragment implements
 					mExhibitsList.add(rExhibit);
 					// 初始化 列表 获取展品icon
 					for (int i = 0; i < mExhibitsList.size(); i++) {
-						Log.w(TAG, mExhibitsList.get(i).getIconUrl() + "");
+//						Log.w(TAG, mExhibitsList.get(i).getIconUrl() + "");
 						mExhibitImages.add(new ImageOption(mExhibitsList.get(i)
 								.getIconUrl(), 0));
 					}
@@ -446,6 +452,7 @@ public class FollowGuideFragment extends Fragment implements
 		}
 
 	}
+
 	
 	/**
 	 * when the fragment is on the top of the stack ,start ranging the beacon
@@ -453,20 +460,24 @@ public class FollowGuideFragment extends Fragment implements
 	@Override
 	public void onResume() {
 		super.onResume();
+		Log.w("LifeCycle", "resume ");
 		// 从AppContext中获取全局exhibit id
-		if (((AppContext)getActivity().getApplication()).isAutoGuide() && !isChosed) {
+		if (((AppContext) getActivity().getApplication()).isAutoGuide()
+				&& !isChosed) {
 			if (pDialog == null)
 				pDialog = mDialogHelper.showSearchingProgressDialog();
 			// 设置beacon监听
 			HomeActivity.setBeaconSearcherListener(this);
-			HomeActivity.setBeaconLocateType(NearestBeacon.GET_EXHIBIT_BEACON);
+		}else if(!((AppContext) getActivity().getApplication()).isAutoGuide()){
+			HomeActivity.setBeaconSearcherListener(null);
 		}
-		notifyExhibitChanged(((AppContext)getActivity().getApplication()).currentExhibitId);
+		notifyExhibitChanged(((AppContext) getActivity().getApplication()).currentExhibitId);
 	}
 
 	private void notifyExhibitChanged(int exhibitId) {
 		if (mCurrentExhibitId != exhibitId && exhibitId != -1) {
-			if (((AppContext)getActivity().getApplication()).isAutoGuide() && isChosed) {
+			if (((AppContext) getActivity().getApplication()).isAutoGuide()
+					&& isChosed) {
 				return;
 			}
 			if (mLyricView != null)
@@ -487,6 +498,15 @@ public class FollowGuideFragment extends Fragment implements
 		}
 	}
 
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		Log.w("LifeCycle", "stop");
+		((AppContext) getActivity().getApplication()).removeGuideModeListener(this);
+		HomeActivity.setBeaconSearcherListener(null);
+	}
+
 	/**
 	 * when the fragment is destroy , close the beaconSearcher,and release
 	 * resources
@@ -494,6 +514,7 @@ public class FollowGuideFragment extends Fragment implements
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		Log.w("LifeCycle", "destroy");
 		if (mLyricView != null) {
 			mLyricView.destroy();
 		}
@@ -503,6 +524,18 @@ public class FollowGuideFragment extends Fragment implements
 		if (mExhibitGallery != null) {
 			mExhibitGallery.destroy();
 		}
+		clear();
+	}
+
+	private void clear() {
+		mCurrentExhibit = null;
+		mCurrentExhibitId = -1;
+		((AppContext) getActivity().getApplication()).currentExhibitId = -1;
+		if (mDialogHelper != null) {
+			mDialogHelper = null;
+		}
+		if (pDialog != null)
+			pDialog = null;
 	}
 
 	private void initLyricView() {
@@ -560,24 +593,6 @@ public class FollowGuideFragment extends Fragment implements
 
 		HomeActivity.getMenu().addIgnoredView(mExhibitGallery);
 
-		// mPicGallery
-		// .setCurrentImageChangedListener(new CurrentImageChangedListener() {
-		//
-		// @Override
-		// public void onCurrentImgChanged(int position,
-		// View viewIndicator) {
-		// ivLyricBg.setErrorImageResId(R.drawable.icon);
-		// ivLyricBg.setDefaultImageResId(R.drawable.icon);
-		// ivLyricBg.setImageUrl(mGalleryList.get(position)
-		// .getImgUrl(), BitmapUtils
-		// .getImageLoader(mContext));
-		// viewIndicator.setAlpha(1f);
-		// mLyricView.setCurrentPosition(mGalleryList
-		// .get(position).getStartTime());
-		// // updatePlayBar();
-		// }
-		// });
-
 		mPicGallery.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -588,7 +603,6 @@ public class FollowGuideFragment extends Fragment implements
 					mLyricView.setCurrentPosition(mGalleryList.get(position)
 							.getStartTime());
 				}
-				// updatePlayBar();
 			}
 		});
 
@@ -603,6 +617,9 @@ public class FollowGuideFragment extends Fragment implements
 		 */
 		tvTitlePics.setOnClickListener(mClickListener);
 		ivPicExpand.setOnClickListener(mClickListener);
+		
+		ivPicExpand.setImageResource(R.drawable.title_normal);
+		mPicGallery.setVisibility(View.VISIBLE);
 
 		mExhibitGallery.setShowInCenter();
 
@@ -760,6 +777,25 @@ public class FollowGuideFragment extends Fragment implements
 			changeCurrentExhibitById(2);
 		} else if (beacon.getId2().toString().contains("58")) {
 			changeCurrentExhibitById(3);
+		}
+	}
+
+	@Override
+	public void onGuideModeChanged(boolean isAutoGuide) {
+		if (isAutoGuide) {
+			HomeActivity.getMenu().toggle();
+			RadioButton rb = (RadioButton) HomeActivity.mRadioGroup
+					.findViewById(R.id.home_tab_follow);
+			rb.setChecked(true);
+			// 进入自动导航
+			if (pDialog != null)
+				pDialog.show();
+			else {
+				pDialog = mDialogHelper.showSearchingProgressDialog();
+			}
+			// 设置beacon监听
+			HomeActivity.setBeaconSearcherListener(this);
+			// TODO
 		}
 	}
 
