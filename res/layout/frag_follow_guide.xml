@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-   	<com.app.guide.widget.HeaderLayout
+   	<com.app.guide.widget.TopBar
 		android:paddingRight="60dp"
 		android:background="@color/myred"
 		android:id="@+id/frag_header_follow_guide"

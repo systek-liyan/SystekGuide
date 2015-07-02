@@ -29,6 +29,7 @@
             android:summary="自动更新已下载的离线数据包" 
             android:defaultValue="false" />    
         
+        
     </PreferenceCategory>
    
     <PreferenceCategory android:title="@string/setting_system">

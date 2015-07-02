@@ -40,7 +40,7 @@ import com.app.guide.offline.GetBeanFromSql;
 import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
 import com.app.guide.utils.BitmapUtils;
 import com.app.guide.widget.DialogManagerHelper;
-import com.app.guide.widget.HeaderLayout;
+import com.app.guide.widget.TopBar;
 import com.app.guide.widget.LyricView;
 import com.app.guide.widget.LyricView.onProgressChangedListener;
 import com.app.guide.widget.MyHorizontalScrollView;
@@ -80,7 +80,7 @@ public class FollowGuideFragment extends Fragment implements
 	/**
 	 * 标题栏
 	 */
-	private HeaderLayout fragHeader;
+	private TopBar fragHeader;
 
 	/**
 	 * the view which show the lyric.
@@ -389,7 +389,7 @@ public class FollowGuideFragment extends Fragment implements
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		// init fragment header
-		fragHeader = (HeaderLayout) view
+		fragHeader = (TopBar) view
 				.findViewById(R.id.frag_header_follow_guide);
 		if (mCurrentExhibit != null)
 			fragHeader.setTitle(mCurrentExhibit.getName());

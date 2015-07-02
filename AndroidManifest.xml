@@ -23,6 +23,13 @@
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 	<uses-permission android:name="android.permission.GET_TASKS" />
 	<uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    
+    
+    <permission android:name="android.permission.BAIDU_LOCATION_SERVICE"></permission>
+    <uses-permission android:name="android.permission.BAIDU_LOCATION_SERVICE"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
+    <uses-permission android:name="android.permission.ACCES_MOCK_LOCATION"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_GPS" />
 	
     <application
         android:name="com.app.guide.AppContext"
@@ -32,7 +39,7 @@
         android:theme="@style/AppTheme" >
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="a9Mr7LiOpi2X04K85jVtyZuO" />
+            android:value="h44Boajn5VsEpGe0ZF9oNB6a" />
 
         <activity
             android:name="com.app.guide.MainActivity"

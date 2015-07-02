@@ -49,7 +49,7 @@ public class CityActivity extends BaseActivity {
 		setContentView(R.layout.activity_city);
 		
 		//检测gps是否打开 
-		new DialogManagerHelper(this).showGPSSettingDialog();
+		new DialogManagerHelper(this).showWifiLocateDialog();
 		
 		mQuicLocationBar = (QuicLocationBar) findViewById(R.id.city_loactionbar);
 		mQuicLocationBar
@@ -57,7 +57,7 @@ public class CityActivity extends BaseActivity {
 		overlay = (TextView) findViewById(R.id.city_dialog);
 		mCityLit = (ListView) findViewById(R.id.city_list);
 		loacteButton = (Button) findViewById(R.id.city_btn_loacte);
-		mLocationClient = new LocationClient(this);
+		mLocationClient = new LocationClient(getApplicationContext());
 		mQuicLocationBar.setTextDialog(overlay);
 		initLocation();
 		initList();
@@ -137,6 +137,10 @@ public class CityActivity extends BaseActivity {
 					Toast.makeText(CityActivity.this, "定位失败，请手动选择城市", Toast.LENGTH_SHORT).show();
 				} else {
 					loacteButton.setText(city);
+					Toast.makeText(CityActivity.this, city.toString(),Toast.LENGTH_SHORT).show();
+					//TODO putExtrax
+					Intent intent = new Intent(CityActivity.this, MuseumActivity.class);
+					startActivity(intent);
 				}
 
 			}

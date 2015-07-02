@@ -41,7 +41,7 @@ import com.app.guide.offline.GetBeanFromSql;
 import com.app.guide.utils.BitmapUtils;
 import com.app.guide.widget.AutoLoadListView;
 import com.app.guide.widget.AutoLoadListView.OnLoadListener;
-import com.app.guide.widget.HeaderLayout;
+import com.app.guide.widget.TopBar;
 
 /**
  * 博物馆主页fragment 从博物馆选择页中获取博物馆的id
@@ -56,7 +56,7 @@ public class MuseumIntroduceFragment extends Fragment {
 
 	private LayoutInflater mInflater;
 	private LinearLayout headerLayout;
-	private HeaderLayout fragHeader;
+	private TopBar fragHeader;
 	/**
 	 * store the imageView which shows the pictures of museum
 	 */
@@ -227,7 +227,7 @@ public class MuseumIntroduceFragment extends Fragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		fragHeader = (HeaderLayout) view.findViewById(R.id.frag_header_main);
+		fragHeader = (TopBar) view.findViewById(R.id.frag_header_main);
 		// 设置博物馆名字
 		fragHeader.setTitle(mMuseumDetailBean.getName());
 

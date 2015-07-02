@@ -15,6 +15,11 @@ import com.app.guide.AppConfig;
 import com.app.guide.Constant;
 import com.app.guide.R;
 
+/**
+ * TODO UI 风格
+ * @author yetwish
+ *
+ */
 public class SettingActivity extends BaseActivity {
 
 	

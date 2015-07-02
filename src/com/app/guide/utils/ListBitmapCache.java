@@ -9,7 +9,6 @@ import android.support.v4.util.LruCache;
 import android.util.Log;
 
 import com.android.volley.toolbox.ImageLoader.ImageCache;
-import com.android.volley.toolbox.ImageRequest;
 import com.app.guide.Constant;
 
 public class ListBitmapCache implements ImageCache {

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    <com.app.guide.widget.HeaderLayout 
+    <com.app.guide.widget.TopBar 
         android:id="@+id/activity_museum_header"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"/>

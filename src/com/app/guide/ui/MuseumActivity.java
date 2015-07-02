@@ -19,7 +19,7 @@ import com.app.guide.adapter.CommonAdapter;
 import com.app.guide.adapter.ViewHolder;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.offline.GetBeanFromSql;
-import com.app.guide.widget.HeaderLayout;
+import com.app.guide.widget.TopBar;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 /**
@@ -57,7 +57,7 @@ public class MuseumActivity extends BaseActivity {
 
 	private void initViews() {
 		// 初始化头部
-		HeaderLayout headerLayout = (HeaderLayout) findViewById(R.id.activity_museum_header);
+		TopBar headerLayout = (TopBar) findViewById(R.id.activity_museum_header);
 		headerLayout.setSearchingVisible(false);
 		headerLayout.setTitle(getResources().getString(
 				R.string.title_activity_museum));
