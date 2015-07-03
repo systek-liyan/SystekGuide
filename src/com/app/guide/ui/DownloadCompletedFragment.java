@@ -4,16 +4,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.app.guide.adapter.DownloadCompletedAdapter;
-import com.app.guide.download.DownloadBean;
-import com.app.guide.offline.GetBeanFromSql;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
+import com.app.guide.adapter.DownloadCompletedAdapter;
+import com.app.guide.download.DownloadBean;
+import com.app.guide.download.DownloadInfo;
+import com.app.guide.offline.GetBeanFromSql;
 
 public class DownloadCompletedFragment extends Fragment {
 

@@ -16,8 +16,7 @@ public class Constant {
 
 	public static final String ROOT_SDCARD = Environment
 			.getExternalStorageDirectory().getAbsolutePath();
-	public static final String FLODER = "Guide/Test";
-
+	
 	/**
 	 * sharedPreferences 相关
 	 */
@@ -27,21 +26,50 @@ public class Constant {
 	public static final String AUTO_ENTER_MUSEUM = "auto enter museum"; 
 	public static final String AUTO_RECEIVE_PIC = "auto receive picture"; 
 	public static final String AUTO_UPDATE_IN_WIFI= "auto update in wifi"; 
-	
-	
-	
-	public static String getCachePath(int museumId, String url) {
-		return getImgCacheDir(museumId) + "/" + getCacheFilename(url);
+
+	/**
+	 * 表示离线数据的存放根目录
+	 */
+	public static final String FLODER_NAME = "Guide/";
+	public static final String FLODER = ROOT_SDCARD + "/" + FLODER_NAME;
+
+	/**
+	 * 
+	 * 获得音频文件下载路径
+	 * 
+	 * @param url
+	 * @param museumId
+	 * @return
+	 */
+	public static String getAudioDownloadPath(String url, String museumId) {
+		String fileName = URLEncoder.encode(url);
+		return FLODER + museumId + "/audio/" + fileName;
 	}
 
-	public static String getImgCacheDir(int museumId) {
-		return ROOT_SDCARD + "/" + FLODER + museumId + "/img";
+	/**
+	 * 
+	 * 获得歌词文件下载路径
+	 * 
+	 * @param url
+	 * @param museumId
+	 * @return
+	 */
+	public static String getLrcDownloadPath(String url, String museumId) {
+		String fileName = URLEncoder.encode(url);
+		return FLODER + museumId + "/lrc/" + fileName;
 	}
 	
-	public static String getCacheFilename(String url) {
-		String name = URLEncoder.encode(url.substring(7));
-		name = name.substring(0, name.lastIndexOf("."));
-		return name;
+	/**
+	 * 
+	 * 获得图片文件下载路径
+	 * 
+	 * @param url
+	 * @param museumId
+	 * @return
+	 */
+	public static String getImageDownloadPath(String url, String museumId) {
+		String fileName = URLEncoder.encode(url);
+		return FLODER + museumId + "/img/" + fileName;
 	}
 
 	/**

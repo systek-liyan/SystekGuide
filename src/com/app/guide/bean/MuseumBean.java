@@ -1,5 +1,6 @@
 package com.app.guide.bean;
 
+import com.app.guide.Constant;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -7,7 +8,7 @@ import com.j256.ormlite.table.DatabaseTable;
 public class MuseumBean {
 
 	@DatabaseField(id = true)
-	private int museumId;
+	private String museumId;
 	@DatabaseField(columnName = "name")
 	private String name;// 博物馆名称
 	@DatabaseField(columnName = "address")
@@ -102,7 +103,7 @@ public class MuseumBean {
 	/**
 	 * @return the museumId
 	 */
-	public int getMuseumId() {
+	public String getMuseumId() {
 		return museumId;
 	}
 
@@ -110,7 +111,7 @@ public class MuseumBean {
 	 * @param museumId
 	 *            the museumId to set
 	 */
-	public void setMuseumId(int museumId) {
+	public void setMuseumId(String museumId) {
 		this.museumId = museumId;
 	}
 }

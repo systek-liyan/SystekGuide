@@ -16,13 +16,13 @@ public class DownloadInfo {
 	@DatabaseField(columnName = "target")
 	private String target;//下载文件的存储位置
 	@DatabaseField(columnName = "museumId")
-	private int museumId;
+	private String museumId;
 	
-	public int getMuseumId() {
+	public String getMuseumId() {
 		return museumId;
 	}
 
-	public void setMuseumId(int museumId) {
+	public void setMuseumId(String museumId) {
 		this.museumId = museumId;
 	}
 

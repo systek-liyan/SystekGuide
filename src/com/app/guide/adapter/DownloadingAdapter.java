@@ -1,5 +1,6 @@
 package com.app.guide.adapter;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -22,9 +23,8 @@ import com.app.guide.R;
 import com.app.guide.download.DownloadBean;
 import com.app.guide.download.DownloadClient;
 import com.app.guide.download.DownloadClient.OnProgressListener;
+import com.app.guide.download.DownloadClient.STATE;
 import com.app.guide.service.AppService;
-import com.app.guide.widget.DialogManagerHelper;
-import com.app.guide.widget.DialogManagerHelper.OnClickedListener;
 
 public class DownloadingAdapter extends BaseAdapter {
 
@@ -32,17 +32,13 @@ public class DownloadingAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	private Context mContext;
 	private Map<Integer, ProgressBar> progressMap;
-	
-	private DialogManagerHelper dialogHelper ; 
-	
+
 	public DownloadingAdapter(Context context, List<DownloadBean> data) {
 		// TODO Auto-generated constructor stub
 		this.data = data;
 		this.mContext = context;
 		this.mInflater = LayoutInflater.from(context);
 		progressMap = new HashMap<Integer, ProgressBar>();
-		// 添加对话框
-		dialogHelper = new DialogManagerHelper(mContext);
 	}
 
 	@Override
@@ -75,7 +71,8 @@ public class DownloadingAdapter extends BaseAdapter {
 		notifyDataSetChanged();
 	}
 
-	@SuppressLint("InflateParams") @Override
+	@SuppressLint("InflateParams")
+	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		final ViewHolder holder;
@@ -98,8 +95,8 @@ public class DownloadingAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		int museumId = data.get(position).getMuseumId();
-		holder.name.setText("Test" + museumId);
+		String museumId = data.get(position).getMuseumId();
+		holder.name.setText(data.get(position).getName());
 
 		final DownloadClient client = AppService.getDownloadClient(mContext,
 				museumId);
@@ -111,7 +108,6 @@ public class DownloadingAdapter extends BaseAdapter {
 				Toast.makeText(mContext,
 						client.getDownloadBean().getName() + "下载完成",
 						Toast.LENGTH_SHORT).show();
-				remove(position);
 			}
 
 			@Override
@@ -141,45 +137,32 @@ public class DownloadingAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if(dialogHelper.showDownloadDialog(new OnClickedListener() {
-					
-					@Override
-					public void onClickedPositiveBtn() {
-						// TODO Auto-generated method stub
-						Toast.makeText(mContext,"download !", Toast.LENGTH_SHORT).show();
-						holder.message.setText("准备中...");
-						try {
-							client.start();
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						holder.start.setText("暂停");
-					}
-					
-					@Override
-					public void onClickedNegativeBtn() {
-						// TODO Auto-generated method stub
-						Toast.makeText(mContext,"cancel download !", Toast.LENGTH_SHORT).show();
-						
-					}
-				})){
+				if (client.getState() == STATE.NONE) {
 					holder.message.setText("准备中...");
 					try {
 						client.start();
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+					} catch (NumberFormatException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+					holder.start.setText("暂停");
+				} else if (client.getState() == STATE.DOWNLOADING) {
+					client.pause();
+					holder.start.setText("开始");
+				} else if (client.getState() == STATE.PAUSE) {
+					client.resume();
 					holder.start.setText("暂停");
 				}
 			}
 		});
 		return convertView;
 	}
-	
-	
-
 
 	private class ViewHolder {
 		private TextView name;

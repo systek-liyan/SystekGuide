@@ -6,28 +6,28 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "label")
 public class OfflineLabelBean {
 
-	@DatabaseField(generatedId = true)
-	private int id;
+	@DatabaseField(id = true)
+	private String id;
 	@DatabaseField(columnName = "museumId")
-	private int museumId;
+	private String museumId;
 	@DatabaseField(columnName = "name")
 	private String name;
 	@DatabaseField(columnName = "lables")
-	private String labels;
+	private String lables;
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
-	public int getMuseumId() {
+	public String getMuseumId() {
 		return museumId;
 	}
 
-	public void setMuseumId(int museumId) {
+	public void setMuseumId(String museumId) {
 		this.museumId = museumId;
 	}
 
@@ -39,12 +39,20 @@ public class OfflineLabelBean {
 		this.name = name;
 	}
 
-	public String getLabels() {
-		return labels;
+
+	public String getLables() {
+		return lables;
 	}
 
-	public void setLabels(String labels) {
-		this.labels = labels;
+	public void setLables(String lables) {
+		this.lables = lables;
+	}
+
+
+	@Override
+	public String toString() {
+		return "OfflineLabelBean [id=" + id + ", museumId=" + museumId
+				+ ", name=" + name + ", labels=" + lables + "]";
 	}
 
 }

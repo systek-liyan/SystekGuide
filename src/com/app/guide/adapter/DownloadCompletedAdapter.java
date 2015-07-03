@@ -74,7 +74,7 @@ public class DownloadCompletedAdapter extends BaseAdapter {
 
 		DownloadBean bean = data.get(position);
 		viewHolder.name.setText(bean.getName());
-		final int museumId = data.get(data.size() - 1).getMuseumId();
+		final String museumId = data.get(data.size() - 1).getMuseumId();
 		viewHolder.delete.setOnClickListener(new OnClickListener() {
 
 			@Override

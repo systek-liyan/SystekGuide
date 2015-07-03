@@ -1,7 +1,7 @@
 package com.app.guide.bean;
 
 public class MapExhibitBean {
-	private int id;		
+	private String id;		
 	private float mapX;
 	private float mapY;
 	private String name;
@@ -12,14 +12,14 @@ public class MapExhibitBean {
 	 * return the id;
 	 * @return
 	 */
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 	
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	/**

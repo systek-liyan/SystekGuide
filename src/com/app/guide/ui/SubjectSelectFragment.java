@@ -118,7 +118,7 @@ public class SubjectSelectFragment extends Fragment {
 
 	private int page;
 
-	private int mMuseumId;
+	private String mMuseumId;
 
 	private List<Button> selectedViews = new ArrayList<Button>();
 
@@ -128,13 +128,13 @@ public class SubjectSelectFragment extends Fragment {
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		mContext = activity;
-		mMuseumId = ((AppContext)activity.getApplication()).currentMuseumId;
-		//加载数据时耗费时间较长
+		mMuseumId = ((AppContext) activity.getApplication()).currentMuseumId;
+		// 加载数据时耗费时间较长
 		pDialog = new DialogManagerHelper(mContext).showLoadingProgressDialog();
 		// 初始化数据
 		initData();
 		pDialog.dismiss();
-		pDialog= null;
+		pDialog = null;
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class SubjectSelectFragment extends Fragment {
 	 */
 	private void getSelectorData() {
 		try {
-			labelBeans = GetBeanFromSql.getLabelBeans(mContext, 1);
+			labelBeans = GetBeanFromSql.getLabelBeans(mContext, mMuseumId);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -237,7 +237,7 @@ public class SubjectSelectFragment extends Fragment {
 		View view = inflater.inflate(R.layout.frag_subject_sellect, null);
 		return view;
 	}
-	
+
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
@@ -255,7 +255,7 @@ public class SubjectSelectFragment extends Fragment {
 						ids += selectedExhibits.get(i).getId() + ",";
 				}
 				Log.w("TAG", ids);
-				((AppContext)getActivity().getApplication()).exhibitsIdList = ids;
+				((AppContext) getActivity().getApplication()).exhibitsIdList = ids;
 				((RadioButton) HomeActivity.mRadioGroup
 						.findViewById(R.id.home_tab_map)).setChecked(true);
 				Toast.makeText(mContext, "完成筛选，跳转到map", Toast.LENGTH_SHORT)
@@ -294,13 +294,13 @@ public class SubjectSelectFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				((AppContext)getActivity().getApplication()).currentExhibitId = exhibits.get(
-						position - invisItem - 1).getId();
-				((AppContext)getActivity().getApplication()).setGuideMode(false);
-				RadioButton rb = (RadioButton) HomeActivity.mRadioGroup
-						.findViewById(R.id.home_tab_follow);
-				rb.setEnabled(true);
-				rb.setChecked(true);
+				((AppContext) getActivity().getApplication()).currentExhibitId = exhibits
+						.get(position - invisItem - 1).getId();
+				((AppContext) getActivity().getApplication())
+						.setGuideMode(false);
+				((RadioButton) HomeActivity.mRadioGroup
+						.findViewById(R.id.home_tab_follow)).setChecked(true);
+
 			}
 		});
 		lvExhibits.setOnLoadListener(new OnLoadListener() {
@@ -369,8 +369,7 @@ public class SubjectSelectFragment extends Fragment {
 		for (int i = 0; i < exhibits.size(); i++) {
 			// 匹配
 			for (j = 0; j < selectedData.size(); j++) {
-				if (!exhibits.get(i).getLabels()
-						.containsValue(selectedData.get(j))) {
+				if (!exhibits.get(i).getLabels().contains(selectedData.get(j))) {
 					break;
 				}
 			}

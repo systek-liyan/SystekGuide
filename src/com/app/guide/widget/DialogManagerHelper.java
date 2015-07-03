@@ -46,7 +46,7 @@ public class DialogManagerHelper {
 				.getSystemService(Context.WIFI_SERVICE);
 		if (!wm.isWifiEnabled()) {
 			//检测当前网络环境为非Wifi 是否继续下载
-			final SweetAlertDialog sa = new SweetAlertDialog(mContext,SweetAlertDialog.SHOW_MESSAGE);
+			final SweetAlertDialog sa = new SweetAlertDialog(mContext);
 			sa.setTitleText(mResources
 					.getString(R.string.dialog_download_wifi));
 			sa.setCancelable(true);

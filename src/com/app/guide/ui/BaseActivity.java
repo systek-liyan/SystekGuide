@@ -31,7 +31,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 		}
 		initMenu();
 	}
-	
 
 	protected void initActionbar() {
 		ActionBar actionBar = getSupportActionBar();
@@ -49,7 +48,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 		}
 	}
 
-	@SuppressLint("InflateParams") protected void initSlidingMenu() {
+	protected void initSlidingMenu() {
 		sm = getSlidingMenu();
 		View view = getLayoutInflater().inflate(R.layout.sliding_menu_left,
 				null);

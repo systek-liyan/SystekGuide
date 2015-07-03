@@ -12,11 +12,14 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.app.guide.Constant;
-import com.app.guide.offline.DownloadManagerHelper;
+import com.app.guide.bean.MuseumBean;
 import com.app.guide.offline.OfflineDownloadHelper;
+import com.app.guide.offline.OfflineDownloadHelper.OnFinishedListener;
 import com.app.guide.service.AppService;
+import com.app.guide.sql.DownloadManagerHelper;
 import com.app.guide.utils.FileUtils;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.HttpHandler;
@@ -40,7 +43,7 @@ public class DownloadClient {
 	private static final int TRY_TIME = 3;
 
 	private Context mContext;
-	private int museumId;
+	private String museumId;
 	private Dao<DownloadInfo, Integer> infoDao;
 	private Dao<DownloadBean, Integer> beanDao;
 	private DownloadBean downloadBean;
@@ -54,7 +57,7 @@ public class DownloadClient {
 
 	private OnProgressListener onProgressListener;
 
-	public DownloadClient(Context context, int museumId) {
+	public DownloadClient(Context context, String museumId) {
 		mContext = context;
 		this.museumId = museumId;
 		queue = new LinkedBlockingQueue<DownloadInfo>();
@@ -65,14 +68,17 @@ public class DownloadClient {
 			public void onSuccess(ResponseInfo<File> responseInfo) {
 				// TODO Auto-generated method stub
 				downloadOnceCompleted(responseInfo.contentLength);
+				Log.w(TAG, "success once:" );
 			}
 
 			@Override
 			public void onFailure(HttpException error, String msg) {
 				// TODO Auto-generated method stub
+				Log.w(TAG, "onFailure once:" );
 				if (msg.equals("downloaded")) {
 					downloadOnceCompleted(FileUtils.getFileSize(queue.peek()
 							.getTarget()));
+					return;
 				}
 				tryTime++;
 				if (tryTime == TRY_TIME && onProgressListener != null) {
@@ -105,8 +111,8 @@ public class DownloadClient {
 	}
 
 	/**
-	 * 每次下载成功一个文件后调用此方法。
-	 * 更新DownloadBean和DownloadInfo表
+	 * 每次下载成功一个文件后调用此方法。 更新DownloadBean和DownloadInfo表
+	 * 
 	 * @param length
 	 */
 	private void downloadOnceCompleted(long length) {
@@ -138,9 +144,9 @@ public class DownloadClient {
 		}
 	}
 
-	
 	/**
 	 * 返回下载状态
+	 * 
 	 * @return
 	 */
 	public STATE getState() {
@@ -149,6 +155,7 @@ public class DownloadClient {
 
 	/**
 	 * 添加下载任务，会将其记录在数据库中
+	 * 
 	 * @param info
 	 */
 	public void addTask(DownloadInfo info) {
@@ -167,11 +174,19 @@ public class DownloadClient {
 
 	/**
 	 * 开始下载，自动判断是否为第一次开始下载
+	 * 
 	 * @throws SQLException
+	 * @throws IOException 
+	 * @throws NumberFormatException 
 	 */
-	public void start() throws SQLException {
+	public void start() throws SQLException, NumberFormatException, IOException {
 		if (state == STATE.NONE) {
-			new PrepareTask().execute();
+			if (prepare()) {
+				if(onProgressListener != null){
+					onProgressListener.onStart();
+				}
+				downloadNext();
+			}
 		} else if (state == STATE.PAUSE) {
 			resume();
 		}
@@ -188,24 +203,53 @@ public class DownloadClient {
 	public boolean prepare() throws SQLException, NumberFormatException,
 			IOException {
 		state = STATE.PREPARE;
+		Log.w(TAG, "prepare");
 		downloadBean = beanDao.queryBuilder().where().eq("museumId", museumId)
 				.queryForFirst();
-		List<DownloadInfo> list;
 		if (downloadBean == null) {
-			downloadBean = new DownloadBean();
-			downloadBean.setCurrent(0);
-			downloadBean.setTotal(223844);
-			downloadBean.setMuseumId(museumId);
-			downloadBean.setName("Test" + museumId);
 			OfflineDownloadHelper helper = new OfflineDownloadHelper(mContext,
 					museumId);
-			list = helper.download();
-		} else {
-			list = infoDao.queryBuilder().where()
-					.eq("museumId", downloadBean.getMuseumId()).query();
-		}
-		if (list.size() == 0) {
+			helper.setOnFinishedListener(new OnFinishedListener() {
+
+				@Override
+				public void onFailed(String msg) {
+					// TODO Auto-generated method stub
+					if (onProgressListener != null) {
+						onProgressListener.onFailed("no start", msg);
+					}
+				}
+
+				@Override
+				public void onSuccess(List<DownloadInfo> list, DownloadBean bean) {
+					// TODO Auto-generated method stub
+					downloadBean = bean;
+					try {
+						beanDao.createOrUpdate(downloadBean);
+						addTask(list);
+						if(onProgressListener != null){
+							onProgressListener.onStart();
+						}
+						Log.w(TAG, "data download completed");
+						downloadNext();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+			helper.download();
 			return false;
+		} else {
+			List<DownloadInfo> list = infoDao.queryBuilder().where()
+					.eq("museumId", downloadBean.getMuseumId()).query();
+			addTask(list);
+			return true;
+		}
+	}
+
+	private void addTask(List<DownloadInfo> list) throws SQLException {
+		if (list.size() == 0) {
+			return;
 		}
 		queue.add(list.get(0));
 		for (int i = 1; i < list.size(); i++) {
@@ -213,15 +257,15 @@ public class DownloadClient {
 		}
 		beanDao.createOrUpdate(downloadBean);
 		list.clear();
-		return true;
 	}
-	
-	public DownloadBean getDownloadBean(){
+
+	public DownloadBean getDownloadBean() {
 		return downloadBean;
 	}
 
 	/**
 	 * 调用xUtils中的下载方法进行单个文件的下载
+	 * 
 	 * @param info
 	 */
 	private void download(DownloadInfo info) {
@@ -276,7 +320,10 @@ public class DownloadClient {
 				}
 				DownloadManagerHelper helper = new DownloadManagerHelper(
 						mContext);
-				helper.getDownloadedDao().deleteById(museumId);
+				DeleteBuilder<MuseumBean, Integer> deleteBuilder = helper
+						.getDownloadedDao().deleteBuilder();
+				deleteBuilder.where().eq("id", museumId);
+				deleteBuilder.delete();
 				FileUtils.deleteDirectory(Constant.FLODER + museumId);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block

@@ -100,7 +100,13 @@ public class LyricView extends View {
 				canvas.drawText(temp.lrc, mX, offsetY + (wordSize + INTERVAL)
 						* i, paint);
 			}
-		} 
+		} else {
+			paintTips.setTextSize(35);
+			canvas.drawText(
+					getResources().getString(R.string.lyric_ble_unenable), mX,
+					310, paintTips);
+			return ;
+		}
 		super.onDraw(canvas);
 	}
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Application;
-import android.content.SharedPreferences;
 
 import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
 import com.baidu.mapapi.SDKInitializer;
@@ -14,89 +13,82 @@ public class AppContext extends Application {
 	/**
 	 * 当前选中的博物馆id
 	 */
-	public int currentMuseumId = 1;
-
+	public String currentMuseumId = "fb468fcd9a894dbf8108f9b8bbc88109";
+	
 	/**
-	 * 当前选中的id
+	 * 当前选中的id 
 	 */
-	public int currentExhibitId = -1;
-
+	public String currentExhibitId;
+	
 	/**
-	 * 传递的展品列表id 规则：各个id间用“，”隔开
+	 * 传递的展品列表id  
+	 * 规则：各个id间用“，”隔开
 	 */
-	public String exhibitsIdList = "";
-
+	public String exhibitsIdList = ""; 
+	
 	/**
 	 * 判断是否有从searchActivity 跳转到homeActivity
 	 */
 	public boolean isSelectedInSearch = false;
-
+	
 	/**
 	 * 是否自动导游
 	 */
 	private boolean isAutoGuide = true;
-
+	
 	/**
 	 * 导航模式改变监听者
 	 */
 	private List<OnGuideModeChangedListener> guideModeListeners;
-
+	
 	private onBluetoothStateChangedListener bleListener;
-
+	
 	/**
 	 * 添加导航模式监听者
-	 * 
-	 * @param listener
-	 *            the listener to set
+	 * @param listener the listener to set
 	 */
-	public void addGuideModeChangedListener(OnGuideModeChangedListener listener) {
-		if (guideModeListeners == null)
-			guideModeListeners = new ArrayList<AppContext.OnGuideModeChangedListener>();
-		if (!guideModeListeners.contains(listener))
+	public void addGuideModeChangedListener(OnGuideModeChangedListener listener){
+		if(guideModeListeners == null) guideModeListeners = new ArrayList<AppContext.OnGuideModeChangedListener>();
+		if(!guideModeListeners.contains(listener))
 			guideModeListeners.add(listener);
 	}
-
+	
 	/**
 	 * 移除监听者
 	 */
-	public void removeGuideModeListener(onBeaconSearcherListener listener) {
-		if (guideModeListeners == null)
-			return;
-		if (guideModeListeners.contains(listener))
+	public void removeGuideModeListener(onBeaconSearcherListener listener){
+		if(guideModeListeners == null) return ;
+		if(guideModeListeners.contains(listener))
 			guideModeListeners.remove(listener);
 	}
-
+	
 	/**
-	 * 设置ble listener
-	 * 
+	 * 设置ble listener 
 	 * @param listener
 	 */
-	public void setBleListener(onBluetoothStateChangedListener listener) {
+	public void setBleListener(onBluetoothStateChangedListener listener){
 		bleListener = listener;
 	}
-
+	
 	/**
 	 * 设置导游模式
-	 * 
-	 * @param guideMode
-	 *            boolean, true：自动导航， false:手动导航
+	 * @param guideMode boolean, true：自动导航， false:手动导航
 	 */
-	public void setGuideMode(boolean guideMode) {
-		if (isAutoGuide == guideMode)
-			return;
+	public void setGuideMode(boolean guideMode){
+		if(isAutoGuide == guideMode) return;
 		isAutoGuide = guideMode;
-		// 通知监听者 导航模式已改变
-		if (guideModeListeners != null) {
-			for (OnGuideModeChangedListener listener : guideModeListeners) {
+		//通知监听者 导航模式已改变
+		if(guideModeListeners != null){
+			for(OnGuideModeChangedListener listener: guideModeListeners){
 				listener.onGuideModeChanged(guideMode);
 			}
 		}
 	}
-
+	
 	/**
 	 * @return boolean 是否自动导航
 	 */
-	public boolean isAutoGuide() {
+	public boolean isAutoGuide(){
 		return isAutoGuide;
 	}
 
@@ -104,29 +96,26 @@ public class AppContext extends Application {
 	 * 是否支持ble
 	 */
 	private boolean isBleEnable = true;
-
+	
 	/**
 	 * @return 是否支持ble
 	 */
-	public boolean isBleEnable() {
+	public boolean isBleEnable(){
 		return isBleEnable;
 	}
-
+	
 	/**
 	 * 设置ble enable
-	 * 
 	 * @param enable
 	 */
-	public void setBleEnable(boolean enable) {
-		if (isBleEnable == enable)
-			return;
+	public void setBleEnable(boolean enable){
+		if(isBleEnable == enable) return;
 		isBleEnable = enable;
-		if (bleListener != null) {
+		if(bleListener!= null){
 			bleListener.onBluetoothStateChanged(enable);
 		}
 	}
-
-	AppConfig appConfig;
+	
 
 	@Override
 	public void onCreate() {
@@ -134,58 +123,29 @@ public class AppContext extends Application {
 		super.onCreate();
 		// 在使用 SDK 各组间之前初始化 context 信息，传入 ApplicationContext
 		SDKInitializer.initialize(this);
-		// 通过sharedPreferences读取系统配置 并存入AppConfig
-		loadDataBySP();
-
 	}
-
-	/**
-	 * 通过sharedPreferences读取系统配置 并存入AppConfig
-	 */
-	private void loadDataBySP() {
-		SharedPreferences sp = getSharedPreferences(Constant.SP_DIR,0);
-		appConfig = AppConfig.getAppConfig(this);
-		
-		appConfig.autoCheckGPS = sp.getBoolean(Constant.AUTO_CHECKE_GPS, true);
-		appConfig.autoEnterMuseum = sp.getBoolean(Constant.AUTO_ENTER_MUSEUM, true);
-		appConfig.autoReceivePic = sp.getBoolean(Constant.AUTO_RECEIVE_PIC, false);
-		appConfig.autoUpdateInWifi = sp.getBoolean(Constant.AUTO_UPDATE_IN_WIFI, true);
-	}
-
-	/**
-	 * 当系统内存低时会调用
-	 */
-	@Override
-	public void onLowMemory() {
-		// TODO Auto-generated method stub
-		super.onLowMemory();
-	}
-
+	
 	/**
 	 * 导航模式改变时回调接口
-	 * 
 	 * @author yetwish
 	 */
-	public interface OnGuideModeChangedListener {
-
+	public interface OnGuideModeChangedListener{
+		
 		/**
 		 * 当导游模式改变时调用该回调
-		 * 
 		 * @param isAutoGuide
 		 */
 		void onGuideModeChanged(boolean isAutoGuide);
-
+		
 	}
-
+	
 	/**
 	 * 蓝牙改变时回调接口
-	 * 
 	 * @author yetwish
 	 */
-	public interface onBluetoothStateChangedListener {
+	public interface onBluetoothStateChangedListener{
 		/**
 		 * 当蓝牙状态改变时调用该回调
-		 * 
 		 * @param isEnable
 		 */
 		void onBluetoothStateChanged(boolean isEnable);

@@ -1,24 +1,25 @@
 package com.app.guide.ui;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Intent;
-import android.media.MediaPlayer;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -69,9 +70,6 @@ public class MuseumIntroduceFragment extends Fragment {
 	private LinearLayout tipsGroup;
 
 	private TextView tvIntroduction;
-	private ImageView ivPlay;
-	private MediaPlayer mPlayer;
-	
 
 	private AutoLoadListView lvExhibit;
 	private ExhibitAdapter exhibitAdapter;
@@ -80,19 +78,15 @@ public class MuseumIntroduceFragment extends Fragment {
 
 	private DisplayMetrics dm;
 
-	private Intent mIntent;
-
-	private int mMuseumId;
+	private String mMuseumId;
 
 	private MuseumDetailBean mMuseumDetailBean;
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		// 获取intent
-		mIntent = activity.getIntent();
 		// 获取museumId
-		mMuseumId = mIntent.getIntExtra(Constant.EXTRA_MUSEUM_ID, 1);
+		mMuseumId = ((AppContext) getActivity().getApplicationContext()).currentMuseumId;
 		Log.w("Fragment", mMuseumId + "");
 		getScreenHeight();
 		// 初始化博物馆数据
@@ -115,37 +109,8 @@ public class MuseumIntroduceFragment extends Fragment {
 			Log.w("Fragment", mMuseumDetailBean.getName());
 			// 初始化图片信息
 			initMuseumImages();
-			// 初始化博物馆介绍
-//			tvIntroduction.setText(mMuseumDetailBean.getTextUrl());
+			// 初始化音频信息
 		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void prepareAudio() {
-//		tvIntroduction.setText(mMuseumDetailBean.getTextUrl());
-		if (mPlayer != null) {
-			if (mPlayer.isPlaying()) {
-				mPlayer.stop();
-			}
-			mPlayer.reset();
-		} else {
-			mPlayer = new MediaPlayer();
-		}
-		try {
-			mPlayer.setDataSource(FollowGuideFragment.FILE_PATH + FollowGuideFragment.MP3_NAMES[0]);
-			mPlayer.prepare();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -162,7 +127,7 @@ public class MuseumIntroduceFragment extends Fragment {
 	private void getExhibitData() {
 		page = 0;
 		try {
-			exhibits = GetBeanFromSql.getExhibitBeans(getActivity(), 1,
+			exhibits = GetBeanFromSql.getExhibitBeans(getActivity(), mMuseumId,
 					page);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -258,30 +223,15 @@ public class MuseumIntroduceFragment extends Fragment {
 		// 获取博物馆简介textView,并给textView尾部添加imageView(播放键)
 		tvIntroduction = (TextView) headerLayout
 				.findViewById(R.id.frag_main_tv_introduction);
-		ivPlay = (ImageView)headerLayout.findViewById(R.id.frag_main_iv_play);
-		
-		ivPlay.setClickable(true);
-		ivPlay.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if(mPlayer == null) return;
-				if(mPlayer.isPlaying()){
-					mPlayer.pause();
-					ivPlay.setImageResource(R.drawable.home_tab_subject_normal_img);
-				}else{
-					mPlayer.start();
-					ivPlay.setImageResource(R.drawable.home_tab_subject_pressed_img);
-				}
-				
-			}
-		});
+		// 设置博物馆简介
+		tvIntroduction.setText(mMuseumDetailBean.getTextUrl());
 		// 获取播放按钮的bitmap
-//		Bitmap bitmap = BitmapFactory.decodeResource(this.getActivity()
-//				.getResources(), R.drawable.home_tab_subject_normal_img);
-//		ImageSpan imgSpan = new ImageSpan(this.getActivity(), bitmap);
-//		SpannableString spanString = new SpannableString("icon");
-//		spanString.setSpan(imgSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//		tvIntroduction.append(spanString);
+		Bitmap bitmap = BitmapFactory.decodeResource(this.getActivity()
+				.getResources(), R.drawable.home_tab_subject_normal_img);
+		ImageSpan imgSpan = new ImageSpan(this.getActivity(), bitmap);
+		SpannableString spanString = new SpannableString("icon");
+		spanString.setSpan(imgSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		tvIntroduction.append(spanString);
 
 		// 获取listview
 		lvExhibit = (AutoLoadListView) view
@@ -293,21 +243,6 @@ public class MuseumIntroduceFragment extends Fragment {
 		initListView();
 		// 解决slidingMenu和viewPager 滑动冲突
 		HomeActivity.getMenu().addIgnoredView(viewPager);
-	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-		prepareAudio();
-	}
-	
-	@Override
-	public void onPause() {
-		super.onPause();
-		if(mPlayer!=null){
-			mPlayer.stop();
-			ivPlay.setImageResource(R.drawable.home_tab_subject_normal_img); 
-		}
 	}
 
 	private void initListView() {
@@ -330,18 +265,17 @@ public class MuseumIntroduceFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				((AppContext)getActivity().getApplication()).currentExhibitId = exhibits.get(position-1).getId();
-				((AppContext)getActivity().getApplication()).setGuideMode(false);
+				((AppContext) getActivity().getApplication()).currentExhibitId = exhibits
+						.get(position - 1).getId();
+				((AppContext) getActivity().getApplication())
+						.setGuideMode(false);
 				// 不能使用HomeActivity.mRadioGroup.check(R.id.home_tab_follow);
 				// 因为该方法会重复调用onCheckedChanged()方法
 				// ，从而导致java.lang.IllegalStateException异常
 				// 跳转到follow guide fragment
-				RadioButton rb = (RadioButton) HomeActivity.mRadioGroup
-						.findViewById(R.id.home_tab_follow);
-				rb.setEnabled(true);
-				rb.setChecked(true);
-				
-				
+				((RadioButton) HomeActivity.mRadioGroup
+						.findViewById(R.id.home_tab_follow)).setChecked(true);
+
 			}
 		});
 

@@ -32,6 +32,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 import com.android.volley.toolbox.NetworkImageView;
 import com.app.guide.AppContext;
 import com.app.guide.AppContext.OnGuideModeChangedListener;
+import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.HorizontalScrollViewAdapter;
 import com.app.guide.bean.Exhibit;
@@ -40,12 +41,12 @@ import com.app.guide.offline.GetBeanFromSql;
 import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
 import com.app.guide.utils.BitmapUtils;
 import com.app.guide.widget.DialogManagerHelper;
-import com.app.guide.widget.TopBar;
 import com.app.guide.widget.LyricView;
 import com.app.guide.widget.LyricView.onProgressChangedListener;
 import com.app.guide.widget.MyHorizontalScrollView;
 import com.app.guide.widget.MyHorizontalScrollView.OnItemClickListener;
 import com.app.guide.widget.MyHorizontalScrollView.OnLoadingMoreListener;
+import com.app.guide.widget.TopBar;
 
 import edu.xidian.NearestBeacon.NearestBeacon;
 
@@ -68,7 +69,6 @@ public class FollowGuideFragment extends Fragment implements
 	 * 上下文对象
 	 */
 	private Context mContext;
-
 
 	private SweetAlertDialog pDialog;
 
@@ -205,12 +205,12 @@ public class FollowGuideFragment extends Fragment implements
 	/**
 	 * 当前exhibit id
 	 */
-	private int mCurrentExhibitId;
+	private String mCurrentExhibitId;
 
 	/**
 	 * 当前博物馆的id
 	 */
-	private int mMuseumId;
+	private String mMuseumId;
 
 	/**
 	 * click listener
@@ -258,9 +258,9 @@ public class FollowGuideFragment extends Fragment implements
 					}
 				}
 				if (index != mPicGallery.getCurrentSelectedIndex() || isFirst) {
-//					Log.w("TAG",
-//							"SET START TIME" + " index " + index + " current "
-//									+ mPicGallery.getCurrentSelectedIndex());
+					// Log.w("TAG",
+					// "SET START TIME" + " index " + index + " current "
+					// + mPicGallery.getCurrentSelectedIndex());
 					mPicGallery.setCurrentSelectedItem(true, index);
 					isFirst = false;
 				}
@@ -273,14 +273,14 @@ public class FollowGuideFragment extends Fragment implements
 					isChosed = false;
 				else {
 					// 循环
-					int id = mCurrentExhibitId;
-					mCurrentExhibitId = -1;
+					String id = mCurrentExhibitId;
+					mCurrentExhibitId = null;
 					notifyExhibitChanged(id);
 				}
 				break;
 			case MSG_EXHIBIT_CHANGED:
 				// 若当前beacon改变了
-				notifyExhibitChanged(msg.arg1);
+				notifyExhibitChanged((String) msg.obj);
 				break;
 
 			}
@@ -310,8 +310,9 @@ public class FollowGuideFragment extends Fragment implements
 		mDialogHelper = new DialogManagerHelper(activity);
 
 		HomeActivity.setBeaconLocateType(NearestBeacon.GET_EXHIBIT_BEACON);
-		
-		((AppContext) getActivity().getApplication()).addGuideModeChangedListener(this);
+
+		((AppContext) getActivity().getApplication())
+				.addGuideModeChangedListener(this);
 	}
 
 	/**
@@ -324,9 +325,9 @@ public class FollowGuideFragment extends Fragment implements
 		manager.getDefaultDisplay().getMetrics(dm);
 	}
 
-	private void initData(int id) {
+	private void initData(String id) {
 		// 判断是否是从点击展品跳转过来的
-		if (id != -1) {
+		if (id != null) {
 			// 开始手动模式
 			// 根据传入的展品id，获取选中的展品信息
 			try {
@@ -340,13 +341,10 @@ public class FollowGuideFragment extends Fragment implements
 					mGalleryList = mCurrentExhibit.getImgList();
 					// 获取展品图片数据
 					// TODO
-					int left = 1;
-					if (mCurrentExhibitId - 1 > 1)
-						left = mCurrentExhibitId - 1;
 					lExhibit = GetBeanFromSql.getExhibit(mContext, mMuseumId,
-							left);
+							mCurrentExhibit.getlExhibitBeanId());
 					rExhibit = GetBeanFromSql.getExhibit(mContext, mMuseumId,
-							mCurrentExhibitId + 1);
+							mCurrentExhibit.getrExhibitBeanId());
 					// 将展品添加到展品数组中
 					mExhibitsList.clear();
 					mExhibitImages.clear();
@@ -357,7 +355,7 @@ public class FollowGuideFragment extends Fragment implements
 					mExhibitsList.add(rExhibit);
 					// 初始化 列表 获取展品icon
 					for (int i = 0; i < mExhibitsList.size(); i++) {
-//						Log.w(TAG, mExhibitsList.get(i).getIconUrl() + "");
+						// Log.w(TAG, mExhibitsList.get(i).getIconUrl() + "");
 						mExhibitImages.add(new ImageOption(mExhibitsList.get(i)
 								.getIconUrl(), 0));
 					}
@@ -389,8 +387,7 @@ public class FollowGuideFragment extends Fragment implements
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		// init fragment header
-		fragHeader = (TopBar) view
-				.findViewById(R.id.frag_header_follow_guide);
+		fragHeader = (TopBar) view.findViewById(R.id.frag_header_follow_guide);
 		if (mCurrentExhibit != null)
 			fragHeader.setTitle(mCurrentExhibit.getName());
 		else
@@ -453,7 +450,6 @@ public class FollowGuideFragment extends Fragment implements
 
 	}
 
-	
 	/**
 	 * when the fragment is on the top of the stack ,start ranging the beacon
 	 */
@@ -468,14 +464,14 @@ public class FollowGuideFragment extends Fragment implements
 				pDialog = mDialogHelper.showSearchingProgressDialog();
 			// 设置beacon监听
 			HomeActivity.setBeaconSearcherListener(this);
-		}else if(!((AppContext) getActivity().getApplication()).isAutoGuide()){
+		} else if (!((AppContext) getActivity().getApplication()).isAutoGuide()) {
 			HomeActivity.setBeaconSearcherListener(null);
 		}
 		notifyExhibitChanged(((AppContext) getActivity().getApplication()).currentExhibitId);
 	}
 
-	private void notifyExhibitChanged(int exhibitId) {
-		if (mCurrentExhibitId != exhibitId && exhibitId != -1) {
+	private void notifyExhibitChanged(String exhibitId) {
+		if (exhibitId != null && !exhibitId.equals(mCurrentExhibitId)) {
 			if (((AppContext) getActivity().getApplication()).isAutoGuide()
 					&& isChosed) {
 				return;
@@ -498,12 +494,12 @@ public class FollowGuideFragment extends Fragment implements
 		}
 	}
 
-
 	@Override
 	public void onStop() {
 		super.onStop();
 		Log.w("LifeCycle", "stop");
-		((AppContext) getActivity().getApplication()).removeGuideModeListener(this);
+		((AppContext) getActivity().getApplication())
+				.removeGuideModeListener(this);
 		HomeActivity.setBeaconSearcherListener(null);
 	}
 
@@ -529,8 +525,8 @@ public class FollowGuideFragment extends Fragment implements
 
 	private void clear() {
 		mCurrentExhibit = null;
-		mCurrentExhibitId = -1;
-		((AppContext) getActivity().getApplication()).currentExhibitId = -1;
+		mCurrentExhibitId = null;
+		((AppContext) getActivity().getApplication()).currentExhibitId = null;
 		if (mDialogHelper != null) {
 			mDialogHelper = null;
 		}
@@ -617,7 +613,7 @@ public class FollowGuideFragment extends Fragment implements
 		 */
 		tvTitlePics.setOnClickListener(mClickListener);
 		ivPicExpand.setOnClickListener(mClickListener);
-		
+
 		ivPicExpand.setImageResource(R.drawable.title_normal);
 		mPicGallery.setVisibility(View.VISIBLE);
 
@@ -662,11 +658,11 @@ public class FollowGuideFragment extends Fragment implements
 		ivExhibitExpand.setOnClickListener(mClickListener);
 	}
 
-	private void changeCurrentExhibitById(int i) {
-		if (mCurrentExhibitId != i) {
+	private void changeCurrentExhibitById(String i) {
+		if (mCurrentExhibitId.equals(i)) {
 			Message msg = Message.obtain();
 			msg.what = MSG_EXHIBIT_CHANGED;
-			msg.arg1 = i;
+			msg.obj = i;
 			mHandler.sendMessage(msg);
 		}
 	}
@@ -680,9 +676,9 @@ public class FollowGuideFragment extends Fragment implements
 		if (mLyricView == null)
 			return;
 		// 准备音频文件
-		mLyricView.prepare(FILE_PATH
-				+ MP3_NAMES[mCurrentExhibitId % MP3_NAMES.length], FILE_PATH
-				+ LYRIC_NAMES[mCurrentExhibitId % MP3_NAMES.length]);
+		mLyricView.prepare(Constant.getAudioDownloadPath(
+				mCurrentExhibit.getAudioUrl(), mMuseumId), Constant
+				.getLrcDownloadPath(mCurrentExhibit.getTextUrl(), mMuseumId));
 		// 设置progressBar的最大值
 		pbMusic.setMax(mLyricView.getDuration());
 		// 开始播放
@@ -770,14 +766,14 @@ public class FollowGuideFragment extends Fragment implements
 		if (pDialog != null) {
 			pDialog.dismiss();
 		}
-		Log.w("BeaconSearcher", beacon.getId2().toString());
-		if (beacon.getId2().toString().contains("44")) {
-			changeCurrentExhibitById(1);
-		} else if (beacon.getId2().toString().contains("47")) {
-			changeCurrentExhibitById(2);
-		} else if (beacon.getId2().toString().contains("58")) {
-			changeCurrentExhibitById(3);
-		}
+//		Log.w("BeaconSearcher", beacon.getId2().toString());
+//		if (beacon.getId2().toString().contains("44")) {
+//			changeCurrentExhibitById(1);
+//		} else if (beacon.getId2().toString().contains("47")) {
+//			changeCurrentExhibitById(2);
+//		} else if (beacon.getId2().toString().contains("58")) {
+//			changeCurrentExhibitById(3);
+//		}
 	}
 
 	@Override

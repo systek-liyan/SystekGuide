@@ -21,9 +21,9 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.app.guide.AppContext;
-import com.app.guide.AppContext.OnGuideModeChangedListener;
 import com.app.guide.AppManager;
 import com.app.guide.R;
+import com.app.guide.AppContext.OnGuideModeChangedListener;
 import com.app.guide.adapter.FragmentTabAdapter;
 import com.app.guide.adapter.FragmentTabAdapter.OnRgsExtraCheckedChangedListener;
 import com.app.guide.widget.DialogManagerHelper;
@@ -40,7 +40,7 @@ public class HomeActivity extends BaseActivity implements
 	private int pressedCount;
 	private Timer timer;
 	private List<Fragment> fragments;
-
+	
 	/**
 	 * 侧滑栏
 	 */
@@ -62,7 +62,7 @@ public class HomeActivity extends BaseActivity implements
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
-
+		
 		// 初始化beacon搜索器
 		initBeaconSearcher();
 		timer = new Timer();
@@ -102,7 +102,7 @@ public class HomeActivity extends BaseActivity implements
 
 		});
 		sm = getSlidingMenu();
-		if (((AppContext) getApplication()).isAutoGuide()) {
+		if (((AppContext)getApplication()).isAutoGuide()) {
 			mBeaconSearcher.openSearcher();
 		} else {
 			((RadioButton) mRadioGroup.findViewById(R.id.home_tab_follow))
@@ -114,7 +114,7 @@ public class HomeActivity extends BaseActivity implements
 				.addAction("android.bluetooth.adapter.action.STATE_CHANGED");
 		registerReceiver(mBluetoothReceiver, intentFilter);
 		// 添加导游模式切换监听
-		((AppContext) getApplication()).addGuideModeChangedListener(this);
+		((AppContext)getApplication()).addGuideModeChangedListener(this);
 	}
 
 	/**
@@ -131,10 +131,10 @@ public class HomeActivity extends BaseActivity implements
 			if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
 				switch (mBluetoothAdapter.getState()) {
 				case BluetoothAdapter.STATE_ON:
-					((AppContext) getApplication()).setBleEnable(true);
+					((AppContext)getApplication()).setBleEnable(true);
 					break;
 				case BluetoothAdapter.STATE_OFF:
-					((AppContext) getApplication()).setBleEnable(false);
+					((AppContext)getApplication()).setBleEnable(false);
 					break;
 				}
 			}
@@ -154,15 +154,14 @@ public class HomeActivity extends BaseActivity implements
 
 	@Override
 	protected void onResume() {
-		if (!((AppContext) getApplication()).isAutoGuide()
-				&& ((AppContext) getApplication()).currentExhibitId == -1) {
+		if (!((AppContext)getApplication()).isAutoGuide() && ((AppContext)getApplication()).currentExhibitId == null) {
 			((RadioButton) mRadioGroup.findViewById(R.id.home_tab_follow))
 					.setEnabled(false);
 		}
-		if (((AppContext) getApplication()).isSelectedInSearch) {
+		if (((AppContext)getApplication()).isSelectedInSearch) {
 			((RadioButton) HomeActivity.mRadioGroup
 					.findViewById(R.id.home_tab_follow)).setChecked(true);
-			((AppContext) getApplication()).isSelectedInSearch = false;
+			((AppContext)getApplication()).isSelectedInSearch = false;
 		}
 		super.onResume();
 	}
@@ -190,7 +189,38 @@ public class HomeActivity extends BaseActivity implements
 			}, 2000);
 		}
 	}
-	
+
+	// @SuppressLint("InflateParams")
+	// @Override
+	// protected void initSlidingMenu() {
+	// // TODO Auto-generated method stub
+	// sm = getSlidingMenu();
+	// View view = getLayoutInflater().inflate(R.layout.sliding_menu_left,
+	// null);
+	// FragmentManager manager = getSupportFragmentManager();
+	// FragmentTransaction transaction = manager.beginTransaction();
+	// MenuFragment menuFragment = new MenuFragment();
+	// menuFragment.setHomeClick(new HomeClick() {
+	//
+	// @Override
+	// public void home() {
+	// // TODO Auto-generated method stub
+	// sm.toggle();
+	// }
+	// });
+	// transaction.replace(R.id.sliding_container, menuFragment);
+	// transaction.commit();
+	// setBehindContentView(view);
+	// sm.setMode(SlidingMenu.LEFT);
+	// sm.setSlidingEnabled(true);
+	// sm.setShadowWidthRes(R.dimen.shadow_width);
+	// sm.setFadeEnabled(true);
+	// sm.setShadowDrawable(R.drawable.shadow);
+	// sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+	// sm.setFadeDegree(0.35f);
+	// sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+	// }
+
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
@@ -239,7 +269,6 @@ public class HomeActivity extends BaseActivity implements
 			mBeaconSearcher.closeSearcher();
 		}
 		unregisterReceiver(mBluetoothReceiver);
-
 	}
 
 	/**
@@ -268,7 +297,7 @@ public class HomeActivity extends BaseActivity implements
 	 * @param activity
 	 */
 	private void initBeaconSearcher() {
-		// 当蓝牙打开时，打开beacon搜索器，开始搜索距离最近的Beacon
+
 		mBeaconSearcher = BeaconSearcher.getInstance(this);
 		// 设定用于展品定位的最小停留时间(ms)
 		mBeaconSearcher.setMin_stay_milliseconds(5000);
@@ -280,8 +309,8 @@ public class HomeActivity extends BaseActivity implements
 		mBeaconSearcher.setNearestBeaconType(NearestBeacon.GET_EXHIBIT_BEACON);
 		// 设置beacon监听器
 		mBeaconSearcher.setNearestBeaconListener(this);
+		// 当蓝牙打开时，打开beacon搜索器，开始搜索距离最近的Beacon
 		new DialogManagerHelper(this).showBLESettingDialog(mBeaconSearcher);
-
 	}
 
 	@Override
@@ -294,7 +323,7 @@ public class HomeActivity extends BaseActivity implements
 					.setEnabled(true);
 		} else {
 			mBeaconSearcher.closeSearcher();
-			if (((AppContext) getApplication()).currentExhibitId == -1)
+			if (((AppContext)getApplication()).currentExhibitId == null)
 				((RadioButton) mRadioGroup.findViewById(R.id.home_tab_follow))
 						.setEnabled(false);
 		}

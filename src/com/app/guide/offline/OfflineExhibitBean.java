@@ -6,297 +6,195 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "exhibit")
 public class OfflineExhibitBean {
 
-	@DatabaseField(generatedId = true, useGetSet = true)
-	private int id;
+	@DatabaseField(id = true, useGetSet = true)
+	private String id;
 	@DatabaseField(columnName = "name", useGetSet = true)
 	private String name;
 	@DatabaseField(columnName = "museumId", useGetSet = true)
-	private int museumId;
+	private String museumId;
 	@DatabaseField(columnName = "beaconId", useGetSet = true)
-	private String beaconUId;
+	private String beaconId;
 	@DatabaseField(columnName = "introduce", useGetSet = true)
 	private String introduce;
 	@DatabaseField(columnName = "address", useGetSet = true)
 	private String address;
-	@DatabaseField(columnName = "mapX", useGetSet = true)
-	private float mapX;
-	@DatabaseField(columnName = "mapY", useGetSet = true)
-	private float mapY;
+	@DatabaseField(columnName = "mapx", useGetSet = true)
+	private float mapx;
+	@DatabaseField(columnName = "mapy", useGetSet = true)
+	private float mapy;
 	@DatabaseField(defaultValue = "1", columnName = "floor", useGetSet = true)
 	private int floor;
-	@DatabaseField(columnName = "iconUrl", useGetSet = true)
-	private String iconUrl;
-	@DatabaseField(columnName = "imgJson", useGetSet = true)
-	private String imgJson;
-	@DatabaseField(columnName = "audioUrl", useGetSet = true)
-	private String audioUrl;
-	@DatabaseField(columnName = "textUrl", useGetSet = true)
-	private String textUrl;
-	@DatabaseField(columnName = "labelJson", useGetSet = true)
-	private String labelJson;
-	@DatabaseField(columnName = "isBoutique")
-	private boolean isBoutique;
-	@DatabaseField(columnName = "lExhibitBeanId")
-	private int lExhibitBeanId;
-	@DatabaseField(columnName = "rExhibitBeanId")
-	private int rExhibitBeanId;
+	@DatabaseField(columnName = "iconurl", useGetSet = true)
+	private String iconurl;
+	@DatabaseField(columnName = "imgsurl", useGetSet = true)
+	private String imgsurl;
+	@DatabaseField(columnName = "audiourl", useGetSet = true)
+	private String audiourl;
+	@DatabaseField(columnName = "texturl", useGetSet = true)
+	private String texturl;
+	@DatabaseField(columnName = "label", useGetSet = true)
+	private String labels;
+	@DatabaseField(columnName = "lexhibit")
+	private String lexhibit;
+	@DatabaseField(columnName = "rexhibit")
+	private String rexhibit;
 	@DatabaseField(columnName = "version", useGetSet = true)
 	private int version;
+	@DatabaseField(columnName = "priority")
+	private int priority;
+//	@DatabaseField(columnName = "filesize")
+//	private long filesize;
+//
+//	public long getFilesize() {
+//		return filesize;
+//	}
+//
+//	public void setFilesize(long filesize) {
+//		this.filesize = filesize;
+//	}
 
-	/**
-	 * @return the id
-	 */
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	/**
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the name
-	 */
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @param name
-	 *            the name to set
-	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	/**
-	 * @return the museumId
-	 */
-	public int getMuseumId() {
+	public String getMuseumId() {
 		return museumId;
 	}
 
-	/**
-	 * @param museumId
-	 *            the museumId to set
-	 */
-	public void setMuseumId(int museumId) {
+	public void setMuseumId(String museumId) {
 		this.museumId = museumId;
 	}
 
-	/**
-	 * @return the beaconId
-	 */
-	public String getBeaconUId() {
-		return beaconUId;
+	public String getBeaconId() {
+		return beaconId;
 	}
 
-	/**
-	 * @param beaconId
-	 *            the beaconId to set
-	 */
-	public void setBeaconUId(String beaconId) {
-		this.beaconUId = beaconId;
+	public void setBeaconId(String beaconId) {
+		this.beaconId = beaconId;
 	}
 
-	/**
-	 * @return the introduce
-	 */
 	public String getIntroduce() {
 		return introduce;
 	}
 
-	/**
-	 * @param introduce
-	 *            the introduce to set
-	 */
 	public void setIntroduce(String introduce) {
 		this.introduce = introduce;
 	}
 
-	/**
-	 * @return the address
-	 */
 	public String getAddress() {
 		return address;
 	}
 
-	/**
-	 * @param address
-	 *            the address to set
-	 */
 	public void setAddress(String address) {
 		this.address = address;
 	}
 
-	/**
-	 * @return the mapX
-	 */
-	public float getMapX() {
-		return mapX;
+	public float getMapx() {
+		return mapx;
 	}
 
-	/**
-	 * @param mapX
-	 *            the mapX to set
-	 */
-	public void setMapX(float mapX) {
-		this.mapX = mapX;
+	public void setMapx(float mapx) {
+		this.mapx = mapx;
 	}
 
-	/**
-	 * @return the mapY
-	 */
-	public float getMapY() {
-		return mapY;
+	public float getMapy() {
+		return mapy;
 	}
 
-	/**
-	 * @param mapY
-	 *            the mapY to set
-	 */
-	public void setMapY(float mapY) {
-		this.mapY = mapY;
+	public void setMapy(float mapy) {
+		this.mapy = mapy;
 	}
 
-	/**
-	 * @return the floor
-	 */
 	public int getFloor() {
 		return floor;
 	}
 
-	/**
-	 * @param floor
-	 *            the floor to set
-	 */
 	public void setFloor(int floor) {
 		this.floor = floor;
 	}
 
-	/**
-	 * @return the iconUrl
-	 */
-	public String getIconUrl() {
-		return iconUrl;
+	public String getIconurl() {
+		return iconurl;
 	}
 
-	/**
-	 * @param iconUrl
-	 *            the iconUrl to set
-	 */
-	public void setIconUrl(String iconUrl) {
-		this.iconUrl = iconUrl;
+	public void setIconurl(String iconurl) {
+		this.iconurl = iconurl;
 	}
 
-	/**
-	 * @return the imgJson
-	 */
-	public String getImgJson() {
-		return imgJson;
+	public String getImgsurl() {
+		return imgsurl;
 	}
 
-	/**
-	 * @param imgJson
-	 *            the imgJson to set
-	 */
-	public void setImgJson(String imgJson) {
-		this.imgJson = imgJson;
+	public void setImgsurl(String imgsurl) {
+		this.imgsurl = imgsurl;
 	}
 
-	/**
-	 * @return the audioUrl
-	 */
-	public String getAudioUrl() {
-		return audioUrl;
+	public String getAudiourl() {
+		return audiourl;
 	}
 
-	/**
-	 * @param audioUrl
-	 *            the audioUrl to set
-	 */
-	public void setAudioUrl(String audioUrl) {
-		this.audioUrl = audioUrl;
+	public void setAudiourl(String audiourl) {
+		this.audiourl = audiourl;
 	}
 
-	/**
-	 * @return the textUrl
-	 */
-	public String getTextUrl() {
-		return textUrl;
+	public String getTexturl() {
+		return texturl;
 	}
 
-	/**
-	 * @param textUrl
-	 *            the textUrl to set
-	 */
-	public void setTextUrl(String textUrl) {
-		this.textUrl = textUrl;
+	public void setTexturl(String texturl) {
+		this.texturl = texturl;
 	}
 
-	/**
-	 * @return the labelJson
-	 */
-	public String getLabelJson() {
-		return labelJson;
+	public String getLabels() {
+		return labels;
 	}
 
-	/**
-	 * @param labelJson
-	 *            the labelJson to set
-	 */
-	public void setLabelJson(String labelJson) {
-		this.labelJson = labelJson;
+	public void setLabels(String labels) {
+		this.labels = labels;
 	}
 
-	/**
-	 * @return the isBoutique
-	 */
-	public boolean isBoutique() {
-		return isBoutique;
+	public String getLexhibit() {
+		return lexhibit;
 	}
 
-	/**
-	 * @param isBoutique
-	 *            the isBoutique to set
-	 */
-	public void setBoutique(boolean isBoutique) {
-		this.isBoutique = isBoutique;
+	public void setLexhibit(String lexhibit) {
+		this.lexhibit = lexhibit;
 	}
 
-	public int getlExhibitBeanId() {
-		return lExhibitBeanId;
+	public String getRexhibit() {
+		return rexhibit;
 	}
 
-	public void setlExhibitBeanId(int lExhibitBeanId) {
-		this.lExhibitBeanId = lExhibitBeanId;
+	public void setRexhibit(String rexhibit) {
+		this.rexhibit = rexhibit;
 	}
 
-	public int getrExhibitBeanId() {
-		return rExhibitBeanId;
-	}
-
-	public void setrExhibitBeanId(int rExhibitBeanId) {
-		this.rExhibitBeanId = rExhibitBeanId;
-	}
-
-	/**
-	 * @return the version
-	 */
 	public int getVersion() {
 		return version;
 	}
 
-	/**
-	 * @param version
-	 *            the version to set
-	 */
 	public void setVersion(int version) {
 		this.version = version;
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 
 }

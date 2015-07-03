@@ -11,17 +11,19 @@ import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.app.guide.AppContext;
 import com.app.guide.R;
 import com.app.guide.bean.MapExhibitBean;
+import com.app.guide.utils.BitmapUtils;
 
 public class MapDialog extends PopupWindow {
 
 	private TextView titleTextView;
-	private ImageView mImageView;
+	private NetworkImageView mImageView;
 	private MapExhibitBean mapExhibitBean;
-	
-	
+
 	@SuppressLint("InflateParams")
 	public MapDialog(final Context context, MapExhibitBean exhibitBean) {
 		super(context);
@@ -30,28 +32,30 @@ public class MapDialog extends PopupWindow {
 		View view = LayoutInflater.from(context).inflate(
 				R.layout.dialog_map_exhibit, null);
 		titleTextView = (TextView) view.findViewById(R.id.dia_map_title);
-		mImageView = (ImageView) view.findViewById(R.id.dia_map_img);
+		mImageView = (NetworkImageView) view.findViewById(R.id.dia_map_img);
 		titleTextView.setText(mapExhibitBean.getName());
-		mImageView.setImageBitmap(BitmapFactory.decodeResource(
-				context.getResources(), R.drawable.e1));
+		mImageView.setDefaultImageResId(R.drawable.ic_launcher);
+		mImageView.setErrorImageResId(R.drawable.ic_launcher);
+		ImageLoader imageLoader = BitmapUtils.getImageLoader(context);
+		mImageView.setImageUrl(exhibitBean.getIconUrl(), imageLoader);
 		mImageView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				((AppContext)context.getApplicationContext()).setGuideMode(false);
-				((AppContext)context.getApplicationContext()).currentExhibitId = mapExhibitBean.getId();
+				((AppContext) context.getApplicationContext())
+						.setGuideMode(false);
+				((AppContext) context.getApplicationContext()).currentExhibitId = mapExhibitBean
+						.getId();
 				dismiss();
 				((RadioButton) HomeActivity.mRadioGroup
 						.findViewById(R.id.home_tab_follow)).setChecked(true);
-				
+
 			}
 		});
-		this.setWidth(200);
-		this.setHeight(200);
+		this.setWidth(250);
+		this.setHeight(280);
 		setContentView(view);
 		this.setBackgroundDrawable(context.getResources().getDrawable(
 				R.drawable.bg_popupwindow));
 		this.setOutsideTouchable(true);
-
 	}
-
 }

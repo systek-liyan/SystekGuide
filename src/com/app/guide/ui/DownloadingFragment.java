@@ -17,8 +17,8 @@ import android.widget.ListView;
 import com.app.guide.R;
 import com.app.guide.adapter.DownloadingAdapter;
 import com.app.guide.download.DownloadBean;
-import com.app.guide.offline.DownloadManagerHelper;
 import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.sql.DownloadManagerHelper;
 
 public class DownloadingFragment extends Fragment {
 
@@ -28,7 +28,8 @@ public class DownloadingFragment extends Fragment {
 	private DownloadingAdapter adapter;
 	private Button addButton;
 
-	@SuppressLint("InflateParams") @Override
+	@SuppressLint("InflateParams")
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -57,17 +58,10 @@ public class DownloadingFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				DownloadManagerHelper helper = new DownloadManagerHelper(
-						getActivity());
-				int museumId = 0;
-				try {
-					museumId = helper.getBeanDao().queryForAll().size() + 1;
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				String museumId = "fb468fcd9a894dbf8108f9b8bbc88109";
 				DownloadBean bean = new DownloadBean();
 				bean.setMuseumId(museumId);
+				bean.setName("首都博物馆");
 				adapter.add(bean);
 			}
 		});

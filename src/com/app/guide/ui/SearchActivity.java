@@ -114,7 +114,7 @@ public class SearchActivity extends BaseActivity implements
 	/**
 	 * museum id
 	 */
-	private int mMuseumId;
+	private String mMuseumId;
 
 	/**
 	 * page
@@ -131,7 +131,7 @@ public class SearchActivity extends BaseActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
 		mIntent = getIntent();
-		mMuseumId = mIntent.getIntExtra(Constant.EXTRA_MUSEUM_ID, 1);
+		mMuseumId = ((AppContext) getApplicationContext()).currentMuseumId;
 		// 加载数据时耗费时间较长
 		pDialog = new DialogManagerHelper(this).showLoadingProgressDialog();
 		// 初始化数据
@@ -283,10 +283,10 @@ public class SearchActivity extends BaseActivity implements
 			public void onItemClick(AdapterView<?> adapterView, View view,
 					int position, long l) {
 				// 跳转到随身导游界面
-				((AppContext)getApplication()).currentExhibitId = shownResults.get(position)
-						.getId();
-				((AppContext)getApplication()).setGuideMode(false);
-				((AppContext)getApplication()).isSelectedInSearch = true;
+				((AppContext) getApplication()).currentExhibitId = shownResults
+						.get(position).getId();
+				((AppContext) getApplication()).setGuideMode(false);
+				((AppContext) getApplication()).isSelectedInSearch = true;
 				finish();
 
 			}

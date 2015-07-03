@@ -156,7 +156,7 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 			// 获取筛选的exhibits
 			String[] ids = ((AppContext)getActivity().getApplication()).exhibitsIdList.split(",");
 			for (int i = 0, j = 0; i < ids.length; i++, j++) {
-				if (Integer.parseInt(ids[i]) != mapExhibitBeans.get(j).getId()) {
+				if (!ids[i].equals(mapExhibitBeans.get(j).getId())) {
 					mapExhibitBeans.remove(j);
 					j++;
 				}

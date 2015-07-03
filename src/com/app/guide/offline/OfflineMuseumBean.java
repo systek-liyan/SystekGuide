@@ -5,145 +5,117 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "museum")
 public class OfflineMuseumBean {
-	@DatabaseField(generatedId = true, useGetSet = true)
-	private int id;
+	@DatabaseField(id = true, useGetSet = true)
+	private String id;
 	@DatabaseField(columnName = "name", useGetSet = true)
 	private String name;
 	@DatabaseField(columnName = "longtiudeX", useGetSet = true)
-	private double longtiudeX;
+	private double longtiudex;
 	@DatabaseField(columnName = "longtiudeY", useGetSet = true)
-	private double longtiudeY;
+	private double longtiudey;
 	@DatabaseField(columnName = "iconUrl", useGetSet = true)
-	private String iconUrl;
+	private String iconurl;
 	@DatabaseField(columnName = "address", useGetSet = true)
 	private String address;
 	@DatabaseField(columnName = "opentime", useGetSet = true)
 	private String opentime;
-	@DatabaseField(columnName = "isOpen")
-	private boolean isOpen;
 	@DatabaseField(columnName = "textUrl", useGetSet = true)
-	private String textUrl;
-	@DatabaseField(columnName = "imgList", useGetSet = true)
-	private String imgList;
+	private String texturl;
+	@DatabaseField(columnName = "imgurl", useGetSet = true)
+	private String imgurl;
 	@DatabaseField(columnName = "audioUrl", useGetSet = true)
-	private String audioUrl;
+	private String audiourl;
 	@DatabaseField(columnName = "floorCount", useGetSet = true)
-	private int floorCount;
+	private int floorcount;
 	@DatabaseField(columnName = "city", useGetSet = true)
 	private String city;
 	@DatabaseField(columnName = "version", useGetSet = true)
 	private int version;
-
-	public int getId() {
+//	@DatabaseField(columnName = "filesize", useGetSet = true)
+//	private long filesize;
+//	
+//	public long getFilesize() {
+//		return filesize;
+//	}
+//	public void setFilesize(long filesize) {
+//		this.filesize = filesize;
+//	}
+	public String getId() {
 		return id;
 	}
-
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
-
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public double getLongtiudeX() {
-		return longtiudeX;
+	public double getLongtiudex() {
+		return longtiudex;
 	}
-
-	public void setLongtiudeX(double longtiudeX) {
-		this.longtiudeX = longtiudeX;
+	public void setLongtiudex(double longtiudex) {
+		this.longtiudex = longtiudex;
 	}
-
-	public double getLongtiudeY() {
-		return longtiudeY;
+	public double getLongtiudey() {
+		return longtiudey;
 	}
-
-	public void setLongtiudeY(double longtiudeY) {
-		this.longtiudeY = longtiudeY;
+	public void setLongtiudey(double longtiudey) {
+		this.longtiudey = longtiudey;
 	}
-
-	public String getIconUrl() {
-		return iconUrl;
+	public String getIconurl() {
+		return iconurl;
 	}
-
-	public void setIconUrl(String iconUrl) {
-		this.iconUrl = iconUrl;
+	public void setIconurl(String iconurl) {
+		this.iconurl = iconurl;
 	}
-
 	public String getAddress() {
 		return address;
 	}
-
 	public void setAddress(String address) {
 		this.address = address;
 	}
-
 	public String getOpentime() {
 		return opentime;
 	}
-
 	public void setOpentime(String opentime) {
 		this.opentime = opentime;
 	}
-
-	public boolean isOpen() {
-		return isOpen;
+	public String getTexturl() {
+		return texturl;
 	}
-
-	public void setOpen(boolean isOpen) {
-		this.isOpen = isOpen;
+	public void setTexturl(String texturl) {
+		this.texturl = texturl;
 	}
-
-	public String getTextUrl() {
-		return textUrl;
+	public String getImgurl() {
+		return imgurl;
 	}
-
-	public void setTextUrl(String textUrl) {
-		this.textUrl = textUrl;
+	public void setImgurl(String imgurls) {
+		this.imgurl = imgurls;
 	}
-
-	public String getImgList() {
-		return imgList;
+	public String getAudiourl() {
+		return audiourl;
 	}
-
-	public void setImgList(String imgList) {
-		this.imgList  = imgList;
+	public void setAudiourl(String audiourl) {
+		this.audiourl = audiourl;
 	}
-
-	public String getAudioUrl() {
-		return audioUrl;
+	public int getFloorcount() {
+		return floorcount;
 	}
-
-	public void setAudioUrl(String audioUrl) {
-		this.audioUrl = audioUrl;
+	public void setFloorcount(int floorcount) {
+		this.floorcount = floorcount;
 	}
-
-	public int getFloorCount() {
-		return floorCount;
-	}
-
-	public void setFloorCount(int floorCount) {
-		this.floorCount = floorCount;
-	}
-
 	public String getCity() {
 		return city;
 	}
-
 	public void setCity(String city) {
 		this.city = city;
 	}
-
 	public int getVersion() {
 		return version;
 	}
-
 	public void setVersion(int version) {
 		this.version = version;
 	}
-
 }

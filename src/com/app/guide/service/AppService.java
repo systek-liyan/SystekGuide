@@ -13,10 +13,10 @@ import com.app.guide.download.DownloadClient;
 public class AppService extends Service {
 	private static final String TAG = AppService.class.getSimpleName();
 
-	public static Map<Integer, DownloadClient> map;
+	public static Map<String, DownloadClient> map;
 
 	public AppService() {
-		map = new ConcurrentHashMap<Integer, DownloadClient>();
+		map = new ConcurrentHashMap<String, DownloadClient>();
 	}
 
 	@Override
@@ -31,9 +31,9 @@ public class AppService extends Service {
 		return null;
 	}
 
-	public static DownloadClient getDownloadClient(Context context, int museumId) {
+	public static DownloadClient getDownloadClient(Context context, String museumId) {
 		if (map == null) {
-			map = new ConcurrentHashMap<Integer, DownloadClient>();
+			map = new ConcurrentHashMap<String, DownloadClient>();
 		}
 		DownloadClient client = map.get(museumId);
 		if (client == null) {
@@ -43,7 +43,7 @@ public class AppService extends Service {
 		return client;
 	}
 
-	public static void remove(int museumId) {
+	public static void remove(String museumId) {
 		map.remove(museumId);
 	}
 

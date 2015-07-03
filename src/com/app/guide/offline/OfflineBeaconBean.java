@@ -6,21 +6,25 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "beacon")
 public class OfflineBeaconBean {
 
-	@DatabaseField(generatedId = true, useGetSet = true)
-	private int id;
+	@DatabaseField(id = true, useGetSet = true)
+	private String id;
 	@DatabaseField(columnName = "uuid", useGetSet = true)
 	private String uuid;
 	@DatabaseField(columnName = "personX", useGetSet = true)
-	private float personX;
+	private float personx;
 	@DatabaseField(columnName = "personY", useGetSet = true)
-	private float personY;
+	private float persony;
 	@DatabaseField(columnName = "type", useGetSet = true)
 	private int type;
+	@DatabaseField(columnName = "major")
+	private String major;
+	@DatabaseField(columnName = "minor")
+	private String minor;
 
 	/**
 	 * @return the id
 	 */
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
@@ -28,7 +32,7 @@ public class OfflineBeaconBean {
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -47,34 +51,37 @@ public class OfflineBeaconBean {
 		this.uuid = uuid;
 	}
 
-	/**
-	 * @return the personX
-	 */
-	public float getPersonX() {
-		return personX;
+
+	public float getPersonx() {
+		return personx;
 	}
 
-	/**
-	 * @param personX
-	 *            the personX to set
-	 */
-	public void setPersonX(float personX) {
-		this.personX = personX;
+	public void setPersonx(float personx) {
+		this.personx = personx;
 	}
 
-	/**
-	 * @return the personY
-	 */
-	public float getPersonY() {
-		return personY;
+	public float getPersony() {
+		return persony;
 	}
 
-	/**
-	 * @param personY
-	 *            the personY to set
-	 */
-	public void setPersonY(float personY) {
-		this.personY = personY;
+	public void setPersony(float persony) {
+		this.persony = persony;
+	}
+
+	public String getMajor() {
+		return major;
+	}
+
+	public void setMajor(String major) {
+		this.major = major;
+	}
+
+	public String getMinor() {
+		return minor;
+	}
+
+	public void setMinor(String minor) {
+		this.minor = minor;
 	}
 
 	/**

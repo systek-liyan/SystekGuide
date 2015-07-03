@@ -9,25 +9,25 @@ import java.util.List;
  */
 public class Exhibit {
 
-	private int id;
+	private String id;
 	private String name;// 展品名
 	private String beaconUId;
 	private String iconUrl;
 	private List<ImageOption> imgList;
 	private String audioUrl;
 	private String textUrl;
-	private HashMap<String, String> labels;
-	private int lExhibitBeanId;
-	private int rExhibitBeanId;
+	private String labels;
+	private String lExhibitBeanId;
+	private String rExhibitBeanId;
 
 	public Exhibit() {
 		super();
 	}
 
-	public Exhibit(int id, String name, String beaconUId, String iconUrl,
+	public Exhibit(String id, String name, String beaconUId, String iconUrl,
 			ArrayList<ImageOption> imgList, String audioUrl, String textUrl,
-			HashMap<String, String> labels, int lExhibitBeanId,
-			int rExhibitBeanId) {
+			String labels, String lExhibitBeanId,
+			String rExhibitBeanId) {
 		this.id = id;
 		this.name = name;
 		this.beaconUId = beaconUId;
@@ -40,11 +40,11 @@ public class Exhibit {
 		this.rExhibitBeanId = rExhibitBeanId;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -96,27 +96,27 @@ public class Exhibit {
 		this.textUrl = textUrl;
 	}
 
-	public HashMap<String, String> getLabels() {
+	public String getLabels() {
 		return labels;
 	}
 
-	public void setLabels(HashMap<String, String> labels) {
+	public void setLabels(String labels) {
 		this.labels = labels;
 	}
 
-	public int getlExhibitBeanId() {
+	public String getlExhibitBeanId() {
 		return lExhibitBeanId;
 	}
 
-	public void setlExhibitBeanId(int lExhibitBeanId) {
+	public void setlExhibitBeanId(String lExhibitBeanId) {
 		this.lExhibitBeanId = lExhibitBeanId;
 	}
 
-	public int getrExhibitBeanId() {
+	public String getrExhibitBeanId() {
 		return rExhibitBeanId;
 	}
 
-	public void setrExhibitBeanId(int rExhibitBeanId) {
+	public void setrExhibitBeanId(String rExhibitBeanId) {
 		this.rExhibitBeanId = rExhibitBeanId;
 	}
 }
