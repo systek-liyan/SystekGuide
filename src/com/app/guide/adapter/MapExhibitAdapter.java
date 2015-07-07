@@ -12,6 +12,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+/**
+ * 地图展品列表adapter
+ * TODO 简化代码
+ */
 public class MapExhibitAdapter extends BaseAdapter {
 
 	private List<MapExhibitBean> data;

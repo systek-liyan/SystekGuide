@@ -18,10 +18,18 @@ import com.app.guide.download.DownloadBean;
 import com.app.guide.exception.DeleteDownloadingException;
 import com.app.guide.offline.OfflineDeleteHelper;
 
+/**
+ * 下载完成adapter 
+ */
 public class DownloadCompletedAdapter extends BaseAdapter {
 
 	private LayoutInflater inflater;
+	
+	/**
+	 * downloadBean 数据列表
+	 */
 	private List<DownloadBean> data;
+	
 	private Context mContext;
 
 	public DownloadCompletedAdapter(Context context, List<DownloadBean> data) {
@@ -75,6 +83,7 @@ public class DownloadCompletedAdapter extends BaseAdapter {
 		DownloadBean bean = data.get(position);
 		viewHolder.name.setText(bean.getName());
 		final String museumId = data.get(data.size() - 1).getMuseumId();
+		//给delete按钮设置点击监听
 		viewHolder.delete.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -95,7 +104,7 @@ public class DownloadCompletedAdapter extends BaseAdapter {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (DeleteDownloadingException e) {
-					// TODO Auto-generated catch block
+					// 当博物馆正在下载时，无法删除，弹出提示框
 					e.printStackTrace();
 					Toast.makeText(mContext, "该博物馆正在下载，无法删除",
 							Toast.LENGTH_SHORT).show();

@@ -10,12 +10,12 @@ import android.widget.RadioGroup;
 import com.app.guide.R;
 
 /**
- * 用法：
- * new FragmentTabAdapter(this, fragments, R.id.home_realtabcontent,mRadioGroup);
- * @author acer
+ * Fragment标签adapter 用法：<br>
+ * <code>new FragmentTabAdapter(this, fragments,R.id.home_realtabcontent,mRadioGroup);</code>
  */
 public class FragmentTabAdapter implements RadioGroup.OnCheckedChangeListener{
-    private List<Fragment> fragments; // 一个tab页面对应一个Fragment
+    
+	private List<Fragment> fragments; // 一个tab页面对应一个Fragment
     private RadioGroup rgs; // 用于切换tab
     private FragmentActivity fragmentActivity; // Fragment所属的Activity
     private int fragmentContentId; // Activity中所要被替换的区域的id

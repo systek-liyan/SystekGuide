@@ -10,8 +10,6 @@ import android.support.v4.util.LruCache;
 import android.util.Log;
 
 import com.android.volley.toolbox.ImageLoader.ImageCache;
-import com.app.guide.AppContext;
-import com.app.guide.Constant;
 
 public class ListBitmapCache implements ImageCache {
 
@@ -42,6 +40,7 @@ public class ListBitmapCache implements ImageCache {
 
 		Bitmap bitmap = mCache.get(url);
 		if (bitmap == null) {
+			//TODO ? 
 			String path = url.substring(url.indexOf("!") + 1);
 			if (path.startsWith("http:/")) {
 				path = path.substring(7);

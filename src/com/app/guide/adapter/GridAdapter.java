@@ -13,7 +13,7 @@ import android.widget.Button;
 import com.app.guide.R;
 
 /**
- * grid view adapter 
+ * gridView adapter 
  * @author yetwish
  */
 public class GridAdapter extends BaseAdapter{

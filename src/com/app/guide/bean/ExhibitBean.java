@@ -1,15 +1,12 @@
 package com.app.guide.bean;
 
-import java.util.HashMap;
-import java.util.List;
-
 /**
  * 列表 展品信息
  */
 public class ExhibitBean {
-	private String id;
+	private String id;  //展品id
 	private String name;// 展品名
-	private String address;// 展厅
+	private String address;//展品所在位置（展厅）
 	private String introduction;// 展品介绍
 	private String imgUrl;// 图标的Url地址
 	private String labels; // 标签

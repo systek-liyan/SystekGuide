@@ -34,7 +34,10 @@ import com.lidroid.xutils.http.callback.RequestCallBack;
  *
  */
 public class DownloadClient {
-
+	
+	/**
+	 * 表示下载的5种状态
+	 */
 	public enum STATE {
 		PREPARE, DOWNLOADING, NONE, PAUSE, CANCELED
 	}
@@ -48,11 +51,23 @@ public class DownloadClient {
 	private Dao<DownloadBean, Integer> beanDao;
 	private DownloadBean downloadBean;
 
+	/**
+	 * 阻塞队列
+	 */
 	private BlockingQueue<DownloadInfo> queue;
+	
 	private HttpUtils utils;
 	private HttpHandler<File> handler;
 	private RequestCallBack<File> callBack;
+	
+	/**
+	 * 表示当前下载状态，默认为none
+	 */
 	private STATE state = STATE.NONE;
+	
+	/**
+	 * 尝试下载次数，当下载失败时会自动重试，当总共尝试此时=3次时，实现下载失败
+	 */
 	private int tryTime = 0;
 
 	private OnProgressListener onProgressListener;
@@ -64,6 +79,7 @@ public class DownloadClient {
 		utils = new HttpUtils();
 		callBack = new RequestCallBack<File>() {
 
+			//下载成功时，回调该方法
 			@Override
 			public void onSuccess(ResponseInfo<File> responseInfo) {
 				// TODO Auto-generated method stub
@@ -71,10 +87,11 @@ public class DownloadClient {
 				Log.w(TAG, "success once:" );
 			}
 
+			//下载失败时，回调该方法
 			@Override
 			public void onFailure(HttpException error, String msg) {
 				// TODO Auto-generated method stub
-				Log.w(TAG, "onFailure once:" );
+				Log.w(TAG, "onFailure once:" +queue.peek().getUrl());
 				if (msg.equals("downloaded")) {
 					downloadOnceCompleted(FileUtils.getFileSize(queue.peek()
 							.getTarget()));
@@ -85,9 +102,10 @@ public class DownloadClient {
 					onProgressListener.onFailed(queue.peek().getUrl(), msg);
 					return;
 				}
-				downloadNext();
+				downloadNext(); //TODO?  
 			}
 
+			//
 			@Override
 			public void onLoading(long total, long current, boolean isUploading) {
 				// TODO Auto-generated method stub
@@ -129,8 +147,10 @@ public class DownloadClient {
 		if (queue.size() != 0) {
 			downloadNext();
 		} else {
+			//下载完成
 			state = STATE.NONE;
 			downloadBean.setCompleted(true);
+			Log.w(TAG, "downLoad complete "+downloadBean.getCurrent()+", total "+downloadBean.getTotal());
 			try {
 				beanDao.createOrUpdate(downloadBean);
 			} catch (SQLException e) {

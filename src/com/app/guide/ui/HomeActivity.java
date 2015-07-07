@@ -159,8 +159,10 @@ public class HomeActivity extends BaseActivity implements
 					.setEnabled(false);
 		}
 		if (((AppContext)getApplication()).isSelectedInSearch) {
-			((RadioButton) HomeActivity.mRadioGroup
-					.findViewById(R.id.home_tab_follow)).setChecked(true);
+			RadioButton btn = (RadioButton) HomeActivity.mRadioGroup
+					.findViewById(R.id.home_tab_follow);
+			btn.setChecked(true);
+			btn.setEnabled(true);
 			((AppContext)getApplication()).isSelectedInSearch = false;
 		}
 		super.onResume();

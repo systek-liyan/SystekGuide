@@ -12,7 +12,7 @@ import com.j256.ormlite.table.DatabaseTable;
 public class DownloadBean {
 
 	@DatabaseField(id = true)
-	private String museumId;
+	private String museumId;//博物馆id
 	@DatabaseField(columnName = "current")
 	private long current;//当前下载进度
 	@DatabaseField(columnName = "total")

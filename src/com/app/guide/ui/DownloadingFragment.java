@@ -18,7 +18,6 @@ import com.app.guide.R;
 import com.app.guide.adapter.DownloadingAdapter;
 import com.app.guide.download.DownloadBean;
 import com.app.guide.offline.GetBeanFromSql;
-import com.app.guide.sql.DownloadManagerHelper;
 
 public class DownloadingFragment extends Fragment {
 

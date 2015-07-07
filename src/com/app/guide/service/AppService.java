@@ -10,6 +10,10 @@ import android.os.IBinder;
 
 import com.app.guide.download.DownloadClient;
 
+/**
+ * appService,用以进行下载
+ *
+ */
 public class AppService extends Service {
 	private static final String TAG = AppService.class.getSimpleName();
 

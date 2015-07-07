@@ -35,7 +35,8 @@ public class OfflineDownloadHelper {
 
 	private static final String TAG = OfflineDownloadHelper.class
 			.getSimpleName();
-	private final static String HOST_HEAD = "http://172.27.35.1:8080";
+	//TODO
+	private final static String HOST_HEAD = "http://192.168.191.1:8080";
 	private Context mContext;
 	private String museumId;
 	private int count = 5;
@@ -93,17 +94,20 @@ public class OfflineDownloadHelper {
 						try {
 							exhibitDao = helper.getOfflineExhibitDao();
 							for (OfflineExhibitBean bean : response) {
-								addAudioDownloadInfo(bean.getAudiourl());
+//								addAudioDownloadInfo(bean.getAudiourl());
 								if (!bean.getImgsurl().contains(
 										bean.getIconurl())) {
 									addImageDownloadInfo(bean.getIconurl());
 								}
-								String imgsurl[] = bean.getImgsurl().split(",");
-								for (int i = 0; i < imgsurl.length; i++) {
-									String url = imgsurl[i];
+								//TODO 处理imgsurl 
+								String imgOptions[] = bean.getImgsurl().split(",");
+								for (int i = 0; i < imgOptions.length; i++) {
+									//Log.w("Volley",imgOptions[i]);
+									String url = (imgOptions[i].split("\\*"))[0];
 									addImageDownloadInfo(url);
 								}
 								// updateDownloadBean(bean.getFilesize());
+//								addLrcDownloadInfo(bean.getTexturl());
 								exhibitDao.createIfNotExists(bean);
 							}
 						} catch (SQLException e) {
@@ -317,12 +321,29 @@ public class OfflineDownloadHelper {
 	private void finished() {
 		count--;
 		Log.w(TAG, "count is " + count);
-		downloadBean.setTotal(529182);
+		downloadBean.setTotal(4413464);
 		if (count == 0) {
 			if (onFinishedListener != null) {
 				onFinishedListener.onSuccess(infoList, downloadBean);
 			}
 		}
+	}
+	
+	/**
+	 * 添加一个歌词文件下载任务
+	 */
+	private void addLrcDownloadInfo(String url){
+		if(url == null || url.equals(""))
+			return ;
+		if(mSet.contains(url))
+			return;
+		if(!url.contains("/")) return ; 
+		mSet.add(url);
+		DownloadInfo info = new DownloadInfo();
+		info.setMuseumId(museumId);
+		info.setUrl(url);
+		info.setTarget(Constant.getLrcDownloadPath(url, museumId));
+		infoList.add(info);
 	}
 
 	/**
@@ -342,7 +363,7 @@ public class OfflineDownloadHelper {
 		info.setMuseumId(museumId);
 		info.setUrl(url);
 		info.setTarget(Constant.getAudioDownloadPath(url, museumId));
-		// infoList.add(info);
+		infoList.add(info);
 	}
 
 	/**

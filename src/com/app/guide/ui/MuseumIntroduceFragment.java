@@ -143,7 +143,7 @@ public class MuseumIntroduceFragment extends Fragment {
 		for (int i = 0; i < mMuseumDetailBean.getImageList().size(); i++) {
 			networkImageView = new NetworkImageView(this.getActivity());
 			networkImageView.setErrorImageResId(R.drawable.icon);
-			networkImageView.setDefaultImageResId(R.drawable.pictures_no);
+			networkImageView.setDefaultImageResId(R.drawable.picture_no);
 			networkImageView.setImageUrl(mMuseumDetailBean.getImageList()
 					.get(i), BitmapUtils.getImageLoader(this.getActivity()));
 			networkImageView.setScaleType(ScaleType.CENTER_CROP);
@@ -273,9 +273,10 @@ public class MuseumIntroduceFragment extends Fragment {
 				// 因为该方法会重复调用onCheckedChanged()方法
 				// ，从而导致java.lang.IllegalStateException异常
 				// 跳转到follow guide fragment
-				((RadioButton) HomeActivity.mRadioGroup
-						.findViewById(R.id.home_tab_follow)).setChecked(true);
-
+				RadioButton btn = (RadioButton) HomeActivity.mRadioGroup
+						.findViewById(R.id.home_tab_follow);
+				btn.setChecked(true);
+				btn.setEnabled(true);
 			}
 		});
 
@@ -291,7 +292,7 @@ public class MuseumIntroduceFragment extends Fragment {
 			e.printStackTrace();
 		}
 		if (data != null) {
-			exhibitAdapter.addData(data);
+			exhibits.addAll(data);
 			if (data.size() < Constant.PAGE_COUNT) {
 				lvExhibit.setLoadFull();
 			}

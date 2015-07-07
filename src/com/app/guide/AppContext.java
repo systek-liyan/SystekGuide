@@ -8,6 +8,17 @@ import android.app.Application;
 import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
 import com.baidu.mapapi.SDKInitializer;
 
+/**
+ * Application类，用来保存全局变量 ，提供一个蓝牙状态变化监听接口<code>OnBluetoothStateChangedListener</code>
+ * 和 一个自动/主动导游模式切换监听接口<code>OnGuideModeChangedListener<code/>
+ * 
+ * 导航模式切换监听者可以有多个，调用<code>addGuideModeChangedListener()、removeGuideModeChangedListener()</code>添加和移出导航模式切换监听者。
+ * 蓝牙状态切换监听者目前只有一个，调用<code>setBleListener()</code>设置监听
+ * 
+ * 调用<code>setGuideMode(boolean guideMode)</code>设置当前app的导航模式，其中true表示自动导航，false表示手动导航，切换不同导航模式时，会自动通知导航模式监听者当前导航模式已改变。
+ * 调用<code>setBleEnable(boolean enable)</code>设置当前手机BLE是否可用，切换不同状态时，会通知蓝牙状态监听者蓝牙状态已改变
+ * 
+ */
 public class AppContext extends Application {
 
 	/**
@@ -41,7 +52,17 @@ public class AppContext extends Application {
 	 */
 	private List<OnGuideModeChangedListener> guideModeListeners;
 	
-	private onBluetoothStateChangedListener bleListener;
+	
+	/**
+	 * 蓝牙状态改变监听者
+	 */
+	private OnBluetoothStateChangedListener bleListener;
+	
+
+	/**
+	 * 是否支持ble
+	 */
+	private boolean isBleEnable = true;
 	
 	/**
 	 * 添加导航模式监听者
@@ -66,7 +87,7 @@ public class AppContext extends Application {
 	 * 设置ble listener 
 	 * @param listener
 	 */
-	public void setBleListener(onBluetoothStateChangedListener listener){
+	public void setBleListener(OnBluetoothStateChangedListener listener){
 		bleListener = listener;
 	}
 	
@@ -92,10 +113,6 @@ public class AppContext extends Application {
 		return isAutoGuide;
 	}
 
-	/**
-	 * 是否支持ble
-	 */
-	private boolean isBleEnable = true;
 	
 	/**
 	 * @return 是否支持ble
@@ -123,6 +140,8 @@ public class AppContext extends Application {
 		super.onCreate();
 		// 在使用 SDK 各组间之前初始化 context 信息，传入 ApplicationContext
 		SDKInitializer.initialize(this);
+		//初始化本地配置参数
+		AppConfig.getAppConfig(this).loadConfigBySP();
 	}
 	
 	/**
@@ -143,7 +162,7 @@ public class AppContext extends Application {
 	 * 蓝牙改变时回调接口
 	 * @author yetwish
 	 */
-	public interface onBluetoothStateChangedListener{
+	public interface OnBluetoothStateChangedListener{
 		/**
 		 * 当蓝牙状态改变时调用该回调
 		 * @param isEnable

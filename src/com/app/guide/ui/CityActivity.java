@@ -137,6 +137,9 @@ public class CityActivity extends BaseActivity {
 					Toast.makeText(CityActivity.this, "定位失败，请手动选择城市", Toast.LENGTH_SHORT).show();
 				} else {
 					loacteButton.setText(city);
+					Toast.makeText(CityActivity.this, city,Toast.LENGTH_SHORT).show();
+					Intent intent = new Intent(CityActivity.this, MuseumActivity.class);
+					startActivity(intent);
 				}
 
 			}

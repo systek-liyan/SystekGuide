@@ -23,7 +23,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.app.guide.R;
 import com.app.guide.bean.LyricObject;
 
 public class LyricView extends View {
@@ -45,7 +44,6 @@ public class LyricView extends View {
 
 	Paint paint = new Paint();// 画笔，用于画不是高亮的歌词
 	Paint paintHL = new Paint(); // 画笔，用于画高亮的歌词，即当前唱到这句歌词
-	Paint paintTips = new Paint();// 画笔，用于画提示语
 	private MediaPlayer mediaPlayer;
 
 
@@ -100,13 +98,7 @@ public class LyricView extends View {
 				canvas.drawText(temp.lrc, mX, offsetY + (wordSize + INTERVAL)
 						* i, paint);
 			}
-		} else {
-			paintTips.setTextSize(35);
-			canvas.drawText(
-					getResources().getString(R.string.lyric_ble_unenable), mX,
-					310, paintTips);
-			return ;
-		}
+		} 
 		super.onDraw(canvas);
 	}
 
@@ -153,10 +145,6 @@ public class LyricView extends View {
 		paintHL.setAntiAlias(true);
 		paintHL.setAlpha(255);
 
-		paintTips = new Paint();
-		paintTips.setTextAlign(Paint.Align.CENTER);
-		paintTips.setColor(Color.BLACK);
-		paintTips.setAntiAlias(true);
 		paint.setAlpha(255);
 		
 		

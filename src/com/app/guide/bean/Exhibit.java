@@ -1,7 +1,6 @@
 package com.app.guide.bean;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -9,16 +8,16 @@ import java.util.List;
  */
 public class Exhibit {
 
-	private String id;
+	private String id;  //展品id
 	private String name;// 展品名
-	private String beaconUId;
-	private String iconUrl;
-	private List<ImageOption> imgList;
-	private String audioUrl;
-	private String textUrl;
-	private String labels;
-	private String lExhibitBeanId;
-	private String rExhibitBeanId;
+	private String beaconUId; //展品所属beacon uuid
+	private String iconUrl;   //展品图标Url
+	private List<ImageOption> imgList; //展品多图片列表
+	private String audioUrl;  //展品音频 url
+	private String textUrl;   //展品简介
+	private String labels;    //展品拥有的标签，以“，”隔开
+	private String lExhibitBeanId; //左边展品id
+	private String rExhibitBeanId; //右边展品id
 
 	public Exhibit() {
 		super();
@@ -39,7 +38,7 @@ public class Exhibit {
 		this.lExhibitBeanId = lExhibitBeanId;
 		this.rExhibitBeanId = rExhibitBeanId;
 	}
-
+	
 	public String getId() {
 		return id;
 	}

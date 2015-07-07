@@ -46,9 +46,10 @@ public class MapDialog extends PopupWindow {
 				((AppContext) context.getApplicationContext()).currentExhibitId = mapExhibitBean
 						.getId();
 				dismiss();
-				((RadioButton) HomeActivity.mRadioGroup
-						.findViewById(R.id.home_tab_follow)).setChecked(true);
-
+				RadioButton btn = (RadioButton) HomeActivity.mRadioGroup
+						.findViewById(R.id.home_tab_follow);
+				btn.setChecked(true);
+				btn.setEnabled(true);
 			}
 		});
 		this.setWidth(250);

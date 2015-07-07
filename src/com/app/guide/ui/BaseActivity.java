@@ -16,7 +16,7 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 public class BaseActivity extends SlidingFragmentActivity {
 
-	private SlidingMenu sm;
+	protected SlidingMenu sm;
 
 	@SuppressLint("InlinedApi")
 	@Override

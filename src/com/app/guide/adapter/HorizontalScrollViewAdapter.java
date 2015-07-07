@@ -10,6 +10,11 @@ import com.app.guide.R;
 import com.app.guide.bean.ImageOption;
 import com.app.guide.utils.BitmapUtils;
 
+/**
+ * 图展adapter
+ * 
+ * @author yetwish
+ */
 public class HorizontalScrollViewAdapter extends CommonAdapter<ImageOption> {
 
 	private ImageLoader mImageLoader;
@@ -25,8 +30,8 @@ public class HorizontalScrollViewAdapter extends CommonAdapter<ImageOption> {
 	public void convert(ViewHolder holder, int position) {
 		NetworkImageView imageView = (NetworkImageView) holder
 				.getView(R.id.item_gallery_iv);
-		imageView.setDefaultImageResId(R.drawable.ic_launcher);
-		imageView.setErrorImageResId(R.drawable.ic_launcher);
+		imageView.setDefaultImageResId(R.drawable.picture_no);
+		imageView.setErrorImageResId(R.drawable.picture_error);
 		imageView.setImageUrl(mData.get(position).getImgUrl(), mImageLoader);
 
 	}

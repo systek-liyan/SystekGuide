@@ -9,6 +9,9 @@ import com.app.guide.service.AppService;
 import com.app.guide.ui.BaseActivity;
 import com.app.guide.ui.CityActivity;
 
+/**
+ * App启动时的跳转页面
+ */
 public class MainActivity extends BaseActivity {
 
 	private static final int MSG_SPLASH = 0x101;
@@ -30,13 +33,16 @@ public class MainActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		//启动系统服务AppService
 		Intent serviceIntent = new Intent(MainActivity.this, AppService.class);
 		startService(serviceIntent);
-		
+		//跳转到城市界面
 		changeToCityActivity();
 	}
-	
+
+	/**
+	 * 启动一个线程，800ms后发送一条跳转到城市页面的消息。
+	 */
 	private void changeToCityActivity(){
         new Thread(){
             @Override

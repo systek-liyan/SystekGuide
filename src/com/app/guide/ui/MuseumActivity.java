@@ -20,7 +20,6 @@ import com.app.guide.adapter.ViewHolder;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.offline.GetBeanFromSql;
 import com.app.guide.widget.TopBar;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 /**
  * 修改ListView数据加载方式为数据库
@@ -33,7 +32,6 @@ public class MuseumActivity extends BaseActivity {
 	private ListView lvMuseum;
 	private List<MuseumBean> mData;
 
-	private SlidingMenu sm;
 
 	@Override
 	@SuppressLint("InlinedApi")

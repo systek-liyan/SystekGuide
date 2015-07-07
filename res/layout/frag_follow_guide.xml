@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="400dp">
             <com.android.volley.toolbox.NetworkImageView
-                android:src="@drawable/pictures_no"
+                android:src="@drawable/picture_no"
                 android:id="@+id/frag_follow_guide_iv_bg"
                 android:layout_height="match_parent"
                 android:layout_width="match_parent"/>
@@ -94,9 +94,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="150dp"
 	        android:layout_gravity="bottom"
-	        android:background="@android:color/white"
 	        android:scrollbars="none" >
-
 	        <LinearLayout
 	            android:id="@+id/frag_follow_guide_pic_gallery"
 	            android:layout_width="wrap_content"

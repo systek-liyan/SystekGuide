@@ -7,6 +7,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
 
+/**
+ * 系统常量类，用以存储系统所有常量
+ * 提供音频文件、歌词文件和图片文件的存储路径
+ */
 public class Constant {
 
 	public static final int PAGE_COUNT = 20;

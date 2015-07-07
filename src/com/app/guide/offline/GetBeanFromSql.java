@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.app.guide.Constant;
 import com.app.guide.bean.Exhibit;
@@ -32,6 +33,10 @@ import com.j256.ormlite.stmt.QueryBuilder;
 public class GetBeanFromSql {
 	private static final String TAG = GetBeanFromSql.class.getSimpleName();
 
+	/**
+	 * 从数据库中获取某一地图中所有展品的列表。<br>
+	 * 这里，一个博物馆的一层表示一张地图
+	 */
 	public static List<MapExhibitBean> getMapExhibit(Context context,
 			String museumid, int floor) throws SQLException {
 		List<MapExhibitBean> list = new ArrayList<MapExhibitBean>();
@@ -57,6 +62,9 @@ public class GetBeanFromSql {
 		return list;
 	}
 
+	/**
+	 * 从数据库中获取整个博物馆下的所有展品
+	 */
 	@SuppressWarnings("deprecation")
 	public static List<ExhibitBean> getExhibitBeans(Context context,
 			String muesumid, int page) throws SQLException {
@@ -85,6 +93,9 @@ public class GetBeanFromSql {
 		return list;
 	}
 
+	/**
+	 * 从数据库中获取某一博物馆中某一层中所有的beacon的位置
+	 */
 	public static HashMap<String, PointM> getLoactionPoint(Context context,
 			String museumid, int floor) throws SQLException {
 		HashMap<String, PointM> map = new HashMap<String, PointM>();
@@ -108,6 +119,9 @@ public class GetBeanFromSql {
 		return map;
 	}
 
+	/**
+	 * 根据exhibitId获取展品详细信息
+	 */
 	public static Exhibit getExhibit(Context context, String museumId,
 			String exhibitId) throws SQLException {
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
@@ -123,17 +137,21 @@ public class GetBeanFromSql {
 			exhibit.setId(exhibitId);
 			exhibit.setName(bean.getName());
 			exhibit.setBeaconUId(bean.getBeaconId());
+			Log.w(TAG, bean.getIconurl());
 			exhibit.setIconUrl(Constant.getImageDownloadPath(bean.getIconurl(),
 					museumId));
 			exhibit.setAudioUrl(bean.getAudiourl());
 			exhibit.setlExhibitBeanId(bean.getLexhibit());
 			exhibit.setrExhibitBeanId(bean.getRexhibit());
-			String urls[] = bean.getImgsurl().split(",");
+			String imgOptions[] = bean.getImgsurl().split(",");
 			List<ImageOption> imgList = new ArrayList<ImageOption>();
-			for (int i = 0; i < urls.length; i++) {
+			imgList.clear();
+			String options[] ;
+			for (int i = 0; i < imgOptions.length; i++) {
+				options = imgOptions[i].split("\\*");
 				ImageOption option = new ImageOption(
-						Constant.getImageDownloadPath(urls[i], museumId),
-						i * 1000);
+						Constant.getImageDownloadPath(options[0], museumId),
+						Integer.valueOf(options[1]));
 				imgList.add(option);
 			}
 			exhibit.setImgList(imgList);
@@ -142,6 +160,9 @@ public class GetBeanFromSql {
 		return exhibit;
 	}
 
+	/**
+	 * 获取所有已下载的博物馆的列表 
+	 */
 	public static List<MuseumBean> getMuseumBeans(Context context)
 			throws SQLException {
 		DownloadManagerHelper helper = new DownloadManagerHelper(context);
@@ -158,6 +179,9 @@ public class GetBeanFromSql {
 		return list;
 	}
 
+	/**
+	 * 获取某一博物馆下所有的标签列表（即该博物馆中所有的标签）
+	 */
 	public static List<LabelBean> getLabelBeans(Context context, String museumId)
 			throws SQLException {
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
@@ -174,6 +198,9 @@ public class GetBeanFromSql {
 		return labels;
 	}
 
+	/**
+	 * 根据博物馆id获取博物馆的详细bean，用以展示博物馆 
+	 */
 	public static MuseumDetailBean getMuseunDetailBean(Context context,
 			String museumId) throws SQLException {
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
@@ -199,6 +226,9 @@ public class GetBeanFromSql {
 		return museum;
 	}
 
+	/**
+	 * 根据博物馆id获取该博物馆的层数
+	 */
 	public static int getFloorCount(Context context, String museumId)
 			throws SQLException {
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
@@ -213,6 +243,9 @@ public class GetBeanFromSql {
 		}
 	}
 
+	/**
+	 * 获取所有正在下载中的bean 
+	 */
 	public static List<DownloadBean> getDownloadingBeans(Context context)
 			throws SQLException {
 		DownloadManagerHelper helper = new DownloadManagerHelper(context);
@@ -221,6 +254,9 @@ public class GetBeanFromSql {
 		return list;
 	}
 
+	/**
+	 * 获取所有已下载完成的bean 
+	 */
 	public static List<DownloadBean> getDownloadCompletedBeans(Context context)
 			throws SQLException {
 		DownloadManagerHelper helper = new DownloadManagerHelper(context);

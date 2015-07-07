@@ -22,15 +22,15 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.app.guide.AppContext;
+import com.app.guide.AppContext.OnBluetoothStateChangedListener;
 import com.app.guide.AppContext.OnGuideModeChangedListener;
-import com.app.guide.AppContext.onBluetoothStateChangedListener;
 import com.app.guide.R;
 import com.app.guide.adapter.CommonAdapter;
 import com.app.guide.adapter.ViewHolder;
 import com.app.guide.bean.Menu;
 
 public class MenuFragment extends Fragment implements
-		OnGuideModeChangedListener, onBluetoothStateChangedListener {
+		OnGuideModeChangedListener, OnBluetoothStateChangedListener {
 
 	private HomeClick homeClick;
 	private ListView lvMenu;

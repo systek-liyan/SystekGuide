@@ -26,11 +26,23 @@ import com.app.guide.download.DownloadClient.OnProgressListener;
 import com.app.guide.download.DownloadClient.STATE;
 import com.app.guide.service.AppService;
 
+/**
+ * 正在下载列表adapter 
+ *
+ */
 public class DownloadingAdapter extends BaseAdapter {
 
-	private List<DownloadBean> data;
 	private LayoutInflater mInflater;
 	private Context mContext;
+	
+	/**
+	 * 正在下载数据列表
+	 */
+	private List<DownloadBean> data;
+	
+	/**
+	 * 存储每一项的progressBar， 复用导致无法更新item中的progress，所以要提取出来
+	 */
 	private Map<Integer, ProgressBar> progressMap;
 
 	public DownloadingAdapter(Context context, List<DownloadBean> data) {

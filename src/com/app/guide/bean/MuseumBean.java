@@ -1,6 +1,5 @@
 package com.app.guide.bean;
 
-import com.app.guide.Constant;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 

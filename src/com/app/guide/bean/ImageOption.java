@@ -2,8 +2,8 @@ package com.app.guide.bean;
 
 public class ImageOption {
 
-	private String imgUrl;
-	private int startTime; // 为实现方便将endTime 改为了startTime
+	private String imgUrl; // 图片URL
+	private int startTime; // 开始显示该图片的音频播放进度（时间）
 
 	public ImageOption() {
 	}
