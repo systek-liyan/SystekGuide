@@ -684,8 +684,6 @@ public class FollowGuideFragment extends Fragment implements
 			updateGalleryAdapter();
 		}
 		
-		mExhibitGallery.setShownInCenter();
-		
 		mExhibitGallery.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(View view, int position, boolean isByLyric) {
@@ -699,8 +697,6 @@ public class FollowGuideFragment extends Fragment implements
 		mExhibitGallery.seOnLoadingMoreListener(new OnLoadingMoreListener() {
 			@Override
 			public int onRightLoadingMore() {
-				// if(shouldUpdate && mExhibitsList.size() >= MIN_PER_COUNT)
-				// updateExhibitAdapter();
 				String names = "";
 				for (int i = 0; i < mExhibitsList.size(); i++) {
 					names += mExhibitsList.get(i).getName() + "\t";
@@ -715,8 +711,6 @@ public class FollowGuideFragment extends Fragment implements
 
 			@Override
 			public int onLeftLoadingMore() {
-				// if(shouldUpdate && mExhibitsList.size() >= MIN_PER_COUNT)
-				// updateExhibitAdapter();
 				String names = "";
 //				for (int i = 0; i < mExhibitsList.size(); i++) {
 //					names += mExhibitsList.get(i).getName() + "\t";
