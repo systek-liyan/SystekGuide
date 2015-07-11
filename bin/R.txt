@@ -709,7 +709,7 @@ int string frag_follow_tab_pictures 0x7f0c0021
 int string gallery_title 0x7f0c0029
 int string hello_world 0x7f0c000e
 int string load_full 0x7f0c0025
-int string lyric_ble_unenable 0x7f0c0024
+int string lyric_not_found 0x7f0c0024
 int string manally_guide 0x7f0c002c
 int string map_menu_friend 0x7f0c0030
 int string map_menu_loca 0x7f0c002f

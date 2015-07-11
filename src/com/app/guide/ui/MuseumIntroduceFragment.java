@@ -13,8 +13,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.style.ImageSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -224,7 +226,9 @@ public class MuseumIntroduceFragment extends Fragment {
 		tvIntroduction = (TextView) headerLayout
 				.findViewById(R.id.frag_main_tv_introduction);
 		// 设置博物馆简介
-		tvIntroduction.setText(mMuseumDetailBean.getTextUrl());
+		// 解析html文本
+		Spanned text = Html.fromHtml(mMuseumDetailBean.getTextUrl());
+		tvIntroduction.setText(text);
 		// 获取播放按钮的bitmap
 		Bitmap bitmap = BitmapFactory.decodeResource(this.getActivity()
 				.getResources(), R.drawable.home_tab_subject_normal_img);

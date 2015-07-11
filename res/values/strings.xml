@@ -22,7 +22,7 @@
     <string name="title_activity_museum">选择博物馆</string>
     
     <!-- 歌词view tips -->
-    <string name="lyric_ble_unenable">请打开自动导航或手动选取展品 </string>
+    <string name="lyric_not_found">没有找到相应的歌词文件</string>
     
     <!-- 用于上拉加载更多ListView -->
     <string name="load_full">已加载全部</string>

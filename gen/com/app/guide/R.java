@@ -1651,7 +1651,7 @@ containing a value of this type.
         public static final int load_full=0x7f0c0025;
         /**  歌词view tips 
          */
-        public static final int lyric_ble_unenable=0x7f0c0024;
+        public static final int lyric_not_found=0x7f0c0024;
         public static final int manally_guide=0x7f0c002c;
         public static final int map_menu_friend=0x7f0c0030;
         public static final int map_menu_loca=0x7f0c002f;

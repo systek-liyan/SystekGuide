@@ -70,8 +70,8 @@ public class DownloadClient {
 	 */
 	private int tryTime = 0;
 
-	private OnProgressListener onProgressListener;
-
+	private OnProgressListener mProgressListener;
+	
 	public DownloadClient(Context context, String museumId) {
 		mContext = context;
 		this.museumId = museumId;
@@ -83,8 +83,11 @@ public class DownloadClient {
 			@Override
 			public void onSuccess(ResponseInfo<File> responseInfo) {
 				// TODO Auto-generated method stub
-				downloadOnceCompleted(responseInfo.contentLength);
 				Log.w(TAG, "success once:" );
+				Log.w(TAG, FileUtils.getFileSize(queue.peek()
+						.getTarget())+",url "+queue.peek().getUrl());
+				downloadOnceCompleted(FileUtils.getFileSize(queue.peek().getTarget()));
+				
 			}
 
 			//下载失败时，回调该方法
@@ -98,21 +101,21 @@ public class DownloadClient {
 					return;
 				}
 				tryTime++;
-				if (tryTime == TRY_TIME && onProgressListener != null) {
-					onProgressListener.onFailed(queue.peek().getUrl(), msg);
+				if (tryTime == TRY_TIME && mProgressListener != null) {
+					mProgressListener.onFailed(queue.peek().getUrl(), msg);
 					return;
 				}
-				downloadNext(); //TODO?  
+				downloadNext(); 
 			}
 
-			//
+			//加载下载任务时回调该方法，为什么每次都会调用两次， 一次为0  一次非0
 			@Override
 			public void onLoading(long total, long current, boolean isUploading) {
 				// TODO Auto-generated method stub
 				super.onLoading(total, current, isUploading);
 				Log.w(TAG, "Loading");
-				if (onProgressListener != null) {
-					onProgressListener.onProgress(downloadBean.getTotal(),
+				if (mProgressListener != null) {
+					mProgressListener.onProgress(downloadBean.getTotal(),
 							(downloadBean.getCurrent() + current));
 				}
 			}
@@ -137,6 +140,7 @@ public class DownloadClient {
 		DownloadInfo deleteInfo = queue.poll();
 		tryTime = 0;
 		try {
+			Log.w(TAG, "set current "+ ", current = " +downloadBean.getCurrent()+ ", set"+ (downloadBean.getCurrent() + length));
 			downloadBean.setCurrent(downloadBean.getCurrent() + length);
 			beanDao.createOrUpdate(downloadBean);
 			infoDao.delete(deleteInfo);
@@ -150,15 +154,14 @@ public class DownloadClient {
 			//下载完成
 			state = STATE.NONE;
 			downloadBean.setCompleted(true);
-			Log.w(TAG, "downLoad complete "+downloadBean.getCurrent()+", total "+downloadBean.getTotal());
 			try {
 				beanDao.createOrUpdate(downloadBean);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if (onProgressListener != null) {
-				onProgressListener.onSuccess();
+			if (mProgressListener != null) {
+				mProgressListener.onSuccess();
 			}
 			AppService.remove(museumId);
 		}
@@ -202,8 +205,8 @@ public class DownloadClient {
 	public void start() throws SQLException, NumberFormatException, IOException {
 		if (state == STATE.NONE) {
 			if (prepare()) {
-				if(onProgressListener != null){
-					onProgressListener.onStart();
+				if(mProgressListener != null){
+					mProgressListener.onStart();
 				}
 				downloadNext();
 			}
@@ -234,8 +237,8 @@ public class DownloadClient {
 				@Override
 				public void onFailed(String msg) {
 					// TODO Auto-generated method stub
-					if (onProgressListener != null) {
-						onProgressListener.onFailed("no start", msg);
+					if (mProgressListener != null) {
+						mProgressListener.onFailed("no start", msg);
 					}
 				}
 
@@ -246,8 +249,8 @@ public class DownloadClient {
 					try {
 						beanDao.createOrUpdate(downloadBean);
 						addTask(list);
-						if(onProgressListener != null){
-							onProgressListener.onStart();
+						if(mProgressListener != null){
+							mProgressListener.onStart();
 						}
 						Log.w(TAG, "data download completed");
 						downloadNext();
@@ -355,22 +358,41 @@ public class DownloadClient {
 	}
 
 	public OnProgressListener getOnProgressListener() {
-		return onProgressListener;
+		return mProgressListener;
 	}
 
 	public void setOnProgressListener(OnProgressListener onProgressListener) {
-		this.onProgressListener = onProgressListener;
+		this.mProgressListener = onProgressListener;
 	}
 
+	/**
+	 * 进度监听接口 ，用以监听下载进度的变化
+	 */
 	public interface OnProgressListener {
+		
 		public void onStart();
 
+		/**
+		 * 下载进度更新时调用该回调，用以更新进度条显示
+		 * 
+		 * @param total
+		 * @param current
+		 */
 		public void onProgress(long total, long current);
 
+		/**
+		 * 下载完成时 调用该回调
+		 */
 		public void onSuccess();
 
+		/**
+		 * 下载失败时 调用该回调
+		 * @param url
+		 * @param msg
+		 */
 		public void onFailed(String url, String msg);
 	}
+	
 
 	private class PrepareTask extends AsyncTask<Void, Void, Boolean> {
 
@@ -399,13 +421,13 @@ public class DownloadClient {
 			if (result) {
 				if (queue.size() > 0) {
 					download(queue.peek());
-					if (onProgressListener != null) {
-						onProgressListener.onStart();
+					if (mProgressListener != null) {
+						mProgressListener.onStart();
 					}
 				}
 			} else {
-				if (onProgressListener != null) {
-					onProgressListener.onFailed(null, "该数据包已经下载完成！");
+				if (mProgressListener != null) {
+					mProgressListener.onFailed(null, "该数据包已经下载完成！");
 				}
 			}
 		}

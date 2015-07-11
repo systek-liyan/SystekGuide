@@ -17,12 +17,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.app.guide.R;
 import com.app.guide.bean.LyricObject;
 
 public class LyricView extends View {
@@ -46,7 +48,6 @@ public class LyricView extends View {
 	Paint paintHL = new Paint(); // 画笔，用于画高亮的歌词，即当前唱到这句歌词
 	private MediaPlayer mediaPlayer;
 
-
 	private ShowLyricRunnable mShowLyricThread = null;
 
 	public LyricView(Context context) {
@@ -67,7 +68,6 @@ public class LyricView extends View {
 	public void setTestDisplayHeight(int height) {
 		SIZE_TEXT_DISPLAY = height;
 	}
-
 
 	@Override
 	protected void onDraw(Canvas canvas) {
@@ -98,7 +98,11 @@ public class LyricView extends View {
 				canvas.drawText(temp.lrc, mX, offsetY + (wordSize + INTERVAL)
 						* i, paint);
 			}
-		} 
+		} else {
+			// 没有找到歌词
+			canvas.drawText(getResources().getString(R.string.lyric_not_found),
+					mX, SIZE_TEXT_DISPLAY, paintHL);
+		}
 		super.onDraw(canvas);
 	}
 
@@ -146,8 +150,7 @@ public class LyricView extends View {
 		paintHL.setAlpha(255);
 
 		paint.setAlpha(255);
-		
-		
+
 	}
 
 	/**
@@ -350,6 +353,15 @@ public class LyricView extends View {
 			mediaPlayer.reset();
 		} else {
 			mediaPlayer = new MediaPlayer();
+			mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+				//播放完毕
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+					if (mProgressChangedListener != null) {
+						mProgressChangedListener.onMediaPlayCompleted();
+					}
+				}
+			});
 		}
 		try {
 			mediaPlayer.setDataSource(mp3Path);
@@ -406,6 +418,8 @@ public class LyricView extends View {
 		if (mediaPlayer != null) {
 			mediaPlayer.stop();
 		}
+		blLrc = false;
+		lrc_map.clear();
 	}
 
 	public boolean isPlaying() {
@@ -451,14 +465,7 @@ public class LyricView extends View {
 						mProgressChangedListener.onProgressChanged(mediaPlayer
 								.getCurrentPosition());
 					}
-				}else{
-					//播放完毕
-					if(mediaPlayer.getDuration()- mediaPlayer.getCurrentPosition() <= 300){
-						if(mProgressChangedListener !=null){
-							mProgressChangedListener.onMediaPlayCompleted();
-						}
-					}
-				}
+				} 
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -477,6 +484,7 @@ public class LyricView extends View {
 
 	public interface onProgressChangedListener {
 		void onProgressChanged(int progress);
+
 		void onMediaPlayCompleted();
 	}
 }

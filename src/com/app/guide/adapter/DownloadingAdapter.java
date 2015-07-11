@@ -120,6 +120,8 @@ public class DownloadingAdapter extends BaseAdapter {
 				Toast.makeText(mContext,
 						client.getDownloadBean().getName() + "下载完成",
 						Toast.LENGTH_SHORT).show();
+				//移出view
+				remove(position);
 			}
 
 			@Override

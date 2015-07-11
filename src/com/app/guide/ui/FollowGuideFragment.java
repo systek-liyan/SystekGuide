@@ -10,7 +10,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -54,20 +53,23 @@ import edu.xidian.NearestBeacon.NearestBeacon;
  * 两种进入该界面的方式，底部导航进入 和选择某一展品进入
  * 随身导游页面，包含与Beacon相关的操作，根据停留时间获取最近的beacon，并让相应的音频文件自动播放，并显示文字
  * 
- * TODO 监听 电话 设置声音 TODO view visible gone 不会绘制 无法加载后面的 TODO 博物馆选择界面 对话框
- * 
- * TODO 多角度展示图片 没切换
+ * TODO 监听 电话 设置声音 TODO view visible gone 不会绘制 无法加载后面的 TODO 博物馆选择界面 对话框 TODO
+ * 展品加载有些问题
  * 
  * @author yetwish
  * @date 2015-4-25
  * 
- *       放上github 图片
  */
 public class FollowGuideFragment extends Fragment implements
 		onBeaconSearcherListener, OnGuideModeChangedListener {
 
 	private static final String TAG = FollowGuideFragment.class.getSimpleName();
 
+	/**
+	 * 两个常量，表示加载更多时失败/成功
+	 */
+	private static final int LOAD_ERROR = 0;
+	private static final int LOAD_SUCCESS = 1;
 	/**
 	 * 上下文对象
 	 */
@@ -190,20 +192,32 @@ public class FollowGuideFragment extends Fragment implements
 	 */
 	private Exhibit mCurrentExhibit;
 
-	/**
-	 * 附近的展品1
-	 */
-	private Exhibit lExhibit;
+	// /**
+	// * 已加载的最坐标的展品
+	// */
+	// private Exhibit lExhibit;
+	//
+	// /**
+	// * 已加载的最右边的展品
+	// */
+	// private Exhibit rExhibit;
 
-	/**
-	 * 附近的展品2
-	 */
-	private Exhibit rExhibit;
+	// /**
+	// * 最左展品坐标
+	// */
+	// private int left;
+	//
+	// /**
+	// * 最右展品坐标
+	// */
+	// private int right;
+	//
+	// /**
+	// * 判断是否在初始化数据
+	// */
+	// private boolean isInitData = false;
 
-	/**
-	 * 展品列表中间的展品
-	 */
-	private Exhibit mExhibit;
+	private static final int MIN_PER_COUNT = 4;
 
 	/**
 	 * 附近的展品列表
@@ -225,24 +239,12 @@ public class FollowGuideFragment extends Fragment implements
 	 */
 	private MyClickListener mClickListener;
 
-	// private BeaconSearcher beaconSearcher;
-
 	private boolean isFirst = true;
 
 	/**
 	 * 自动导航时 手动选择展品 优先播放完选择的展品，再返回自动导航
 	 */
 	private boolean isChosed = false;
-
-	/**
-	 * defined several file path of media resources
-	 */
-	public static final String FILE_PATH = Environment
-			.getExternalStorageDirectory().getAbsolutePath() + "/Test/";
-	public static final String[] MP3_NAMES = { "3201.mp3", "3203.mp3",
-			"3205.mp3" };
-	private static final String[] LYRIC_NAMES = { "3201.lrc", "3203.lrc",
-			"3205.lrc" };
 
 	private static final int MSG_PROGRESS_CHANGED = 0x200;
 	private static final int MSG_EXHIBIT_CHANGED = 0x201;
@@ -277,6 +279,7 @@ public class FollowGuideFragment extends Fragment implements
 				// TODO
 				// 播放完，进入下一首
 				// notifyExhibitChanged(rExhibit.getId());
+				Log.w(TAG, "播放完重复播放" + isChosed + ", " + mCurrentExhibitId);
 				if (isChosed)
 					isChosed = false;
 				else {
@@ -333,6 +336,11 @@ public class FollowGuideFragment extends Fragment implements
 		manager.getDefaultDisplay().getMetrics(dm);
 	}
 
+	/**
+	 * l:左边展品 r:右边展品 ll:左边的左边 rr:右边的右边
+	 * 
+	 * @param id
+	 */
 	private void initData(String id) {
 		// 判断是否是从点击展品跳转过来的
 		if (id != null) {
@@ -341,33 +349,32 @@ public class FollowGuideFragment extends Fragment implements
 			try {
 				mCurrentExhibit = GetBeanFromSql.getExhibit(mContext,
 						mMuseumId, id);
-				mExhibit = mCurrentExhibit;
 				mCurrentExhibitId = id;
 				// 更新appContext中的id
 				((AppContext) getActivity().getApplication()).currentExhibitId = id;
 				if (mCurrentExhibit != null) {
 					// 获取展品图片数据
 					mGalleryList = mCurrentExhibit.getImgList();
-					// 获取展品图片数据
-					// TODO
-					lExhibit = GetBeanFromSql.getExhibit(mContext, mMuseumId,
-							mCurrentExhibit.getlExhibitBeanId());
-					rExhibit = GetBeanFromSql.getExhibit(mContext, mMuseumId,
-							mCurrentExhibit.getrExhibitBeanId());
-					// 将展品添加到展品数组中
+					// 重置两个列表
 					mExhibitsList.clear();
 					mExhibitImages.clear();
-					if (lExhibit != null)
-						mExhibitsList.add(lExhibit);
+					// 获取左右展品
 					mExhibitsList.add(mCurrentExhibit);
-					if (rExhibit != null)
-						mExhibitsList.add(rExhibit);
-					// 初始化 列表 获取展品icon
-					for (int i = 0; i < mExhibitsList.size(); i++) {
-						Log.w(TAG, mExhibitsList.get(i).getIconUrl() + "");
-						mExhibitImages.add(new ImageOption(mExhibitsList.get(i)
-								.getIconUrl(), 0));
+					mExhibitImages.add(new ImageOption(mCurrentExhibit
+							.getIconUrl(), 0));
+					// TODO load next and load pre
+					// 保证一开始有4个或以上个展品在列表中
+					loadPreExhibit(mCurrentExhibit);
+					if (loadNextExhibit(mCurrentExhibit)) {
+						for (int i = 0; i < 2; i++) {
+							loadNextExhibit(mExhibitsList.get(mExhibitsList
+									.size() - 1));
+						}
 					}
+					if (mExhibitsList.size() < MIN_PER_COUNT) {// 后面没有了
+						loadPreExhibit(mExhibitsList.get(0));
+					}
+					// 初始化标题
 					if (mCurrentExhibit != null && fragHeader != null) {
 						fragHeader.setTitle(mCurrentExhibit.getName());
 					}
@@ -377,6 +384,64 @@ public class FollowGuideFragment extends Fragment implements
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+
+	/**
+	 * 加载某一展品的右展品
+	 * 
+	 * @param mExhibit
+	 * @return
+	 */
+	private boolean loadNextExhibit(Exhibit mExhibit) {
+
+		try {
+			Exhibit exhibt = GetBeanFromSql.getExhibit(mContext, mMuseumId,
+					mExhibit.getrExhibitBeanId());
+			if (exhibt == null)
+				return false;
+			Log.w(TAG, "Load next " + "传进来的" + mExhibit.getName() + ","
+					+ exhibt.getName());
+			// 将展品加入展品列表
+			mExhibitsList.add(exhibt);
+			// 将展品图片加入展品图片列表
+			mExhibitImages.add(new ImageOption(exhibt.getIconUrl(), 0));
+			if (mExhibitAdapter != null) {
+				mExhibitAdapter.notifyDataSetChanged();
+			}
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	/**
+	 * 加载某一展品的左展品
+	 * 
+	 * @param mExhibit
+	 * @return
+	 */
+	private boolean loadPreExhibit(Exhibit mExhibit) {
+		try {
+			Exhibit exhibt = GetBeanFromSql.getExhibit(mContext, mMuseumId,
+					mExhibit.getlExhibitBeanId());
+			if (exhibt == null)
+				return false;
+			Log.w(TAG,
+					"Load pre " + "传进来的" + mExhibit.getName() + ","
+							+ exhibt.getName());
+			// 将展品加入展品列表
+			mExhibitsList.add(0, exhibt);
+			// 将展品图片加入展品图片列表
+			mExhibitImages.add(0, new ImageOption(exhibt.getIconUrl(), 0));
+			if (mExhibitAdapter != null) {
+				mExhibitAdapter.notifyDataSetChanged();
+			}
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -451,10 +516,10 @@ public class FollowGuideFragment extends Fragment implements
 
 		initLyricView();
 
+		initGalleryViews();		
 		// 如果当前已有展品信息，则加载gallery
 		if (mCurrentExhibit != null) {
-			initGalleryViews();
-			// notifyStartPlaying();
+			notifyStartPlaying();
 		}
 
 	}
@@ -489,20 +554,10 @@ public class FollowGuideFragment extends Fragment implements
 				mLyricView.stop();
 			initData(exhibitId);
 			if (mCurrentExhibit != null) {
-//				if (mGalleryAdapter == null) {
-//					// 未初始化galleray view
-//					initGalleryViews();
-//				} else {
-//					// 已初始化
-//					mExhibitGallery.initData(mExhibitAdapter);
-//				}
-				mGalleryAdapter = null;
-				mGalleryAdapter = new HorizontalScrollViewAdapter(mContext,
-						mGalleryList, R.layout.item_gallery);
-				mPicGallery.setBackToBegin();
-				mPicGallery.initData(mGalleryAdapter);
-
-				// notifyStartPlaying();
+				// 重新加载数据
+				updateGalleryAdapter();
+				updateExhibitAdapter();
+				notifyStartPlaying();
 			}
 		}
 	}
@@ -615,11 +670,6 @@ public class FollowGuideFragment extends Fragment implements
 			}
 
 		});
-		if (mGalleryAdapter == null)
-			mGalleryAdapter = new HorizontalScrollViewAdapter(mContext,
-					mGalleryList, R.layout.item_gallery);
-		mPicGallery.initData(mGalleryAdapter);
-		mPicGallery.setCurrentSelectedItem(false, 0);
 
 		/**
 		 * 设置tvPic可点击
@@ -630,14 +680,16 @@ public class FollowGuideFragment extends Fragment implements
 		ivPicExpand.setImageResource(R.drawable.title_normal);
 		mPicGallery.setVisibility(View.VISIBLE);
 
-		mExhibitGallery.setShowInCenter();
-
+		if(mCurrentExhibit != null){
+			updateGalleryAdapter();
+		}
+		
+		mExhibitGallery.setShownInCenter();
+		
 		mExhibitGallery.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(View view, int position, boolean isByLyric) {
 				// 切换展品
-				// Toast.makeText(mContext, position+" ",
-				// Toast.LENGTH_SHORT).show();
 				notifyExhibitChanged(mExhibitsList.get(position).getId());
 				isChosed = true;
 			}
@@ -647,68 +699,62 @@ public class FollowGuideFragment extends Fragment implements
 		mExhibitGallery.seOnLoadingMoreListener(new OnLoadingMoreListener() {
 			@Override
 			public int onRightLoadingMore() {
-				// TODO Auto-generated method stub
-				int result = 0;
-				if (rExhibit != null) {
-					Exhibit exhibit = null;
-					try {
-						exhibit = GetBeanFromSql.getExhibit(mContext,
-								mMuseumId, rExhibit.getrExhibitBeanId());
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if (exhibit != null) {
-						result = 1;
-						mExhibitsList.add(exhibit);
-						mExhibitImages.add(new ImageOption(
-								exhibit.getIconUrl(), 0));
-						lExhibit = mExhibit;
-						mExhibit = rExhibit;
-						rExhibit = exhibit;
-					}
-
+				// if(shouldUpdate && mExhibitsList.size() >= MIN_PER_COUNT)
+				// updateExhibitAdapter();
+				String names = "";
+				for (int i = 0; i < mExhibitsList.size(); i++) {
+					names += mExhibitsList.get(i).getName() + "\t";
 				}
-				return result;
+				Log.w(TAG, names);
+				if (loadNextExhibit(mExhibitsList.get(mExhibitsList.size() - 1))) {
+
+					return LOAD_SUCCESS;
+				} else
+					return LOAD_ERROR;
 			}
 
 			@Override
 			public int onLeftLoadingMore() {
-				int result = 0;
-				if (lExhibit != null) {
-					Exhibit exhibit = null;
-					try {
-						exhibit = GetBeanFromSql.getExhibit(mContext,
-								mMuseumId, lExhibit.getlExhibitBeanId());
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if (exhibit != null) {
-						result = 1;
-						mExhibitsList.add(0, exhibit);
-						mExhibitImages.add(0,
-								new ImageOption(exhibit.getIconUrl(), 0));
-						rExhibit = mExhibit;
-						mExhibit = lExhibit;
-						lExhibit = exhibit;
-					}
-				}
-				return result;
+				// if(shouldUpdate && mExhibitsList.size() >= MIN_PER_COUNT)
+				// updateExhibitAdapter();
+				String names = "";
+//				for (int i = 0; i < mExhibitsList.size(); i++) {
+//					names += mExhibitsList.get(i).getName() + "\t";
+//				}
+//				Log.w(TAG, names);
+				if (loadPreExhibit(mExhibitsList.get(0))) {
+					return LOAD_SUCCESS;
+				} else
+					return LOAD_ERROR;
 			}
 		});
-
-		if (mExhibitAdapter == null)
-			mExhibitAdapter = new HorizontalScrollViewAdapter(mContext,
-					mExhibitImages, R.layout.item_gallery);
-
-		mExhibitGallery.initData(mExhibitAdapter);
-
+		if(mCurrentExhibit != null){
+			updateExhibitAdapter();
+		}
 		/**
 		 * 设置tvExhibit 可点击
 		 */
 		tvTitleExhibits.setOnClickListener(mClickListener);
 		ivExhibitExpand.setOnClickListener(mClickListener);
+	}
+	
+	private void updateGalleryAdapter(){
+		mGalleryAdapter = null;
+		mGalleryAdapter = new HorizontalScrollViewAdapter(mContext,
+				mGalleryList, R.layout.item_gallery);
+		mPicGallery.setBackToBegin();
+		mPicGallery.initData(mGalleryAdapter);
+		mPicGallery.setCurrentSelectedItem(false, 0);
+	}
+
+	private void updateExhibitAdapter() {
+		mExhibitAdapter = null;
+		mExhibitAdapter = new HorizontalScrollViewAdapter(mContext,
+				mExhibitImages, R.layout.item_gallery);
+		mPicGallery.setBackToBegin();
+		mExhibitGallery.initData(mExhibitAdapter);
+		mExhibitGallery.setCurrentSelectedItem(false, mExhibitsList.indexOf(mCurrentExhibit));
+
 	}
 
 	private void changeCurrentExhibitById(String i) {
@@ -735,7 +781,6 @@ public class FollowGuideFragment extends Fragment implements
 				.getLrcDownloadPath(mCurrentExhibit.getTextUrl(), mMuseumId));
 		// 设置progressBar的最大值
 		pbMusic.setMax(mLyricView.getDuration());
-		// /daoyou/userfiles/1/files/ser/serExhibit/lrc/exhibitCBZ.lrc
 		// 开始播放
 		mLyricView.start();
 		ivStart.setImageResource(R.drawable.play_btn_pause);

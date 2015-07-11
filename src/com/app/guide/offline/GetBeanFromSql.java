@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.app.guide.Constant;
 import com.app.guide.bean.Exhibit;
@@ -62,6 +61,26 @@ public class GetBeanFromSql {
 		return list;
 	}
 
+	/**
+	 * 从数据库中获取某一博物馆某一楼层图片的url
+	 * 
+	 * @param context
+	 * @param museumId
+	 * @return
+	 * @throws SQLException 
+	 */
+	public static OfflineMapBean getMapBean(Context context, String museumId, int floor) 
+			throws SQLException{
+		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
+				new DatabaseContext(context, Constant.FLODER_NAME+museumId), 
+				museumId+".db");
+		Dao<OfflineMapBean,Integer> oDao = helper.getOfflineMapDao();
+		QueryBuilder<OfflineMapBean, Integer> builder = oDao.queryBuilder();
+		builder.where().eq("floor", floor);
+		OfflineMapBean bean = builder.queryForFirst();
+		return bean;
+	}
+	
 	/**
 	 * 从数据库中获取整个博物馆下的所有展品
 	 */
@@ -137,10 +156,10 @@ public class GetBeanFromSql {
 			exhibit.setId(exhibitId);
 			exhibit.setName(bean.getName());
 			exhibit.setBeaconUId(bean.getBeaconId());
-			Log.w(TAG, bean.getIconurl());
 			exhibit.setIconUrl(Constant.getImageDownloadPath(bean.getIconurl(),
 					museumId));
 			exhibit.setAudioUrl(bean.getAudiourl());
+			exhibit.setTextUrl(bean.getTexturl());
 			exhibit.setlExhibitBeanId(bean.getLexhibit());
 			exhibit.setrExhibitBeanId(bean.getRexhibit());
 			String imgOptions[] = bean.getImgsurl().split(",");

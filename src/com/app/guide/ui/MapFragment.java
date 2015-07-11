@@ -1,11 +1,14 @@
 package com.app.guide.ui;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.altbeacon.beacon.Beacon;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -17,17 +20,19 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.app.guide.AppContext;
+import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.MapExhibitAdapter;
 import com.app.guide.bean.MapExhibitBean;
 import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.offline.OfflineMapBean;
 import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
 import com.app.guide.widget.MarkObject;
 import com.app.guide.widget.MarkObject.MarkClickListener;
@@ -38,6 +43,7 @@ import edu.xidian.NearestBeacon.NearestBeacon;
 
 public class MapFragment extends Fragment implements onBeaconSearcherListener {
 
+	private static final String TAG = MapFragment.class.getSimpleName();
 	private MyMap sceneMap;// 地图类
 	private ImageView locaImageView;
 	private Bitmap bitmap;// 显示地图的Bitmap
@@ -46,9 +52,75 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 	private Button showMenuBtn;
 	private MapExhibitAdapter adapter;
 	private List<MapExhibitBean> mapExhibitBeans;
+	
+	/**
+	 * 人所在地图X坐标,0.5表示在地图的水平中点
+	 */
 	private float personX;
+	
+	/**
+	 * 人所在地图Y坐标，0.5表示人在地图垂直中点
+	 */
 	private float personY;
+	
+	/**
+	 * 当前博物馆的楼层数
+	 */
 	private int floorCount;
+	
+	/**
+	 * 当前选中博物馆
+	 */
+	private String mMuseumId;
+
+	/**
+	 * 表示当前选中楼层
+	 */
+	private int currentFloor;
+
+	/**
+	 * 存储各个楼层的图片路径
+	 */
+	private Map<Integer, String> mFloorUrls;
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+
+		// 加载图片
+		initData();
+	}
+
+	/**
+	 * 加载各楼层地图
+	 */
+	private void initData() {
+		currentFloor = 1;
+		mMuseumId = ((AppContext) getActivity().getApplication()).currentMuseumId;
+		mFloorUrls = new HashMap<Integer, String>();
+		// 加载楼层数
+		try {
+			floorCount = GetBeanFromSql.getFloorCount(getActivity(), mMuseumId);
+			// 加载各个楼层的图片
+			for (int i = 0; i < floorCount; i++) {
+				OfflineMapBean bean = GetBeanFromSql.getMapBean(getActivity(), mMuseumId, i+1);
+				Log.w(TAG, ( bean == null )+"");
+				if(bean != null ){
+					mFloorUrls.put(i + 1, bean.getImgurl());
+					Log.w(TAG,  (i+1) + mFloorUrls.get(i+1));
+				}else{
+					//表示后面没有了，不再加载
+					break;
+					//TODO 表示没有该地图资源，加载图片显示错误的图片  有一个URL
+					//mFloorUrls.put(i+1, "piture_error!");
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 
 	@SuppressLint("InflateParams")
 	@Override
@@ -65,20 +137,15 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 		super.onViewCreated(view, savedInstanceState);
 		sceneMap = (MyMap) view.findViewById(R.id.map_sceneMap);
 		mListView = (ListView) view.findViewById(R.id.map_list_exhibit);
-		try {
-			floorCount = GetBeanFromSql.getFloorCount(getActivity(),
-					((AppContext)getActivity().getApplication()).currentMuseumId);
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+
 		mPopMapMenu = new PopMapMenu(getActivity(), floorCount);
 		showMenuBtn = (Button) view.findViewById(R.id.map_btn_showmenu);
 		locaImageView = (ImageView) view.findViewById(R.id.map_location);
 		sceneMap.setShowMark(false);
 		try {
-			mapExhibitBeans = GetBeanFromSql.getMapExhibit(getActivity(),
-					((AppContext)getActivity().getApplication()).currentMuseumId, 1);
+			mapExhibitBeans = GetBeanFromSql
+					.getMapExhibit(getActivity(), ((AppContext) getActivity()
+							.getApplication()).currentMuseumId, 1);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -152,9 +219,11 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		if (!((AppContext)getActivity().getApplication()).exhibitsIdList.equals("")) {
+		if (!((AppContext) getActivity().getApplication()).exhibitsIdList
+				.equals("")) {
 			// 获取筛选的exhibits
-			String[] ids = ((AppContext)getActivity().getApplication()).exhibitsIdList.split(",");
+			String[] ids = ((AppContext) getActivity().getApplication()).exhibitsIdList
+					.split(",");
 			for (int i = 0, j = 0; i < ids.length; i++, j++) {
 				if (!ids[i].equals(mapExhibitBeans.get(j).getId())) {
 					mapExhibitBeans.remove(j);
@@ -163,11 +232,13 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 			}
 			adapter.notifyDataSetChanged();
 		}
-		if (((AppContext)getActivity().getApplication()).isAutoGuide()) {
+		if (((AppContext) getActivity().getApplication()).isAutoGuide()) {
 			HomeActivity.setBeaconLocateType(NearestBeacon.GET_LOCATION_BEACON);
 			HomeActivity.setBeaconSearcherListener(this);
 		}
-		bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test);
+		// 加载当前层数的图片
+		bitmap = BitmapFactory.decodeFile(Constant.getImageDownloadPath(
+				mFloorUrls.get(currentFloor), mMuseumId));
 		sceneMap.setBitmap(bitmap);
 		for (final MapExhibitBean bean : mapExhibitBeans) {
 			MarkObject object = new MarkObject();
