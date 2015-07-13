@@ -65,7 +65,7 @@ public class CityActivity extends BaseActivity {
 
 	private void initList() {
 		mCityNames = getCityNames();
-		CityAdapter adapter = new CityAdapter(CityActivity.this, mCityNames);
+		CityAdapter adapter = new CityAdapter(CityActivity.this, mCityNames,R.layout.item_city);
 		mCityLit.setAdapter(adapter);
 		alphaIndexer = adapter.getCityMap();
 		mCityLit.setOnItemClickListener(new CityListOnItemClick());

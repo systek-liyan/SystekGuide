@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal" >
-	<Button
-	    android:id="@+id/item_label_grid_btn"
-	    android:gravity="center"
-	    android:textSize="14sp"
-	   	android:maxLines="1"
-	    android:textColor="@color/hint_font_color"
-	    android:background="@color/btn_pressed_color" 
-	    android:layout_width="wrap_content"
-	    android:layout_height="40dp"/>
-</LinearLayout>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/item_label_grid_btn"
+	android:gravity="center"
+	android:textSize="14sp"
+	android:maxLines="1"
+	android:textColor="@color/hint_font_color"
+	android:background="@color/btn_pressed_color" 
+	android:layout_width="wrap_content"
+	android:layout_height="40dp" />

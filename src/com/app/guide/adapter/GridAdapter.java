@@ -3,11 +3,9 @@ package com.app.guide.adapter;
 import java.util.List;
 
 import android.content.Context;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 
 import com.app.guide.R;
@@ -16,72 +14,64 @@ import com.app.guide.R;
  * gridView adapter 
  * @author yetwish
  */
-public class GridAdapter extends BaseAdapter{
+public class GridAdapter extends CommonAdapter<String>{
 
-	private Context mContext;
-	private List<String> items;
-	private GridItemClickListener itemListener;
-	public GridAdapter(Context context,List<String> items,GridItemClickListener listener){
-		this.mContext = context;
-		this.items = items;
-		this.itemListener = listener;
-		
-	}
+	private GridItemClickListener mItemClickListener;
 	
-	@Override
-	public int getCount() {
-		return items.size();
-	}
-
-	@Override
-	public String getItem(int index) {
-		return items.get(index);
-	}
-
-	@Override
-	public long getItemId(int i) {
-		return i;
-	}
-
-	@Override
-	public View getView(int position, View converView, ViewGroup root) {
-		Button btnItem;
-		if(converView == null){
-			converView = LayoutInflater.from(mContext).inflate(R.layout.item_label_grid_view, root,false);
-			btnItem = (Button) converView.findViewById(R.id.item_label_grid_btn);
-			converView.setTag(btnItem);
-		}else{
-			btnItem = (Button)converView.getTag();
-		}
-		btnItem.setText(getItem(position));
-		btnItem.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Button button = (Button)view;
-				if(itemListener!=null){
-					//响应点击事件，并将子控件(button)的text 传递出去
-					itemListener.onClick(button);
-				}
-			}
-		});
-		return converView;
-	}
+	private MyClickListener mClickListener;
 	
 	
+	public GridAdapter(Context context, List<String> data, int layoutId) {
+		super(context, data, layoutId);
+		mClickListener = new MyClickListener();
+	}
+	
+	public void setItemClickListener(GridItemClickListener listener){
+		this.mItemClickListener = listener;
+	} 
+
 	/**
-	 * 更新数据
+	 * 替换整个数组
 	 * @param items
 	 */
-	public void refreshData(List<String> items){
-		this.items = items;
+	public void replaceAll(List<String> data){
+		this.mData= data;
 		notifyDataSetChanged();
 	}
 
+
+	@Override
+	public void convert(ViewHolder holder, int position) {
+		Button btn = holder.getView(R.id.item_label_grid_btn);
+		btn.setText(getItem(position));
+		//设置点击监听
+		btn.setOnClickListener(mClickListener);
+	}
+	
+	private class MyClickListener implements OnClickListener{
+
+		@Override
+		public void onClick(View view) {
+			if(mItemClickListener != null){
+				mItemClickListener.onClick(view);
+			}
+		}
+		
+	} 
+	
+
 	/**
-	 * 回调接口，用来响应点击事件，并将子控件的参数传递给父控件
+	 * 回调接口，用来响应点击事件，客户端实现具体的事件处理
+	 * 
 	 * @author yetwish
 	 */
-	public interface GridItemClickListener{
-		public void onClick(Button btnItem);
+	public interface GridItemClickListener {
+		
+		/**
+		 * 当标签项被点击时，回调刚方法
+		 * @param view
+		 */
+		public void onClick(View view);
 	}
+
 }

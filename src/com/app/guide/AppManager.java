@@ -8,9 +8,6 @@ import android.content.Context;
 
 /**
  * 应用程序Activity管理类：用于Activity管理和应用程序退出
- * @author Peter
- * @version 1.0
- * @created 2014-2-27
  */
 public class AppManager {
 	

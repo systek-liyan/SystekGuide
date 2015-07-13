@@ -61,25 +61,6 @@ public class GetBeanFromSql {
 		return list;
 	}
 
-	/**
-	 * 从数据库中获取某一博物馆某一楼层图片的url
-	 * 
-	 * @param context
-	 * @param museumId
-	 * @return
-	 * @throws SQLException 
-	 */
-	public static OfflineMapBean getMapBean(Context context, String museumId, int floor) 
-			throws SQLException{
-		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
-				new DatabaseContext(context, Constant.FLODER_NAME+museumId), 
-				museumId+".db");
-		Dao<OfflineMapBean,Integer> oDao = helper.getOfflineMapDao();
-		QueryBuilder<OfflineMapBean, Integer> builder = oDao.queryBuilder();
-		builder.where().eq("floor", floor);
-		OfflineMapBean bean = builder.queryForFirst();
-		return bean;
-	}
 	
 	/**
 	 * 从数据库中获取整个博物馆下的所有展品
@@ -216,7 +197,99 @@ public class GetBeanFromSql {
 		}
 		return labels;
 	}
+	
+	/**
+	 * 通过beaconId 获取该beacon管理的展品列表
+	 * 
+	 * @param context
+	 * @param museumId
+	 * @param beaconId
+	 * @return
+	 * @throws SQLException
+	 */
+	public static List<Exhibit> getExhibitsByBeaconId(Context context, String museumId,String beaconId)
+					throws SQLException{
+		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
+				new DatabaseContext(context, Constant.FLODER_NAME + museumId),
+				museumId + ".db");
+		Dao<OfflineExhibitBean, Integer> oDao = helper.getOfflineExhibitDao();
+		QueryBuilder<OfflineExhibitBean, Integer> builder = oDao.queryBuilder();
+		builder.where().eq("beacon_id", beaconId);
+		List<OfflineExhibitBean> offlineList = builder.query();
+		List<Exhibit> exhibits = new ArrayList<Exhibit>();
+		for(OfflineExhibitBean bean: offlineList) {
+			Exhibit exhibit = new Exhibit();
+			exhibit.setId(bean.getId());
+			exhibit.setName(bean.getName());
+			exhibit.setBeaconUId(bean.getBeaconId());
+			exhibit.setIconUrl(Constant.getImageDownloadPath(bean.getIconurl(),
+					museumId));
+			exhibit.setAudioUrl(bean.getAudiourl());
+			exhibit.setTextUrl(bean.getTexturl());
+			exhibit.setlExhibitBeanId(bean.getLexhibit());
+			exhibit.setrExhibitBeanId(bean.getRexhibit());
+			String imgOptions[] = bean.getImgsurl().split(",");
+			List<ImageOption> imgList = new ArrayList<ImageOption>();
+			imgList.clear();
+			String options[] ;
+			for (int i = 0; i < imgOptions.length; i++) {
+				options = imgOptions[i].split("\\*");
+				ImageOption option = new ImageOption(
+						Constant.getImageDownloadPath(options[0], museumId),
+						Integer.valueOf(options[1]));
+				imgList.add(option);
+			}
+			exhibit.setImgList(imgList);
+			exhibit.setLabels(bean.getLabels());
+			exhibits.add(exhibit);
+		}
+		return exhibits;
+		
+	}
+	
+	/**
+	 * 通过beacon的minor 和major 获取offlineBeaconBean
+	 * 
+	 * @param context
+	 * @param museumId
+	 * @param minor
+	 * @param major
+	 * @return
+	 */
+	public static OfflineBeaconBean getBeaconBean(Context context,String museumId, String minor,String major)
+			throws SQLException{
+		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
+				new DatabaseContext(context, Constant.FLODER_NAME + museumId), 
+				museumId+".db");
+		Dao<OfflineBeaconBean, Integer> oDao = helper.getOfflineBeaconDao();
+		QueryBuilder<OfflineBeaconBean, Integer> builder = oDao.queryBuilder();
+		builder.where().eq("major", major).eq("minor", minor);
+		OfflineBeaconBean bean = builder.queryForFirst();
+		return bean;
+		
+	}
 
+	/**
+	 * 从数据库中获取某一博物馆某一楼层地图的bean
+	 * 
+	 * @param context
+	 * @param museumId
+	 * @return
+	 * @throws SQLException 
+	 */
+	public static OfflineMapBean getMapBean(Context context, String museumId, int floor) 
+			throws SQLException{
+		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
+				new DatabaseContext(context, Constant.FLODER_NAME+museumId), 
+				museumId+".db");
+		Dao<OfflineMapBean,Integer> oDao = helper.getOfflineMapDao();
+		QueryBuilder<OfflineMapBean, Integer> builder = oDao.queryBuilder();
+		builder.where().eq("floor", floor);
+		OfflineMapBean bean = builder.queryForFirst();
+		return bean;
+	}
+	
+	
 	/**
 	 * 根据博物馆id获取博物馆的详细bean，用以展示博物馆 
 	 */

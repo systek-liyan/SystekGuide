@@ -29,7 +29,8 @@ import android.widget.ListView;
 import com.app.guide.AppContext;
 import com.app.guide.Constant;
 import com.app.guide.R;
-import com.app.guide.adapter.MapExhibitAdapter;
+import com.app.guide.adapter.CommonAdapter;
+import com.app.guide.adapter.ViewHolder;
 import com.app.guide.bean.MapExhibitBean;
 import com.app.guide.offline.GetBeanFromSql;
 import com.app.guide.offline.OfflineMapBean;
@@ -50,24 +51,24 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 	private ListView mListView;// 用于现实展品列表
 	private PopMapMenu mPopMapMenu;
 	private Button showMenuBtn;
-	private MapExhibitAdapter adapter;
+	private CommonAdapter<MapExhibitBean> adapter;
 	private List<MapExhibitBean> mapExhibitBeans;
-	
+
 	/**
 	 * 人所在地图X坐标,0.5表示在地图的水平中点
 	 */
 	private float personX;
-	
+
 	/**
 	 * 人所在地图Y坐标，0.5表示人在地图垂直中点
 	 */
 	private float personY;
-	
+
 	/**
 	 * 当前博物馆的楼层数
 	 */
 	private int floorCount;
-	
+
 	/**
 	 * 当前选中博物馆
 	 */
@@ -103,23 +104,24 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 			floorCount = GetBeanFromSql.getFloorCount(getActivity(), mMuseumId);
 			// 加载各个楼层的图片
 			for (int i = 0; i < floorCount; i++) {
-				OfflineMapBean bean = GetBeanFromSql.getMapBean(getActivity(), mMuseumId, i+1);
-				Log.w(TAG, ( bean == null )+"");
-				if(bean != null ){
+				OfflineMapBean bean = GetBeanFromSql.getMapBean(getActivity(),
+						mMuseumId, i + 1);
+				Log.w(TAG, (bean == null) + "");
+				if (bean != null) {
 					mFloorUrls.put(i + 1, bean.getImgurl());
-					Log.w(TAG,  (i+1) + mFloorUrls.get(i+1));
-				}else{
-					//表示后面没有了，不再加载
+					Log.w(TAG, (i + 1) + mFloorUrls.get(i + 1));
+				} else {
+					// 表示后面没有了，不再加载
 					break;
-					//TODO 表示没有该地图资源，加载图片显示错误的图片  有一个URL
-					//mFloorUrls.put(i+1, "piture_error!");
+					// TODO 表示没有该地图资源，加载图片显示错误的图片 有一个URL
+					// mFloorUrls.put(i+1, "piture_error!");
 				}
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@SuppressLint("InflateParams")
@@ -150,7 +152,19 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		adapter = new MapExhibitAdapter(getActivity(), mapExhibitBeans);
+		adapter = new CommonAdapter<MapExhibitBean>(getActivity(),
+				mapExhibitBeans, R.layout.item_map_exhibit) {
+
+			@Override
+			public void convert(ViewHolder holder, int position) {
+				holder.setTvText(R.id.item_map_exhibit_name,
+						getItem(position).getName()).
+						setTvText(R.id.item_map_exhibit_address,
+						getItem(position).getAddress());
+
+			}
+
+		};
 		mListView.setAdapter(adapter);
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -219,10 +233,10 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		if (!((AppContext) getActivity().getApplication()).exhibitsIdList
+		if (!((AppContext) getActivity().getApplication()).exhibitsIds
 				.equals("")) {
 			// 获取筛选的exhibits
-			String[] ids = ((AppContext) getActivity().getApplication()).exhibitsIdList
+			String[] ids = ((AppContext) getActivity().getApplication()).exhibitsIds
 					.split(",");
 			for (int i = 0, j = 0; i < ids.length; i++, j++) {
 				if (!ids[i].equals(mapExhibitBeans.get(j).getId())) {

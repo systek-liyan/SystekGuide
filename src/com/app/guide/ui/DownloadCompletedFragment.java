@@ -11,9 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.app.guide.R;
 import com.app.guide.adapter.DownloadCompletedAdapter;
 import com.app.guide.download.DownloadBean;
-import com.app.guide.download.DownloadInfo;
 import com.app.guide.offline.GetBeanFromSql;
 
 public class DownloadCompletedFragment extends Fragment {
@@ -40,7 +40,7 @@ public class DownloadCompletedFragment extends Fragment {
 			e.printStackTrace();
 		}
 		DownloadCompletedAdapter adapter = new DownloadCompletedAdapter(
-				getActivity(), data);
+				getActivity(), data, R.layout.item_download_completed);
 		mListView.setAdapter(adapter);
 	}
 

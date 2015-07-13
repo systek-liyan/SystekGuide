@@ -16,6 +16,8 @@ public class MainActivity extends BaseActivity {
 
 	private static final int MSG_SPLASH = 0x101;
 	
+	private static final long ACTIVE_TIME = 1000L;
+	
 	@SuppressLint("HandlerLeak") 
 	private Handler mHandler = new Handler(){
 		public void handleMessage(android.os.Message msg) {
@@ -41,7 +43,7 @@ public class MainActivity extends BaseActivity {
 	}
 
 	/**
-	 * 启动一个线程，800ms后发送一条跳转到城市页面的消息。
+	 * 启动一个线程，一段时间后发送一条跳转到城市页面的消息。
 	 */
 	private void changeToCityActivity(){
         new Thread(){
@@ -49,7 +51,7 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 super.run();
                 try {
-                    Thread.sleep(800L);
+                    Thread.sleep(ACTIVE_TIME);
                 }catch (InterruptedException e){
                     e.printStackTrace();
                 }finally{

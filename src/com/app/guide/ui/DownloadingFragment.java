@@ -50,7 +50,8 @@ public class DownloadingFragment extends Fragment {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		adapter = new DownloadingAdapter(getActivity(), data);
+		adapter = new DownloadingAdapter(getActivity(), data,
+				R.layout.item_downloading);
 		downloadingLv.setAdapter(adapter);
 		addButton.setOnClickListener(new OnClickListener() {
 

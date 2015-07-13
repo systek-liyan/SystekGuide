@@ -35,7 +35,7 @@ public class AppContext extends Application {
 	 * 传递的展品列表id  
 	 * 规则：各个id间用“，”隔开
 	 */
-	public String exhibitsIdList = ""; 
+	public String exhibitsIds = ""; 
 	
 	/**
 	 * 判断是否有从searchActivity 跳转到homeActivity

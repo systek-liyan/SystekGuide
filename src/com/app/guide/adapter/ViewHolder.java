@@ -5,6 +5,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -82,9 +83,18 @@ public class ViewHolder {
 	/**
 	 * 给TextView设置文本，返回viewHolder对象，用以链式编程
 	 */
-	public ViewHolder setText(int viewId, String text) {
+	public ViewHolder setTvText(int viewId, String text) {
 		TextView tv = getView(viewId);
 		tv.setText(text);
+		return this;
+	}
+	
+	/**
+	 * 给Button设置文本，返回viewHolder对象，用以链式编程
+	 */
+	public ViewHolder setBtnText(int viewId,String text){
+		Button btn = getView(viewId);
+		btn.setText(text);
 		return this;
 	}
 

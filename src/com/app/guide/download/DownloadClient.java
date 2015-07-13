@@ -8,7 +8,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.app.guide.Constant;
@@ -28,36 +27,73 @@ import com.lidroid.xutils.http.callback.RequestCallBack;
 
 /**
  * 
- * 使用xUtils框架进行单个博物馆的下载任务，对博物馆离线数据的所有文件形成一个队列依次进行下载
- * 
+ * 使用xUtils框架进行单个博物馆的下载任务，对博物馆离线数据的所有文件形成一个队列依次进行下载<br>
+ * 一个下载任务将会开启一个DownloadClient(下载客户端),对应一个downloadBean<br>
+ * 所有的下载客户端由AppService统一管理
+ * @see AppService
  * @author joe_c
  *
  */
 public class DownloadClient {
 	
+	private static final String TAG = DownloadClient.class.getSimpleName();
+
 	/**
 	 * 表示下载的5种状态
 	 */
 	public enum STATE {
 		PREPARE, DOWNLOADING, NONE, PAUSE, CANCELED
 	}
-
-	private static final String TAG = DownloadClient.class.getSimpleName();
+	
+	/**
+	 * 下载失败重试次数
+	 */
 	private static final int TRY_TIME = 3;
 
+	/**
+	 * 上下文对象
+	 */
 	private Context mContext;
+	
+	/**
+	 * 要下载的博物馆Id 
+	 */
 	private String museumId;
+	
+	/**
+	 * DownloadInfo表的数据访问对象，用以访问、操作downloadInfo表中的数据
+	 */
 	private Dao<DownloadInfo, Integer> infoDao;
+	
+	/**
+	 * DownloadBean表的数据访问对象，用以访问、操作downloadInfo表中的数据
+	 */
 	private Dao<DownloadBean, Integer> beanDao;
+	
+	/**
+	 * 该downloadClient对应的downloadBean,一对一的关系 
+	 */
 	private DownloadBean downloadBean;
 
 	/**
-	 * 阻塞队列
+	 * 阻塞队列,下载队列,用来存储所有的下载项
 	 */
 	private BlockingQueue<DownloadInfo> queue;
 	
+	//TODO
+	/**
+	 * xUtil
+	 */
 	private HttpUtils utils;
+	
+	/**
+	 * xUtil
+	 */
 	private HttpHandler<File> handler;
+	
+	/**
+	 * xUtil
+	 */
 	private RequestCallBack<File> callBack;
 	
 	/**
@@ -70,6 +106,9 @@ public class DownloadClient {
 	 */
 	private int tryTime = 0;
 
+	/**
+	 * 内部定义的进度监听接口的对象，实现对downloadClient的下载进度的监听
+	 */
 	private OnProgressListener mProgressListener;
 	
 	public DownloadClient(Context context, String museumId) {
@@ -82,10 +121,8 @@ public class DownloadClient {
 			//下载成功时，回调该方法
 			@Override
 			public void onSuccess(ResponseInfo<File> responseInfo) {
-				// TODO Auto-generated method stub
 				Log.w(TAG, "success once:" );
-				Log.w(TAG, FileUtils.getFileSize(queue.peek()
-						.getTarget())+",url "+queue.peek().getUrl());
+				//调用下载成功的方法
 				downloadOnceCompleted(FileUtils.getFileSize(queue.peek().getTarget()));
 				
 			}
@@ -95,6 +132,8 @@ public class DownloadClient {
 			public void onFailure(HttpException error, String msg) {
 				// TODO Auto-generated method stub
 				Log.w(TAG, "onFailure once:" +queue.peek().getUrl());
+				//如果已经下载成功，则调用下载成功方法，否则将tryTime++重新下载，
+				//如果tryTime达到3次，则调用ProgressListener#onFailed()方法
 				if (msg.equals("downloaded")) {
 					downloadOnceCompleted(FileUtils.getFileSize(queue.peek()
 							.getTarget()));
@@ -105,6 +144,7 @@ public class DownloadClient {
 					mProgressListener.onFailed(queue.peek().getUrl(), msg);
 					return;
 				}
+				//下载 下载队列中第一项
 				downloadNext(); 
 			}
 
@@ -121,26 +161,26 @@ public class DownloadClient {
 			}
 
 		};
+		//初始化，取得两个表的数据访问对象
 		DownloadManagerHelper helper = new DownloadManagerHelper(mContext);
 		try {
 			infoDao = helper.getInfoDao();
 			beanDao = helper.getBeanDao();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * 每次下载成功一个文件后调用此方法。 更新DownloadBean和DownloadInfo表
-	 * 
-	 * @param length
+	 * 每次下载成功一个文件后调用此方法。 更新DownloadBean和DownloadInfo表。
+	 * 并重置尝试次数，更新下载队列，将队列中的第一项移除。<br>
+	 * 移除后若队列为空，则表示下载已全部完成，则调用ProgressListener#onSuccess()方法
+	 *  @param length
 	 */
 	private void downloadOnceCompleted(long length) {
 		DownloadInfo deleteInfo = queue.poll();
 		tryTime = 0;
 		try {
-			Log.w(TAG, "set current "+ ", current = " +downloadBean.getCurrent()+ ", set"+ (downloadBean.getCurrent() + length));
 			downloadBean.setCurrent(downloadBean.getCurrent() + length);
 			beanDao.createOrUpdate(downloadBean);
 			infoDao.delete(deleteInfo);
@@ -150,8 +190,8 @@ public class DownloadClient {
 		}
 		if (queue.size() != 0) {
 			downloadNext();
-		} else {
-			//下载完成
+		} else {//下载完成
+			//更新下载状态
 			state = STATE.NONE;
 			downloadBean.setCompleted(true);
 			try {
@@ -163,6 +203,7 @@ public class DownloadClient {
 			if (mProgressListener != null) {
 				mProgressListener.onSuccess();
 			}
+			//在AppService中，移除该博物馆下载任务
 			AppService.remove(museumId);
 		}
 	}
@@ -184,11 +225,13 @@ public class DownloadClient {
 	public void addTask(DownloadInfo info) {
 		queue.add(info);
 		try {
+			//每添加一个下载任务，则创建一条downloadInfo记录
 			infoDao.createOrUpdate(info);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//获取下载任务对应的物理存储位置
 		File file = new File(info.getTarget());
 		if (file.exists()) {
 			file.delete();
@@ -227,16 +270,20 @@ public class DownloadClient {
 			IOException {
 		state = STATE.PREPARE;
 		Log.w(TAG, "prepare");
+		//判断数据库中downloadBean表中 是否已经存在要下载的博物馆的记录
 		downloadBean = beanDao.queryBuilder().where().eq("museumId", museumId)
 				.queryForFirst();
-		if (downloadBean == null) {
+		if (downloadBean == null) { 
+			//如果不存在，则调用offlineDownloadHelper,并准备开始下载，为helper对象设置下载状态监听接口OnFinishedListener
+			//当helper完成所有的下载接口（服务端API）的访问，且成功生成一个下载列表时，会回调OnFinishedListener#onSuccess()方法
+			//否则（不成功的情况下）,会回调OnFinishedListener#onFailed()方法
 			OfflineDownloadHelper helper = new OfflineDownloadHelper(mContext,
 					museumId);
 			helper.setOnFinishedListener(new OnFinishedListener() {
 
 				@Override
 				public void onFailed(String msg) {
-					// TODO Auto-generated method stub
+					// 调用ProgressListener#onFailed()方法
 					if (mProgressListener != null) {
 						mProgressListener.onFailed("no start", msg);
 					}
@@ -247,22 +294,29 @@ public class DownloadClient {
 					// TODO Auto-generated method stub
 					downloadBean = bean;
 					try {
+						//创建downloadBean
 						beanDao.createOrUpdate(downloadBean);
+						//并将offlineDownloadHelper中生成的downloadInfo列表添加到下载队列中
 						addTask(list);
+						Log.w(TAG, "下载任务队列生成成功！");
+						//开始下载
+						downloadNext();
+						//调用ProgressListener#onStart()方法
 						if(mProgressListener != null){
 							mProgressListener.onStart();
 						}
-						Log.w(TAG, "data download completed");
-						downloadNext();
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
 			});
+			//调用OfflineDownloadHelper#download()方法，使其开始工作
 			helper.download();
 			return false;
 		} else {
+			//如果数据库中已经存在 要下载的博物馆的记录了，从数据库中获取该博物馆的所有downloadInfo记录
+			//一个DownloadInfo记录表示一个未下载完成的下载项，并将其添加到下载队列中。
 			List<DownloadInfo> list = infoDao.queryBuilder().where()
 					.eq("museumId", downloadBean.getMuseumId()).query();
 			addTask(list);
@@ -270,6 +324,12 @@ public class DownloadClient {
 		}
 	}
 
+	/**
+	 * 将downloadInfo列表添加到下载队列中。
+	 * 
+	 * @param list
+	 * @throws SQLException
+	 */
 	private void addTask(List<DownloadInfo> list) throws SQLException {
 		if (list.size() == 0) {
 			return;
@@ -278,10 +338,13 @@ public class DownloadClient {
 		for (int i = 1; i < list.size(); i++) {
 			addTask(list.get(i));
 		}
-		beanDao.createOrUpdate(downloadBean);
+		beanDao.createOrUpdate(downloadBean);//？?TODO 
 		list.clear();
 	}
 
+	/**
+	 * @return 当前下载客户端对应的downloadBean
+	 */
 	public DownloadBean getDownloadBean() {
 		return downloadBean;
 	}
@@ -298,7 +361,7 @@ public class DownloadClient {
 	}
 
 	/**
-	 * 下载队列中的系一个任务
+	 * 下载队列中的第一个任务
 	 */
 	private void downloadNext() {
 		if (queue.size() != 0) {
@@ -308,7 +371,7 @@ public class DownloadClient {
 	}
 
 	/**
-	 * 暂停方法
+	 * 暂停下载
 	 */
 	public void pause() {
 		if (handler != null && state == STATE.DOWNLOADING) {
@@ -318,7 +381,7 @@ public class DownloadClient {
 	}
 
 	/**
-	 * 恢复下载方法
+	 * 恢复下载
 	 */
 	public void resume() {
 		if (state == STATE.PAUSE) {
@@ -328,7 +391,7 @@ public class DownloadClient {
 	}
 
 	/**
-	 * 取消方法
+	 * 取消下载，移出数据库中的记录，以及删除已经下载的文件
 	 */
 	public void cancel() {
 		if (state == STATE.DOWNLOADING) {
@@ -357,16 +420,16 @@ public class DownloadClient {
 		}
 	}
 
-	public OnProgressListener getOnProgressListener() {
-		return mProgressListener;
-	}
-
+	/**
+	 * 设置下载进度监听器
+	 * @return
+	 */
 	public void setOnProgressListener(OnProgressListener onProgressListener) {
 		this.mProgressListener = onProgressListener;
 	}
 
 	/**
-	 * 进度监听接口 ，用以监听下载进度的变化
+	 * 下载进度监听接口 ，用以监听下载进度的变化
 	 */
 	public interface OnProgressListener {
 		
@@ -393,7 +456,7 @@ public class DownloadClient {
 		public void onFailed(String url, String msg);
 	}
 	
-
+	/*
 	private class PrepareTask extends AsyncTask<Void, Void, Boolean> {
 
 		@Override
@@ -432,5 +495,5 @@ public class DownloadClient {
 			}
 		}
 	}
-
+	*/
 }

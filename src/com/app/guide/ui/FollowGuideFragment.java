@@ -37,6 +37,7 @@ import com.app.guide.adapter.HorizontalScrollViewAdapter;
 import com.app.guide.bean.Exhibit;
 import com.app.guide.bean.ImageOption;
 import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.offline.OfflineBeaconBean;
 import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
 import com.app.guide.utils.BitmapUtils;
 import com.app.guide.widget.DialogManagerHelper;
@@ -50,11 +51,13 @@ import com.app.guide.widget.TopBar;
 import edu.xidian.NearestBeacon.NearestBeacon;
 
 /**
- * 两种进入该界面的方式，底部导航进入 和选择某一展品进入
- * 随身导游页面，包含与Beacon相关的操作，根据停留时间获取最近的beacon，并让相应的音频文件自动播放，并显示文字
+ * 两种进入该界面的方式，底部导航进入(前提：必须开启自动导航) 和选择某一展品进入<br>
+ * 随身导游页面，包含与Beacon相关的操作，根据停留时间获取最近的beacon，并让相应的音频文件自动播放，并显示文字<br>
+ * 自动导航时 手动选择展品 优先播放完选择的展品，再返回自动导航
  * 
- * TODO 监听 电话 设置声音 TODO view visible gone 不会绘制 无法加载后面的 TODO 博物馆选择界面 对话框 TODO
- * 展品加载有些问题
+ * TODO 监听 电话 设置声音
+ * TODO 博物馆选择界面 对话框 
+ * TODO 播放栏
  * 
  * @author yetwish
  * @date 2015-4-25
@@ -66,16 +69,39 @@ public class FollowGuideFragment extends Fragment implements
 	private static final String TAG = FollowGuideFragment.class.getSimpleName();
 
 	/**
-	 * 两个常量，表示加载更多时失败/成功
+	 * 常量，表示加载更多操作失败
 	 */
 	private static final int LOAD_ERROR = 0;
+	
+	/**
+	 * 常量，表示加载更多操作成功
+	 */
 	private static final int LOAD_SUCCESS = 1;
+	
+	/**
+	 * 常量，最小可用的展品列表大小
+	 */
+	private static final int MIN_PER_COUNT = 4;
+	
+	/**
+	 * 常量，播放进度改变时 传递的msg的标识数
+	 */
+	private static final int MSG_PROGRESS_CHANGED = 0x200;
+
+	/**
+	 * 常量，（beacon切换使得）展品改变时 传递的msg的标识数
+	 */
+	private static final int MSG_EXHIBIT_CHANGED = 0x201;
+	
+	/**
+	 * 常量，播放完成时 传递的msg的标识数
+	 */
+	private static final int MSG_MEDIA_PLAY_COMPLETE = 0x202;
+	
 	/**
 	 * 上下文对象
 	 */
 	private Context mContext;
-
-	private SweetAlertDialog pDialog;
 
 	/**
 	 * 存储屏幕像素信息
@@ -192,33 +218,6 @@ public class FollowGuideFragment extends Fragment implements
 	 */
 	private Exhibit mCurrentExhibit;
 
-	// /**
-	// * 已加载的最坐标的展品
-	// */
-	// private Exhibit lExhibit;
-	//
-	// /**
-	// * 已加载的最右边的展品
-	// */
-	// private Exhibit rExhibit;
-
-	// /**
-	// * 最左展品坐标
-	// */
-	// private int left;
-	//
-	// /**
-	// * 最右展品坐标
-	// */
-	// private int right;
-	//
-	// /**
-	// * 判断是否在初始化数据
-	// */
-	// private boolean isInitData = false;
-
-	private static final int MIN_PER_COUNT = 4;
-
 	/**
 	 * 附近的展品列表
 	 */
@@ -239,17 +238,19 @@ public class FollowGuideFragment extends Fragment implements
 	 */
 	private MyClickListener mClickListener;
 
-	private boolean isFirst = true;
-
 	/**
-	 * 自动导航时 手动选择展品 优先播放完选择的展品，再返回自动导航
+	 * 标记是否手动选择了展品列表中的展品
 	 */
 	private boolean isChosed = false;
 
-	private static final int MSG_PROGRESS_CHANGED = 0x200;
-	private static final int MSG_EXHIBIT_CHANGED = 0x201;
-	private static final int MSG_MEDIA_PLAY_COMPLETE = 0x202;
+	/**
+	 * 加载对话框
+	 */
+	private SweetAlertDialog pDialog;
 
+	/**
+	 * 对话框helper对象
+	 */
 	private DialogManagerHelper mDialogHelper;
 
 	@SuppressLint("HandlerLeak")
@@ -261,37 +262,54 @@ public class FollowGuideFragment extends Fragment implements
 				// 更新progressBar 和 图集
 				pbMusic.setProgress(progress);
 				// 匹配图集的时间
-				int index = 0;
+				int index = -1;
 				for (int i = 0; i < mGalleryList.size(); i++) {
 					if (progress >= mGalleryList.get(i).getStartTime()) {
 						index = i;
 					}
 				}
-				if (index != mPicGallery.getCurrentSelectedIndex() || isFirst) {
-					// Log.w("TAG",
-					// "SET START TIME" + " index " + index + " current "
-					// + mPicGallery.getCurrentSelectedIndex());
+				if (index != mPicGallery.getCurrentSelectedIndex()) {
 					mPicGallery.setCurrentSelectedItem(true, index);
-					isFirst = false;
 				}
 				break;
 			case MSG_MEDIA_PLAY_COMPLETE:
-				// TODO
-				// 播放完，进入下一首
-				// notifyExhibitChanged(rExhibit.getId());
-				Log.w(TAG, "播放完重复播放" + isChosed + ", " + mCurrentExhibitId);
+				// 判断是否有手动选择展品，有则将isChosed标志位置为False
 				if (isChosed)
 					isChosed = false;
 				else {
-					// 循环
+					// 没有则循环播放当前展品
 					String id = mCurrentExhibitId;
 					mCurrentExhibitId = null;
-					notifyExhibitChanged(id);
+					changeCurrentExhibitById(id);
 				}
 				break;
 			case MSG_EXHIBIT_CHANGED:
-				// 若当前beacon改变了
-				notifyExhibitChanged((String) msg.obj);
+				// beacon切换时，获取新beacon的展品列表
+				String beaconId = (String) msg.obj;
+				// 获取展品列表
+				try {
+					// 在beacon没有管理展品的情况下，不更新数据
+					List<Exhibit> exhibits = GetBeanFromSql
+							.getExhibitsByBeaconId(mContext, mMuseumId,
+									beaconId);
+					if (exhibits == null)
+						return;
+					mExhibitsList = exhibits;
+					confirmExhibitListAvailable();
+					//判断是否有不小于两个展品，有则显示第二个（中间那个），否则显示唯一的一个
+					if (mExhibitsList.size() >= 2)
+						updateCurrentExhibit(mExhibitsList.get(1));
+					else
+						updateCurrentExhibit(mExhibitsList.get(0));
+					updateGalleryAdapter();
+					setPicGalleryVisibility(true);
+					updateExhibitAdapter();
+					notifyStartPlaying();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 
 			}
@@ -337,7 +355,7 @@ public class FollowGuideFragment extends Fragment implements
 	}
 
 	/**
-	 * l:左边展品 r:右边展品 ll:左边的左边 rr:右边的右边
+	 * 根据展品id 更新、加载数据
 	 * 
 	 * @param id
 	 */
@@ -347,14 +365,10 @@ public class FollowGuideFragment extends Fragment implements
 			// 开始手动模式
 			// 根据传入的展品id，获取选中的展品信息
 			try {
-				mCurrentExhibit = GetBeanFromSql.getExhibit(mContext,
+				Exhibit exhibit = GetBeanFromSql.getExhibit(mContext,
 						mMuseumId, id);
-				mCurrentExhibitId = id;
-				// 更新appContext中的id
-				((AppContext) getActivity().getApplication()).currentExhibitId = id;
-				if (mCurrentExhibit != null) {
-					// 获取展品图片数据
-					mGalleryList = mCurrentExhibit.getImgList();
+				if (exhibit != null) {
+					updateCurrentExhibit(exhibit);
 					// 重置两个列表
 					mExhibitsList.clear();
 					mExhibitImages.clear();
@@ -362,18 +376,8 @@ public class FollowGuideFragment extends Fragment implements
 					mExhibitsList.add(mCurrentExhibit);
 					mExhibitImages.add(new ImageOption(mCurrentExhibit
 							.getIconUrl(), 0));
-					// TODO load next and load pre
 					// 保证一开始有4个或以上个展品在列表中
-					loadPreExhibit(mCurrentExhibit);
-					if (loadNextExhibit(mCurrentExhibit)) {
-						for (int i = 0; i < 2; i++) {
-							loadNextExhibit(mExhibitsList.get(mExhibitsList
-									.size() - 1));
-						}
-					}
-					if (mExhibitsList.size() < MIN_PER_COUNT) {// 后面没有了
-						loadPreExhibit(mExhibitsList.get(0));
-					}
+					confirmExhibitListAvailable();
 					// 初始化标题
 					if (mCurrentExhibit != null && fragHeader != null) {
 						fragHeader.setTitle(mCurrentExhibit.getName());
@@ -394,14 +398,14 @@ public class FollowGuideFragment extends Fragment implements
 	 * @return
 	 */
 	private boolean loadNextExhibit(Exhibit mExhibit) {
-
+	
 		try {
 			Exhibit exhibt = GetBeanFromSql.getExhibit(mContext, mMuseumId,
 					mExhibit.getrExhibitBeanId());
 			if (exhibt == null)
 				return false;
-			Log.w(TAG, "Load next " + "传进来的" + mExhibit.getName() + ","
-					+ exhibt.getName());
+//			Log.w(TAG, "Load next " + "传进来的" + mExhibit.getName() + ","
+//					+ exhibt.getName());
 			// 将展品加入展品列表
 			mExhibitsList.add(exhibt);
 			// 将展品图片加入展品图片列表
@@ -428,9 +432,8 @@ public class FollowGuideFragment extends Fragment implements
 					mExhibit.getlExhibitBeanId());
 			if (exhibt == null)
 				return false;
-			Log.w(TAG,
-					"Load pre " + "传进来的" + mExhibit.getName() + ","
-							+ exhibt.getName());
+//			Log.w(TAG,"Load pre " + "传进来的" + mExhibit.getName() + ","
+//							+ exhibt.getName());
 			// 将展品加入展品列表
 			mExhibitsList.add(0, exhibt);
 			// 将展品图片加入展品图片列表
@@ -451,7 +454,7 @@ public class FollowGuideFragment extends Fragment implements
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.frag_follow_guide, null);
 		return view;
-
+	
 	}
 
 	/**
@@ -467,61 +470,179 @@ public class FollowGuideFragment extends Fragment implements
 		else
 			fragHeader.setTitle("");
 		fragHeader.setSearchingVisible(false);
-
+	
 		// find Views
 		mLyricView = (LyricView) view
 				.findViewById(R.id.frag_follow_guide_lyricview);
-
+	
 		ivLyricBg = (NetworkImageView) view
 				.findViewById(R.id.frag_follow_guide_iv_bg);
-
+	
 		mLyricContainer = (FrameLayout) view
 				.findViewById(R.id.frag_follow_guide_lyric_container);
-
+	
 		ivStart = (ImageView) view
 				.findViewById(R.id.frag_follow_guide_iv_start);
-
+	
 		ivPre = (ImageView) view.findViewById(R.id.frag_follow_guide_iv_pre);
-
+	
 		ivNext = (ImageView) view.findViewById(R.id.frag_follow_guide_iv_next);
-
+	
 		pbMusic = (ProgressBar) view
 				.findViewById(R.id.frag_follow_guide_progressbar);
-
+	
 		tvTitlePics = (TextView) view
 				.findViewById(R.id.frag_follow_guide_tv_title_pics);
-
+	
 		tvTitleExhibits = (TextView) view
 				.findViewById(R.id.frag_follow_guide_tv_title_exhibits);
-
+	
 		ivPicExpand = (ImageView) view
 				.findViewById(R.id.frag_follow_guide_iv_gallery_expand);
-
+	
 		ivExhibitExpand = (ImageView) view
 				.findViewById(R.id.frag_follow_guide_iv_exhibit_expand);
-
+	
 		mPicGallery = (MyHorizontalScrollView) view
 				.findViewById(R.id.frag_follow_guide_pic_gallery_container);
-
+	
 		mExhibitGallery = (MyHorizontalScrollView) view
 				.findViewById(R.id.frag_follow_guide_exhibit_gallery_container);
-
+	
 		ivStart.setOnClickListener(mClickListener);
 		ivPre.setOnClickListener(mClickListener);
 		ivNext.setOnClickListener(mClickListener);
-
+	
 		ivStart.setClickable(false);
 		ivPre.setClickable(false);
 		ivNext.setClickable(false);
-
+	
 		initLyricView();
-
-		initGalleryViews();		
+	
+		initGalleryViews();
 		// 如果当前已有展品信息，则加载gallery
 		if (mCurrentExhibit != null) {
 			notifyStartPlaying();
 		}
+	
+	}
 
+	private void initLyricView() {
+		// 设置监听
+		mLyricView.setProgressChangedListener(new onProgressChangedListener() {
+	
+			@Override
+			public void onProgressChanged(int progress) {
+				Message msg = Message.obtain();
+				msg.what = MSG_PROGRESS_CHANGED;
+				msg.arg1 = progress;
+				mHandler.sendMessage(msg);
+			}
+	
+			@Override
+			public void onMediaPlayCompleted() {
+				mHandler.sendEmptyMessage(MSG_MEDIA_PLAY_COMPLETE);
+			}
+		});
+	
+		// 设置lyricView height
+		mLyricContainer.post(new Runnable() {
+			@Override
+			public void run() {
+	
+				int titleHeight = (int) ((tvTitlePics.getHeight()
+						+ tvTitleExhibits.getHeight() + 20) * dm.density);
+				Log.w(TAG, titleHeight + " title");
+				int playBarHeight = (int) (getResources().getDimension(
+						R.dimen.progressbar_height)
+						+ getResources().getDimension(R.dimen.icon_height) + 20 * dm.density);
+	
+				Log.w(TAG, playBarHeight + " play bar");
+	
+				int headerHeight = (int) getResources().getDimension(
+						R.dimen.frag_header_height);
+	
+				mLyricHeight = dm.heightPixels - titleHeight - playBarHeight
+						- headerHeight - 45;
+	
+				mLyricContainer.setLayoutParams(new LinearLayout.LayoutParams(
+						LinearLayout.LayoutParams.MATCH_PARENT, mLyricHeight));
+	
+				Log.w(TAG, mLyricHeight + " lyric");
+			}
+		});
+	}
+
+	private void initGalleryViews() {
+	
+		/**
+		 * 处理与slidingMenu滚动冲突
+		 */
+		HomeActivity.getMenu().addIgnoredView(mPicGallery);
+	
+		HomeActivity.getMenu().addIgnoredView(mExhibitGallery);
+	
+		mPicGallery.setOnItemClickListener(new OnItemClickListener() {
+	
+			@Override
+			public void onItemClick(View view, int position, boolean isByLyric) {
+				ivLyricBg.setImageUrl(mGalleryList.get(position).getImgUrl(),
+						BitmapUtils.getImageLoader(mContext));
+				if (!isByLyric) {
+					mLyricView.setCurrentPosition(mGalleryList.get(position)
+							.getStartTime());
+				}
+			}
+	
+		});
+	
+		/**
+		 * 设置tvPic可点击
+		 */
+		tvTitlePics.setOnClickListener(mClickListener);
+		ivPicExpand.setOnClickListener(mClickListener);
+	
+		if (mCurrentExhibit != null) {
+			updateGalleryAdapter();
+			setPicGalleryVisibility(true);
+		}
+	
+		mExhibitGallery.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(View view, int position, boolean isByLyric) {
+				//切换展品
+				changeCurrentExhibitById(mExhibitsList.get(position).getId());
+				//将手动选择切换标记位置为true 
+				isChosed = true;
+			}
+		});
+	
+		//设置加载更多监听
+		mExhibitGallery.seOnLoadingMoreListener(new OnLoadingMoreListener() {
+			@Override
+			public int onRightLoadingMore() {
+				if (loadNextExhibit(mExhibitsList.get(mExhibitsList.size() - 1))) {
+					return LOAD_SUCCESS;
+				} else
+					return LOAD_ERROR;
+			}
+	
+			@Override
+			public int onLeftLoadingMore() {
+				if (loadPreExhibit(mExhibitsList.get(0))) {
+					return LOAD_SUCCESS;
+				} else
+					return LOAD_ERROR;
+			}
+		});
+		if (mCurrentExhibit != null) {
+			updateExhibitAdapter();
+		}
+		/**
+		 * 设置tvExhibit 可点击
+		 */
+		tvTitleExhibits.setOnClickListener(mClickListener);
+		ivExhibitExpand.setOnClickListener(mClickListener);
 	}
 
 	/**
@@ -530,42 +651,23 @@ public class FollowGuideFragment extends Fragment implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.w("LifeCycle", "resume ");
-		// 从AppContext中获取全局exhibit id
-		if (((AppContext) getActivity().getApplication()).isAutoGuide()
-				&& !isChosed) {
-			if (pDialog == null)
+		//自动、手动导航模式切换
+		if (((AppContext) getActivity().getApplication()).isAutoGuide()) {
+			//判断是否需要弹出对话框
+			if (pDialog == null && !isChosed)
 				pDialog = mDialogHelper.showSearchingProgressDialog();
 			// 设置beacon监听
 			HomeActivity.setBeaconSearcherListener(this);
-		} else if (!((AppContext) getActivity().getApplication()).isAutoGuide()) {
+		} else 
 			HomeActivity.setBeaconSearcherListener(null);
-		}
-		notifyExhibitChanged(((AppContext) getActivity().getApplication()).currentExhibitId);
-	}
-
-	private void notifyExhibitChanged(String exhibitId) {
-		if (exhibitId != null && !exhibitId.equals(mCurrentExhibitId)) {
-			if (((AppContext) getActivity().getApplication()).isAutoGuide()
-					&& isChosed) {
-				return;
-			}
-			if (mLyricView != null)
-				mLyricView.stop();
-			initData(exhibitId);
-			if (mCurrentExhibit != null) {
-				// 重新加载数据
-				updateGalleryAdapter();
-				updateExhibitAdapter();
-				notifyStartPlaying();
-			}
-		}
+		// 从AppContext中获取全局exhibit id 可能为null
+		changeCurrentExhibitById(((AppContext) getActivity().getApplication()).currentExhibitId);
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		Log.w("LifeCycle", "stop");
+		//移出监听
 		((AppContext) getActivity().getApplication())
 				.removeGuideModeListener(this);
 		HomeActivity.setBeaconSearcherListener(null);
@@ -578,7 +680,6 @@ public class FollowGuideFragment extends Fragment implements
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		Log.w("LifeCycle", "destroy");
 		if (mLyricView != null) {
 			mLyricView.destroy();
 		}
@@ -602,137 +703,27 @@ public class FollowGuideFragment extends Fragment implements
 			pDialog = null;
 	}
 
-	private void initLyricView() {
-		// 设置监听
-		mLyricView.setProgressChangedListener(new onProgressChangedListener() {
-
-			@Override
-			public void onProgressChanged(int progress) {
-				Message msg = Message.obtain();
-				msg.what = MSG_PROGRESS_CHANGED;
-				msg.arg1 = progress;
-				mHandler.sendMessage(msg);
-			}
-
-			@Override
-			public void onMediaPlayCompleted() {
-				mHandler.sendEmptyMessage(MSG_MEDIA_PLAY_COMPLETE);
-			}
-		});
-
-		// 设置lyric height
-		mLyricContainer.post(new Runnable() {
-			@Override
-			public void run() {
-
-				int titleHeight = (int) ((tvTitlePics.getHeight()
-						+ tvTitleExhibits.getHeight() + 20) * dm.density);
-				Log.w(TAG, titleHeight + " title");
-				int playBarHeight = (int) (getResources().getDimension(
-						R.dimen.progressbar_height)
-						+ getResources().getDimension(R.dimen.icon_height) + 20 * dm.density);
-
-				Log.w(TAG, playBarHeight + " play bar");
-
-				int headerHeight = (int) getResources().getDimension(
-						R.dimen.frag_header_height);
-
-				mLyricHeight = dm.heightPixels - titleHeight - playBarHeight
-						- headerHeight - 45;
-
-				mLyricContainer.setLayoutParams(new LinearLayout.LayoutParams(
-						LinearLayout.LayoutParams.MATCH_PARENT, mLyricHeight));
-
-				Log.w(TAG, mLyricHeight + " lyric");
-			}
-		});
+	/**
+	 * 更新当前展品数据数据，即更新gallery列表和mCurrentExhibit、mCurrentExhibitId
+	 * 
+	 * @param exhibit
+	 */
+	private void updateCurrentExhibit(Exhibit exhibit) {
+		if (exhibit == null) 
+			return;
+		mCurrentExhibit = exhibit;
+		mCurrentExhibitId = exhibit.getId();
+		// 更新appContext中的id
+		((AppContext) getActivity().getApplication()).currentExhibitId = exhibit
+				.getId();
+		// 获取展品图片数据
+		mGalleryList = mCurrentExhibit.getImgList();
 	}
 
-	private void initGalleryViews() {
-
-		/**
-		 * 处理与slidingMenu滚动冲突
-		 */
-		HomeActivity.getMenu().addIgnoredView(mPicGallery);
-
-		HomeActivity.getMenu().addIgnoredView(mExhibitGallery);
-
-		mPicGallery.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(View view, int position, boolean isByLyric) {
-				ivLyricBg.setImageUrl(mGalleryList.get(position).getImgUrl(),
-						BitmapUtils.getImageLoader(mContext));
-				if (!isByLyric) {
-					mLyricView.setCurrentPosition(mGalleryList.get(position)
-							.getStartTime());
-				}
-			}
-
-		});
-
-		/**
-		 * 设置tvPic可点击
-		 */
-		tvTitlePics.setOnClickListener(mClickListener);
-		ivPicExpand.setOnClickListener(mClickListener);
-
-		ivPicExpand.setImageResource(R.drawable.title_normal);
-		mPicGallery.setVisibility(View.VISIBLE);
-
-		if(mCurrentExhibit != null){
-			updateGalleryAdapter();
-		}
-		
-		mExhibitGallery.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(View view, int position, boolean isByLyric) {
-				// 切换展品
-				notifyExhibitChanged(mExhibitsList.get(position).getId());
-				isChosed = true;
-			}
-		});
-
-		// TODO bug
-		mExhibitGallery.seOnLoadingMoreListener(new OnLoadingMoreListener() {
-			@Override
-			public int onRightLoadingMore() {
-				String names = "";
-				for (int i = 0; i < mExhibitsList.size(); i++) {
-					names += mExhibitsList.get(i).getName() + "\t";
-				}
-				Log.w(TAG, names);
-				if (loadNextExhibit(mExhibitsList.get(mExhibitsList.size() - 1))) {
-
-					return LOAD_SUCCESS;
-				} else
-					return LOAD_ERROR;
-			}
-
-			@Override
-			public int onLeftLoadingMore() {
-				String names = "";
-//				for (int i = 0; i < mExhibitsList.size(); i++) {
-//					names += mExhibitsList.get(i).getName() + "\t";
-//				}
-//				Log.w(TAG, names);
-				if (loadPreExhibit(mExhibitsList.get(0))) {
-					return LOAD_SUCCESS;
-				} else
-					return LOAD_ERROR;
-			}
-		});
-		if(mCurrentExhibit != null){
-			updateExhibitAdapter();
-		}
-		/**
-		 * 设置tvExhibit 可点击
-		 */
-		tvTitleExhibits.setOnClickListener(mClickListener);
-		ivExhibitExpand.setOnClickListener(mClickListener);
-	}
-	
-	private void updateGalleryAdapter(){
+	/**
+	 * 更新多角度展示列表adapter: galleryAdapter
+	 */
+	private void updateGalleryAdapter() {
 		mGalleryAdapter = null;
 		mGalleryAdapter = new HorizontalScrollViewAdapter(mContext,
 				mGalleryList, R.layout.item_gallery);
@@ -741,23 +732,68 @@ public class FollowGuideFragment extends Fragment implements
 		mPicGallery.setCurrentSelectedItem(false, 0);
 	}
 
+	/**
+	 * 更新展品列表adapter : exhibitAdapter
+	 */
 	private void updateExhibitAdapter() {
 		mExhibitAdapter = null;
 		mExhibitAdapter = new HorizontalScrollViewAdapter(mContext,
 				mExhibitImages, R.layout.item_gallery);
 		mPicGallery.setBackToBegin();
 		mExhibitGallery.initData(mExhibitAdapter);
-		mExhibitGallery.setCurrentSelectedItem(false, mExhibitsList.indexOf(mCurrentExhibit));
+		mExhibitGallery.setCurrentSelectedItem(false,
+				mExhibitsList.indexOf(mCurrentExhibit));
 
 	}
+	
+	/**
+	 * 根据exhibit id 切换当前展品
+	 * @param exhibitId
+	 */
+	private void changeCurrentExhibitById(String exhibitId) {
+		//排除id = null及与当前id相等的情况
+		if (exhibitId != null && !exhibitId.equals(mCurrentExhibitId)) {
+			if (mLyricView != null)
+				mLyricView.stop();
+			initData(exhibitId);
+			if (mCurrentExhibit != null) {
+				// 重新加载数据
+				updateGalleryAdapter();
+				updateExhibitAdapter();
+				notifyStartPlaying();
+			}
+		}
+	}
 
-	private void changeCurrentExhibitById(String i) {
-		if (mCurrentExhibitId.equals(i)) {
+	/**
+	 * 根据beaconId切换当前展品
+	 * @param beaconId
+	 */
+	private void changeCurrentExhibitByBeaconId(String beaconId) {
+		if (mCurrentExhibit != null
+				&& !mCurrentExhibit.getBeaconUId().equals(beaconId) && !isChosed) {
 			Message msg = Message.obtain();
 			msg.what = MSG_EXHIBIT_CHANGED;
-			msg.obj = i;
+			msg.obj = beaconId;
 			mHandler.sendMessage(msg);
 		}
+	}
+
+	/**
+	 * 保证展品列表可用，在当前条件下是保证展品列表size>=4，或不可加载更多（即没有左右展品的情况下）
+	 */
+	private void confirmExhibitListAvailable() {
+		if (mExhibitsList.size() >= MIN_PER_COUNT)
+			return;
+		// 先向左加载一个,保证该列表的第一个展品处于“中间”位置
+		loadPreExhibit(mExhibitsList.get(0));
+		// 如果未达到4 向右加载更多
+		for (int i = mExhibitsList.size(); i <= MIN_PER_COUNT; i++)
+			loadNextExhibit(mExhibitsList.get(mExhibitsList.size() - 1));
+		// 如果加载完还是没有达到4，则向左加载
+		for (int i = mExhibitsList.size(); i <= MIN_PER_COUNT; i++)
+			loadPreExhibit(mExhibitsList.get(0));
+		// 如果还未达到，证明已经不能加载更多了。
 	}
 
 	/**
@@ -768,7 +804,6 @@ public class FollowGuideFragment extends Fragment implements
 			return;
 		if (mLyricView == null)
 			return;
-		Log.w(TAG, mCurrentExhibit.getTextUrl());
 		// 准备音频文件
 		mLyricView.prepare(Constant.getAudioDownloadPath(
 				mCurrentExhibit.getAudioUrl(), mMuseumId), Constant
@@ -782,6 +817,36 @@ public class FollowGuideFragment extends Fragment implements
 		ivPre.setClickable(true);
 		ivNext.setClickable(true);
 	}
+	
+	/**
+	 * 设置多角度图片gallery可见性
+	 * @param visibility true:可见；false:不可见
+	 */
+	private void setPicGalleryVisibility(boolean visibility){
+		if(visibility){
+			mPicGallery.setVisibility(View.VISIBLE);
+			ivPicExpand.setImageResource(R.drawable.title_normal);
+		}else{
+			mPicGallery.setVisibility(View.GONE);
+			ivPicExpand.setImageResource(R.drawable.title_expanded);
+		}
+	}
+	
+	/**
+	 * 设置展品列表图片gallery可见性
+	 * @param visibility true:可见；false:不可见
+	 */
+	private void setExhibitGalleryVisibility(boolean visibility){
+		if(visibility){
+			mExhibitGallery.setVisibility(View.VISIBLE);
+			ivExhibitExpand.setImageResource(R.drawable.title_normal);
+		}else{
+			mExhibitGallery.setVisibility(View.GONE);
+			ivExhibitExpand.setImageResource(R.drawable.title_expanded);
+
+		}
+	}
+	
 
 	/**
 	 * custom clickListener
@@ -820,28 +885,21 @@ public class FollowGuideFragment extends Fragment implements
 				// 展开多角度列表
 				if (!picFlag) {
 					// gvGalleryPics.setVisibility(View.VISIBLE);
-					mPicGallery.setVisibility(View.VISIBLE);
-					ivPicExpand.setImageResource(R.drawable.title_normal);
+					setPicGalleryVisibility(true);
 					picFlag = true;
 
 				} else {
-					mPicGallery.setVisibility(View.GONE);
-					// gvGalleryPics.setVisibility(View.GONE);
-					ivPicExpand.setImageResource(R.drawable.title_expanded);
+					setPicGalleryVisibility(false);
 					picFlag = false;
 				}
 				break;
 			case R.id.frag_follow_guide_tv_title_exhibits:
 			case R.id.frag_follow_guide_iv_exhibit_expand:
 				if (!exhibitFlag) {
-					mExhibitGallery.setVisibility(View.VISIBLE);
-					// gvGalleryExhibits.setVisibility(View.VISIBLE);
-					ivExhibitExpand.setImageResource(R.drawable.title_normal);
+					setExhibitGalleryVisibility(true);
 					exhibitFlag = true;
 				} else {
-					mExhibitGallery.setVisibility(View.GONE);
-					// gvGalleryExhibits.setVisibility(View.GONE);
-					ivExhibitExpand.setImageResource(R.drawable.title_expanded);
+					setExhibitGalleryVisibility(false);
 					exhibitFlag = false;
 				}
 				break;
@@ -860,14 +918,18 @@ public class FollowGuideFragment extends Fragment implements
 		if (pDialog != null) {
 			pDialog.dismiss();
 		}
-		// Log.w("BeaconSearcher", beacon.getId2().toString());
-		// if (beacon.getId2().toString().contains("44")) {
-		// changeCurrentExhibitById(1);
-		// } else if (beacon.getId2().toString().contains("47")) {
-		// changeCurrentExhibitById(2);
-		// } else if (beacon.getId2().toString().contains("58")) {
-		// changeCurrentExhibitById(3);
-		// }
+		// 根据搜索到的beacon的major
+		// minor获取数据库中匹配的beaconBean,以获取其id，用于检索该beacon中的exhibit
+		try {
+			OfflineBeaconBean beaconBean = GetBeanFromSql.getBeaconBean(
+					mContext, mMuseumId, beacon.getId2().toString(), beacon
+							.getId3().toString());
+			changeCurrentExhibitByBeaconId(beaconBean.getId());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
@@ -885,7 +947,6 @@ public class FollowGuideFragment extends Fragment implements
 			}
 			// 设置beacon监听
 			HomeActivity.setBeaconSearcherListener(this);
-			// TODO
 		}
 	}
 

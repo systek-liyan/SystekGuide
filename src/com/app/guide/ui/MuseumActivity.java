@@ -83,9 +83,9 @@ public class MuseumActivity extends BaseActivity {
 				MuseumBean bean = mData.get(position);
 				holder.setImageBitmap(R.id.item_museum_iv_icon,
 						MuseumActivity.this, bean.getIconUrl())
-						.setText(R.id.item_museum_tv_name, bean.getName())
-						.setText(R.id.item_museum_tv_address, bean.getAddress())
-						.setText(R.id.item_museum_tv_time, bean.getOpentime());
+						.setTvText(R.id.item_museum_tv_name, bean.getName())
+						.setTvText(R.id.item_museum_tv_address, bean.getAddress())
+						.setTvText(R.id.item_museum_tv_time, bean.getOpentime());
 				Button btnOpen = holder.getView(R.id.item_museum_btn_isopen);
 				if (bean.isOpen())
 					btnOpen.setVisibility(View.GONE);

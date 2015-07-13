@@ -13,7 +13,11 @@ import com.android.volley.toolbox.ImageLoader.ImageCache;
 
 public class ListBitmapCache implements ImageCache {
 
+	/**
+	 * 内存缓存
+	 */
 	private LruCache<String, Bitmap> mCache;
+	
 	private String parentDir;
 
 	public ListBitmapCache(Context context) {
@@ -40,7 +44,6 @@ public class ListBitmapCache implements ImageCache {
 
 		Bitmap bitmap = mCache.get(url);
 		if (bitmap == null) {
-			//TODO ? 
 			String path = url.substring(url.indexOf("!") + 1);
 			if (path.startsWith("http:/")) {
 				path = path.substring(7);
@@ -76,6 +79,15 @@ public class ListBitmapCache implements ImageCache {
 		mCache.put(url, bitmap);
 	}
 
+	/**
+	 * 获取最合适的图片缩放比例
+	 * 
+	 * @param viewWidth
+	 * @param viewHeight
+	 * @param bitmapWidth
+	 * @param bitmapHeight
+	 * @return
+	 */
 	private int getBestSamplesize(int viewWidth, int viewHeight,
 			int bitmapWidth, int bitmapHeight) {
 		double wr = (double) bitmapWidth / viewWidth;

@@ -1109,6 +1109,8 @@ containing a value of this type.
         public static final int frag_header_height=0x7f09001a;
         public static final int gallery_height=0x7f09001c;
         public static final int gallery_width=0x7f09001b;
+        public static final int gridview_item_span_width=0x7f090021;
+        public static final int gridview_item_width=0x7f090020;
         public static final int icon_height=0x7f09001e;
         public static final int icon_width=0x7f09001f;
         public static final int list_item_exhibit_icon_size=0x7f090016;

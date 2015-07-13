@@ -11,7 +11,7 @@ import android.os.IBinder;
 import com.app.guide.download.DownloadClient;
 
 /**
- * appService,用以进行下载
+ * AppService,应用程序Service类。用以管理downloadClient，并使下载过程运行在Service中
  *
  */
 public class AppService extends Service {

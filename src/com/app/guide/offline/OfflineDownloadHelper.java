@@ -462,6 +462,7 @@ public class OfflineDownloadHelper {
 	}
 
 	public interface OnFinishedListener {
+		
 		public void onSuccess(List<DownloadInfo> list, DownloadBean downloadBean);
 
 		public void onFailed(String msg);

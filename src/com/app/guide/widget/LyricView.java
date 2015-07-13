@@ -46,6 +46,7 @@ public class LyricView extends View {
 
 	Paint paint = new Paint();// 画笔，用于画不是高亮的歌词
 	Paint paintHL = new Paint(); // 画笔，用于画高亮的歌词，即当前唱到这句歌词
+	Paint paintTips = new Paint();// 画笔，用于画提示语
 	private MediaPlayer mediaPlayer;
 
 	private ShowLyricRunnable mShowLyricThread = null;
@@ -101,7 +102,7 @@ public class LyricView extends View {
 		} else {
 			// 没有找到歌词
 			canvas.drawText(getResources().getString(R.string.lyric_not_found),
-					mX, SIZE_TEXT_DISPLAY, paintHL);
+					mX, SIZE_TEXT_DISPLAY, paintTips);
 		}
 		super.onDraw(canvas);
 	}
@@ -140,16 +141,20 @@ public class LyricView extends View {
 		paint.setColor(Color.WHITE);
 		paint.setAntiAlias(true);
 		paint.setDither(true);
-		paint.setAlpha(180);
-
+		paint.setAlpha(255);
+		
 		paintHL = new Paint();
 		paintHL.setTextAlign(Paint.Align.CENTER);
-
 		paintHL.setColor(Color.RED);
 		paintHL.setAntiAlias(true);
 		paintHL.setAlpha(255);
 
-		paint.setAlpha(255);
+		
+		paintTips = new Paint();
+		paintTips.setTextAlign(Paint.Align.CENTER);
+		paintTips.setColor(Color.BLACK);
+		paintTips.setAntiAlias(true);
+		paintTips.setTextSize(35);
 
 	}
 

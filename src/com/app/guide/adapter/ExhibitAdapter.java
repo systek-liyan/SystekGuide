@@ -22,11 +22,11 @@ public class ExhibitAdapter extends CommonAdapter<ExhibitBean> {
 	public void convert(ViewHolder holder, int position) {
 		holder.setImageBitmap(R.id.item_exhibit_iv_icon, mContext,
 				mData.get(position).getImgUrl())
-				.setText(R.id.item_exhibit_tv_name,
+				.setTvText(R.id.item_exhibit_tv_name,
 						mData.get(position).getName())
-				.setText(R.id.item_exhibit_tv_address,
+				.setTvText(R.id.item_exhibit_tv_address,
 						mData.get(position).getAddress())
-				.setText(R.id.item_exhibit_tv_introduction,
+				.setTvText(R.id.item_exhibit_tv_introduction,
 						mData.get(position).getIntroduction());
 
 	}
