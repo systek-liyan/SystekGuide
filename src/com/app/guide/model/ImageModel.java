@@ -1,14 +1,14 @@
-package com.app.guide.bean;
+package com.app.guide.model;
 
-public class ImageOption {
+public class ImageModel {
 
 	private String imgUrl; // 图片URL
 	private int startTime; // 开始显示该图片的音频播放进度（时间）
 
-	public ImageOption() {
+	public ImageModel() {
 	}
 
-	public ImageOption(String imgUrl, int startTime) {
+	public ImageModel(String imgUrl, int startTime) {
 		this.imgUrl = imgUrl;
 		this.startTime = startTime;
 	}

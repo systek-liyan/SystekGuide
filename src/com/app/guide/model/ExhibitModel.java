@@ -1,37 +1,38 @@
-package com.app.guide.bean;
+package com.app.guide.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * 展品信息类,用于随行导游界面数据显示
  */
-public class Exhibit {
+public class ExhibitModel {
 
 	private String id;  //展品id
 	private String name;// 展品名
-	private String beaconUId; //展品所属beacon uuid
+	private String beaconId; //展品所属beacon的id
 	private String iconUrl;   //展品图标Url
-	private List<ImageOption> imgList; //展品多图片列表
+	private List<ImageModel> imgsUrl; //展品多图片列表
 	private String audioUrl;  //展品音频 url
 	private String textUrl;   //展品简介
 	private String labels;    //展品拥有的标签，以“，”隔开
 	private String lExhibitBeanId; //左边展品id
 	private String rExhibitBeanId; //右边展品id
 
-	public Exhibit() {
+	public ExhibitModel() {
 		super();
 	}
 
-	public Exhibit(String id, String name, String beaconUId, String iconUrl,
-			ArrayList<ImageOption> imgList, String audioUrl, String textUrl,
+	public ExhibitModel(String id, String name, String beaconUId, String iconUrl,
+			ArrayList<ImageModel> imgList, String audioUrl, String textUrl,
 			String labels, String lExhibitBeanId,
 			String rExhibitBeanId) {
 		this.id = id;
 		this.name = name;
-		this.beaconUId = beaconUId;
+		this.beaconId = beaconUId;
 		this.iconUrl = iconUrl;
-		this.imgList = imgList;
+		this.imgsUrl = imgList;
 		this.audioUrl = audioUrl;
 		this.textUrl = textUrl;
 		this.labels = labels;
@@ -56,11 +57,11 @@ public class Exhibit {
 	}
 
 	public String getBeaconUId() {
-		return beaconUId;
+		return beaconId;
 	}
 
 	public void setBeaconUId(String beaconUId) {
-		this.beaconUId = beaconUId;
+		this.beaconId = beaconUId;
 	}
 
 	public String getIconUrl() {
@@ -71,12 +72,12 @@ public class Exhibit {
 		this.iconUrl = iconUrl;
 	}
 
-	public List<ImageOption> getImgList() {
-		return imgList;
+	public List<ImageModel> getImgList() {
+		return imgsUrl;
 	}
 
-	public void setImgList(List<ImageOption> imgList) {
-		this.imgList = imgList;
+	public void setImgList(List<ImageModel> imgList) {
+		this.imgsUrl = imgList;
 	}
 
 	public String getAudioUrl() {

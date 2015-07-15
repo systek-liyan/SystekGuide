@@ -7,7 +7,7 @@ import android.content.Context;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.app.guide.R;
-import com.app.guide.bean.ImageOption;
+import com.app.guide.model.ImageModel;
 import com.app.guide.utils.BitmapUtils;
 
 /**
@@ -15,11 +15,11 @@ import com.app.guide.utils.BitmapUtils;
  * 
  * @author yetwish
  */
-public class HorizontalScrollViewAdapter extends CommonAdapter<ImageOption> {
+public class HorizontalScrollViewAdapter extends CommonAdapter<ImageModel> {
 
 	private ImageLoader mImageLoader;
 
-	public HorizontalScrollViewAdapter(Context context, List<ImageOption> data,
+	public HorizontalScrollViewAdapter(Context context, List<ImageModel> data,
 			int layoutId) {
 		super(context, data, layoutId);
 		mImageLoader = BitmapUtils.getImageLoader(context);

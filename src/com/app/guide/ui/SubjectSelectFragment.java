@@ -29,8 +29,8 @@ import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
 import com.app.guide.adapter.GridAdapter.GridItemClickListener;
 import com.app.guide.bean.ExhibitBean;
-import com.app.guide.bean.LabelBean;
-import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.beanhelper.GetBeanFromSql;
+import com.app.guide.model.LabelModel;
 import com.app.guide.widget.AutoLoadListView;
 import com.app.guide.widget.AutoLoadListView.OnLoadListener;
 import com.app.guide.widget.DialogManagerHelper;
@@ -53,7 +53,7 @@ public class SubjectSelectFragment extends Fragment {
 	/**
 	 * 存储标签视图的数据,修改为数据库加载方式
 	 */
-	private List<LabelBean> labelBeans;
+	private List<LabelModel> labelBeans;
 
 	/**
 	 * 存储已筛选的数据
@@ -241,7 +241,7 @@ public class SubjectSelectFragment extends Fragment {
 	 * 加载已选择view，并将已选择view添加到listView头部，
 	 */
 	private void initSelectedHeader() {
-		LabelBean bean = new LabelBean("已选择", selectedData);
+		LabelModel bean = new LabelModel("已选择", selectedData);
 		selectedHeader = new LabelView(mContext, bean);
 		selectedHeader.setClickListener(mSelectedListener);
 
@@ -252,7 +252,7 @@ public class SubjectSelectFragment extends Fragment {
 	 * 初始化悬浮部分view
 	 */
 	private void initInvisLayout() {
-		LabelBean bean = new LabelBean("已选择", selectedData);
+		LabelModel bean = new LabelModel("已选择", selectedData);
 		invisView = new LabelView(mContext, bean);
 		selectedHeader.setClickListener(mSelectedListener);
 		invisLayout.addView(invisView);
@@ -328,7 +328,7 @@ public class SubjectSelectFragment extends Fragment {
 						.get(position - invisItem - 1).getId();
 				//更新全局变量的导航模式为手动导航
 				((AppContext) getActivity().getApplication())
-						.setGuideMode(false);
+						.setGuideMode(Constant.GUIDE_MODE_MANUALLY);
 				//跳转至随行导游界面
 				RadioButton btn = (RadioButton) HomeActivity.mRadioGroup
 						.findViewById(R.id.home_tab_follow);
@@ -454,7 +454,7 @@ public class SubjectSelectFragment extends Fragment {
 				updateSelectResult();
 				exhibitAdapter.notifyDataSetChanged();
 			}
-			//重绘视图，使得item可点击
+			//重绘视图，使得item可点击 TODO 在切换的期间到底做了什么
 			selectedHeader.invalidate();
 			if(invisView.getVisibility() == View.VISIBLE){
 				invisView.invalidate();

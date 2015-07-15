@@ -1,12 +1,18 @@
-package com.app.guide.bean;
+package com.app.guide.model;
 
-public class MapExhibitBean {
-	private String id;		
-	private float mapX;
-	private float mapY;
-	private String name;
-	private String address;
-	private String iconUrl;
+/**
+ * 地图上展品数据存储类，用于地图导游界面显示地图上的展品 
+ * @author yetwish
+ *
+ */
+public class MapExhibitModel {
+	
+	private String id;	//展品id
+	private float mapX; //展品位于地图位置的横坐标
+	private float mapY; //展品位于地图位置的纵坐标
+	private String name; //展品名
+	private String address; //展品展出地址
+	private String iconUrl; //展品图标
 	
 	/**
 	 * return the id;

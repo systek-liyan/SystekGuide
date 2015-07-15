@@ -14,18 +14,19 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.app.guide.AppContext;
+import com.app.guide.Constant;
 import com.app.guide.R;
-import com.app.guide.bean.MapExhibitBean;
+import com.app.guide.model.MapExhibitModel;
 import com.app.guide.utils.BitmapUtils;
 
 public class MapDialog extends PopupWindow {
 
 	private TextView titleTextView;
 	private NetworkImageView mImageView;
-	private MapExhibitBean mapExhibitBean;
+	private MapExhibitModel mapExhibitBean;
 
 	@SuppressLint("InflateParams")
-	public MapDialog(final Context context, MapExhibitBean exhibitBean) {
+	public MapDialog(final Context context, MapExhibitModel exhibitBean) {
 		super(context);
 		// TODO Auto-generated constructor stub
 		this.mapExhibitBean = exhibitBean;
@@ -42,7 +43,7 @@ public class MapDialog extends PopupWindow {
 			@Override
 			public void onClick(View v) {
 				((AppContext) context.getApplicationContext())
-						.setGuideMode(false);
+						.setGuideMode(Constant.GUIDE_MODE_MANUALLY);
 				((AppContext) context.getApplicationContext()).currentExhibitId = mapExhibitBean
 						.getId();
 				dismiss();

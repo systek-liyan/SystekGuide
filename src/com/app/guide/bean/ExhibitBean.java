@@ -1,15 +1,21 @@
 package com.app.guide.bean;
 
 /**
- * 列表 展品信息
+ * 列表展品信息,用于展品列表的显示。<br>
+ * 
+ * 实时获取博物馆展品列表类。可用于筛选出Id，再由该Id获取其他界面的Bean
  */
 public class ExhibitBean {
+	
 	private String id;  //展品id
 	private String name;// 展品名
 	private String address;//展品所在位置（展厅）
 	private String introduction;// 展品介绍
-	private String imgUrl;// 图标的Url地址
+	private String iconUrl;// 图标的Url地址
 	private String labels; // 标签
+	
+	private int priority; //优先级
+	private String beaconId; //展品所属beacon的Id 
 
 	public ExhibitBean(String id, String name, String address,
 			String introduction, String imgUrl, String labels) {
@@ -17,7 +23,7 @@ public class ExhibitBean {
 		this.name = name;
 		this.address = address;
 		this.introduction = introduction;
-		this.imgUrl = imgUrl;
+		this.iconUrl = imgUrl;
 		this.labels = labels;
 	}
 
@@ -85,7 +91,7 @@ public class ExhibitBean {
 	 * @return the imgUrl
 	 */
 	public String getImgUrl() {
-		return imgUrl;
+		return iconUrl;
 	}
 
 	/**
@@ -93,7 +99,7 @@ public class ExhibitBean {
 	 *            the imgUrl to set
 	 */
 	public void setImgUrl(String imgUrl) {
-		this.imgUrl = imgUrl;
+		this.iconUrl = imgUrl;
 	}
 
 	/**

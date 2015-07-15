@@ -102,7 +102,7 @@ public class HomeActivity extends BaseActivity implements
 
 		});
 		sm = getSlidingMenu();
-		if (((AppContext)getApplication()).isAutoGuide()) {
+		if (((AppContext)getApplication()).getGuideMode()) {
 			mBeaconSearcher.openSearcher();
 		} else {
 			((RadioButton) mRadioGroup.findViewById(R.id.home_tab_follow))
@@ -154,7 +154,7 @@ public class HomeActivity extends BaseActivity implements
 
 	@Override
 	protected void onResume() {
-		if (!((AppContext)getApplication()).isAutoGuide() && ((AppContext)getApplication()).currentExhibitId == null) {
+		if (!((AppContext)getApplication()).getGuideMode() && ((AppContext)getApplication()).currentExhibitId == null) {
 			((RadioButton) mRadioGroup.findViewById(R.id.home_tab_follow))
 					.setEnabled(false);
 		}

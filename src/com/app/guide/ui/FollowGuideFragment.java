@@ -34,9 +34,9 @@ import com.app.guide.AppContext.OnGuideModeChangedListener;
 import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.HorizontalScrollViewAdapter;
-import com.app.guide.bean.Exhibit;
-import com.app.guide.bean.ImageOption;
-import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.beanhelper.GetBeanFromSql;
+import com.app.guide.model.ExhibitModel;
+import com.app.guide.model.ImageModel;
 import com.app.guide.offline.OfflineBeaconBean;
 import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
 import com.app.guide.utils.BitmapUtils;
@@ -186,12 +186,12 @@ public class FollowGuideFragment extends Fragment implements
 	/**
 	 * 存储多角度图片gallery的数据
 	 */
-	private List<ImageOption> mGalleryList = null;
+	private List<ImageModel> mGalleryList = null;
 
 	/**
 	 * 存储展品图片数据
 	 */
-	private List<ImageOption> mExhibitImages = new ArrayList<ImageOption>();
+	private List<ImageModel> mExhibitImages = new ArrayList<ImageModel>();
 
 	/**
 	 * gallery adapter
@@ -216,12 +216,12 @@ public class FollowGuideFragment extends Fragment implements
 	/**
 	 * 当前显示的展品
 	 */
-	private Exhibit mCurrentExhibit;
+	private ExhibitModel mCurrentExhibit;
 
 	/**
 	 * 附近的展品列表
 	 */
-	private List<Exhibit> mExhibitsList = new ArrayList<Exhibit>();
+	private List<ExhibitModel> mExhibitsList = new ArrayList<ExhibitModel>();
 
 	/**
 	 * 当前exhibit id
@@ -289,7 +289,7 @@ public class FollowGuideFragment extends Fragment implements
 				// 获取展品列表
 				try {
 					// 在beacon没有管理展品的情况下，不更新数据
-					List<Exhibit> exhibits = GetBeanFromSql
+					List<ExhibitModel> exhibits = GetBeanFromSql
 							.getExhibitsByBeaconId(mContext, mMuseumId,
 									beaconId);
 					if (exhibits == null)
@@ -365,7 +365,7 @@ public class FollowGuideFragment extends Fragment implements
 			// 开始手动模式
 			// 根据传入的展品id，获取选中的展品信息
 			try {
-				Exhibit exhibit = GetBeanFromSql.getExhibit(mContext,
+				ExhibitModel exhibit = GetBeanFromSql.getExhibit(mContext,
 						mMuseumId, id);
 				if (exhibit != null) {
 					updateCurrentExhibit(exhibit);
@@ -374,7 +374,7 @@ public class FollowGuideFragment extends Fragment implements
 					mExhibitImages.clear();
 					// 获取左右展品
 					mExhibitsList.add(mCurrentExhibit);
-					mExhibitImages.add(new ImageOption(mCurrentExhibit
+					mExhibitImages.add(new ImageModel(mCurrentExhibit
 							.getIconUrl(), 0));
 					// 保证一开始有4个或以上个展品在列表中
 					confirmExhibitListAvailable();
@@ -397,10 +397,10 @@ public class FollowGuideFragment extends Fragment implements
 	 * @param mExhibit
 	 * @return
 	 */
-	private boolean loadNextExhibit(Exhibit mExhibit) {
+	private synchronized boolean loadNextExhibit(ExhibitModel mExhibit) {
 	
 		try {
-			Exhibit exhibt = GetBeanFromSql.getExhibit(mContext, mMuseumId,
+			ExhibitModel exhibt = GetBeanFromSql.getExhibit(mContext, mMuseumId,
 					mExhibit.getrExhibitBeanId());
 			if (exhibt == null)
 				return false;
@@ -409,7 +409,7 @@ public class FollowGuideFragment extends Fragment implements
 			// 将展品加入展品列表
 			mExhibitsList.add(exhibt);
 			// 将展品图片加入展品图片列表
-			mExhibitImages.add(new ImageOption(exhibt.getIconUrl(), 0));
+			mExhibitImages.add(new ImageModel(exhibt.getIconUrl(), 0));
 			if (mExhibitAdapter != null) {
 				mExhibitAdapter.notifyDataSetChanged();
 			}
@@ -426,9 +426,9 @@ public class FollowGuideFragment extends Fragment implements
 	 * @param mExhibit
 	 * @return
 	 */
-	private boolean loadPreExhibit(Exhibit mExhibit) {
+	private synchronized boolean loadPreExhibit(ExhibitModel mExhibit) {
 		try {
-			Exhibit exhibt = GetBeanFromSql.getExhibit(mContext, mMuseumId,
+			ExhibitModel exhibt = GetBeanFromSql.getExhibit(mContext, mMuseumId,
 					mExhibit.getlExhibitBeanId());
 			if (exhibt == null)
 				return false;
@@ -437,7 +437,7 @@ public class FollowGuideFragment extends Fragment implements
 			// 将展品加入展品列表
 			mExhibitsList.add(0, exhibt);
 			// 将展品图片加入展品图片列表
-			mExhibitImages.add(0, new ImageOption(exhibt.getIconUrl(), 0));
+			mExhibitImages.add(0, new ImageModel(exhibt.getIconUrl(), 0));
 			if (mExhibitAdapter != null) {
 				mExhibitAdapter.notifyDataSetChanged();
 			}
@@ -606,7 +606,9 @@ public class FollowGuideFragment extends Fragment implements
 			updateGalleryAdapter();
 			setPicGalleryVisibility(true);
 		}
-	
+		//设置切换时不自动加载
+		mExhibitGallery.setAutoLoad(false);
+		
 		mExhibitGallery.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(View view, int position, boolean isByLyric) {
@@ -652,7 +654,7 @@ public class FollowGuideFragment extends Fragment implements
 	public void onResume() {
 		super.onResume();
 		//自动、手动导航模式切换
-		if (((AppContext) getActivity().getApplication()).isAutoGuide()) {
+		if (((AppContext) getActivity().getApplication()).getGuideMode()) {
 			//判断是否需要弹出对话框
 			if (pDialog == null && !isChosed)
 				pDialog = mDialogHelper.showSearchingProgressDialog();
@@ -708,7 +710,7 @@ public class FollowGuideFragment extends Fragment implements
 	 * 
 	 * @param exhibit
 	 */
-	private void updateCurrentExhibit(Exhibit exhibit) {
+	private void updateCurrentExhibit(ExhibitModel exhibit) {
 		if (exhibit == null) 
 			return;
 		mCurrentExhibit = exhibit;
@@ -727,7 +729,6 @@ public class FollowGuideFragment extends Fragment implements
 		mGalleryAdapter = null;
 		mGalleryAdapter = new HorizontalScrollViewAdapter(mContext,
 				mGalleryList, R.layout.item_gallery);
-		mPicGallery.setBackToBegin();
 		mPicGallery.initData(mGalleryAdapter);
 		mPicGallery.setCurrentSelectedItem(false, 0);
 	}
@@ -739,7 +740,6 @@ public class FollowGuideFragment extends Fragment implements
 		mExhibitAdapter = null;
 		mExhibitAdapter = new HorizontalScrollViewAdapter(mContext,
 				mExhibitImages, R.layout.item_gallery);
-		mPicGallery.setBackToBegin();
 		mExhibitGallery.initData(mExhibitAdapter);
 		mExhibitGallery.setCurrentSelectedItem(false,
 				mExhibitsList.indexOf(mCurrentExhibit));
@@ -788,11 +788,16 @@ public class FollowGuideFragment extends Fragment implements
 		// 先向左加载一个,保证该列表的第一个展品处于“中间”位置
 		loadPreExhibit(mExhibitsList.get(0));
 		// 如果未达到4 向右加载更多
-		for (int i = mExhibitsList.size(); i <= MIN_PER_COUNT; i++)
-			loadNextExhibit(mExhibitsList.get(mExhibitsList.size() - 1));
+		for (int i = mExhibitsList.size(); i < MIN_PER_COUNT; i++){
+			loadNextExhibit(mExhibitsList.get(mExhibitsList.size()-1));
+		}
 		// 如果加载完还是没有达到4，则向左加载
-		for (int i = mExhibitsList.size(); i <= MIN_PER_COUNT; i++)
+		for (int i = mExhibitsList.size(); i < MIN_PER_COUNT; i++){
 			loadPreExhibit(mExhibitsList.get(0));
+		}
+		for(int i = 0 ; i < mExhibitsList.size();i++){
+			Log.w(TAG, mExhibitsList.get(i).getName());
+		}
 		// 如果还未达到，证明已经不能加载更多了。
 	}
 

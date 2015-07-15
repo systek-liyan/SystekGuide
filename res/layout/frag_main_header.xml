@@ -21,17 +21,28 @@
             android:layout_width="wrap_content">
 		</LinearLayout>
 	</FrameLayout>
-        
-   <TextView 
-        android:id="@+id/frag_main_tv_introduction"
-        android:layout_margin="20dp"
-	    android:layout_gravity="center"
-	    android:text="博物馆简介"
-	    android:ellipsize="end"
-	    android:textSize="18sp"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"/>
-   <!-- 精品 -->
+    <FrameLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content">
+		<TextView 
+			android:id="@+id/frag_main_tv_introduction"
+			android:layout_margin="20dp"
+			android:layout_gravity="center"
+			android:text="博物馆简介"
+			android:ellipsize="end"
+			android:textSize="18sp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+		<ImageView 
+			android:id="@+id/frag_main_iv_play"
+			android:src="@drawable/home_tab_subject_normal_img"
+			android:layout_gravity="bottom|right"
+			android:layout_marginBottom="10dp"
+			android:layout_marginRight="10dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+	</FrameLayout>
+    <!-- 精品 -->
     <TextView
         android:text="精品"
         android:background="@color/btn_pressed_color"

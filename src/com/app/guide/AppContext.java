@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Application;
 
+import com.app.guide.beanhelper.GetBeanHelper;
 import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
 import com.baidu.mapapi.SDKInitializer;
 
@@ -21,6 +22,7 @@ import com.baidu.mapapi.SDKInitializer;
  */
 public class AppContext extends Application {
 
+	
 	/**
 	 * 当前选中的博物馆id
 	 */
@@ -35,7 +37,23 @@ public class AppContext extends Application {
 	 * 传递的展品列表id  
 	 * 规则：各个id间用“，”隔开
 	 */
-	public String exhibitsIds = ""; 
+	public String exhibitsIds = "";
+	
+	/**
+	 * 记录博物馆的楼层数
+	 */
+	public int floorCount = -1;
+	
+	/**
+	 * 记录当前网络状态 ,默认值为Constant.NETWORK_NONE,即没网络状态
+	 * @see Constant#NETWORK_NONE
+	 */
+	public int networkState = Constant.NETWORK_NONE;
+	
+	/**
+	 * 判断加载的博物馆是否有离线数据,在进入博物馆时会进行初始化
+	 */
+	public boolean hasOffline = false;
 	
 	/**
 	 * 判断是否有从searchActivity 跳转到homeActivity
@@ -43,9 +61,10 @@ public class AppContext extends Application {
 	public boolean isSelectedInSearch = false;
 	
 	/**
-	 * 是否自动导游
+	 * 是否自动导游, 默认为自动导航模式
+	 * @see Constant#GUIDE_MODE_AUTO
 	 */
-	private boolean isAutoGuide = true;
+	private boolean GuideMode = Constant.GUIDE_MODE_AUTO;
 	
 	/**
 	 * 导航模式改变监听者
@@ -93,11 +112,12 @@ public class AppContext extends Application {
 	
 	/**
 	 * 设置导游模式
-	 * @param guideMode boolean, true：自动导航， false:手动导航
+	 * @param guideMode boolean, 
+	 * 		true：自动导航 ， false:手动导航
 	 */
 	public void setGuideMode(boolean guideMode){
-		if(isAutoGuide == guideMode) return;
-		isAutoGuide = guideMode;
+		if(GuideMode == guideMode) return;
+		GuideMode = guideMode;
 		//通知监听者 导航模式已改变
 		if(guideModeListeners != null){
 			for(OnGuideModeChangedListener listener: guideModeListeners){
@@ -109,8 +129,8 @@ public class AppContext extends Application {
 	/**
 	 * @return boolean 是否自动导航
 	 */
-	public boolean isAutoGuide(){
-		return isAutoGuide;
+	public boolean getGuideMode(){
+		return GuideMode;
 	}
 
 	

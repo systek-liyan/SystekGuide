@@ -1,4 +1,4 @@
-package com.app.guide.offline;
+package com.app.guide.beanhelper;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,15 +9,21 @@ import java.util.List;
 import android.content.Context;
 
 import com.app.guide.Constant;
-import com.app.guide.bean.Exhibit;
 import com.app.guide.bean.ExhibitBean;
-import com.app.guide.bean.ImageOption;
-import com.app.guide.bean.LabelBean;
-import com.app.guide.bean.MapExhibitBean;
 import com.app.guide.bean.MuseumBean;
-import com.app.guide.bean.MuseumDetailBean;
-import com.app.guide.bean.PointM;
 import com.app.guide.download.DownloadBean;
+import com.app.guide.model.ExhibitModel;
+import com.app.guide.model.ImageModel;
+import com.app.guide.model.LabelModel;
+import com.app.guide.model.MapExhibitModel;
+import com.app.guide.model.MuseumModel;
+import com.app.guide.model.PointModel;
+import com.app.guide.offline.OfflineBeaconBean;
+import com.app.guide.offline.OfflineBeanSqlHelper;
+import com.app.guide.offline.OfflineExhibitBean;
+import com.app.guide.offline.OfflineLabelBean;
+import com.app.guide.offline.OfflineMapBean;
+import com.app.guide.offline.OfflineMuseumBean;
 import com.app.guide.sql.DatabaseContext;
 import com.app.guide.sql.DownloadManagerHelper;
 import com.j256.ormlite.dao.Dao;
@@ -36,9 +42,9 @@ public class GetBeanFromSql {
 	 * 从数据库中获取某一地图中所有展品的列表。<br>
 	 * 这里，一个博物馆的一层表示一张地图
 	 */
-	public static List<MapExhibitBean> getMapExhibit(Context context,
+	public static List<MapExhibitModel> getMapExhibit(Context context,
 			String museumid, int floor) throws SQLException {
-		List<MapExhibitBean> list = new ArrayList<MapExhibitBean>();
+		List<MapExhibitModel> list = new ArrayList<MapExhibitModel>();
 
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 				new DatabaseContext(context, Constant.FLODER_NAME + museumid),
@@ -47,7 +53,7 @@ public class GetBeanFromSql {
 		QueryBuilder<OfflineExhibitBean, Integer> builder = oDao.queryBuilder();
 		List<OfflineExhibitBean> offlineExhibitBeans = builder.query();
 		for (OfflineExhibitBean offlineExhibitBean : offlineExhibitBeans) {
-			MapExhibitBean bean = new MapExhibitBean();
+			MapExhibitModel bean = new MapExhibitModel();
 			bean.setAddress(offlineExhibitBean.getAddress());
 			bean.setName(offlineExhibitBean.getName());
 			bean.setMapX(offlineExhibitBean.getMapx());
@@ -96,9 +102,9 @@ public class GetBeanFromSql {
 	/**
 	 * 从数据库中获取某一博物馆中某一层中所有的beacon的位置
 	 */
-	public static HashMap<String, PointM> getLoactionPoint(Context context,
+	public static HashMap<String, PointModel> getLoactionPoint(Context context,
 			String museumid, int floor) throws SQLException {
-		HashMap<String, PointM> map = new HashMap<String, PointM>();
+		HashMap<String, PointModel> map = new HashMap<String, PointModel>();
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 				new DatabaseContext(context, Constant.FLODER_NAME + museumid),
 				museumid + ".db");
@@ -109,7 +115,7 @@ public class GetBeanFromSql {
 		builder.where().eq("floor", floor);
 		List<OfflineBeaconBean> list = builder.query();
 		for (OfflineBeaconBean offlineBean : list) {
-			PointM pointM = new PointM();
+			PointModel pointM = new PointModel();
 			pointM.setMapX(offlineBean.getPersonx());
 			pointM.setMapY(offlineBean.getPersony());
 			map.put(offlineBean.getUuid(), pointM);
@@ -122,7 +128,7 @@ public class GetBeanFromSql {
 	/**
 	 * 根据exhibitId获取展品详细信息
 	 */
-	public static Exhibit getExhibit(Context context, String museumId,
+	public static ExhibitModel getExhibit(Context context, String museumId,
 			String exhibitId) throws SQLException {
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 				new DatabaseContext(context, Constant.FLODER_NAME + museumId),
@@ -131,9 +137,9 @@ public class GetBeanFromSql {
 		QueryBuilder<OfflineExhibitBean, Integer> builder = oDao.queryBuilder();
 		builder.where().eq("id", exhibitId);
 		OfflineExhibitBean bean = builder.queryForFirst();
-		Exhibit exhibit = null;
+		ExhibitModel exhibit = null;
 		if (bean != null) {
-			exhibit = new Exhibit();
+			exhibit = new ExhibitModel();
 			exhibit.setId(exhibitId);
 			exhibit.setName(bean.getName());
 			exhibit.setBeaconUId(bean.getBeaconId());
@@ -144,12 +150,12 @@ public class GetBeanFromSql {
 			exhibit.setlExhibitBeanId(bean.getLexhibit());
 			exhibit.setrExhibitBeanId(bean.getRexhibit());
 			String imgOptions[] = bean.getImgsurl().split(",");
-			List<ImageOption> imgList = new ArrayList<ImageOption>();
+			List<ImageModel> imgList = new ArrayList<ImageModel>();
 			imgList.clear();
 			String options[] ;
 			for (int i = 0; i < imgOptions.length; i++) {
 				options = imgOptions[i].split("\\*");
-				ImageOption option = new ImageOption(
+				ImageModel option = new ImageModel(
 						Constant.getImageDownloadPath(options[0], museumId),
 						Integer.valueOf(options[1]));
 				imgList.add(option);
@@ -182,16 +188,16 @@ public class GetBeanFromSql {
 	/**
 	 * 获取某一博物馆下所有的标签列表（即该博物馆中所有的标签）
 	 */
-	public static List<LabelBean> getLabelBeans(Context context, String museumId)
+	public static List<LabelModel> getLabelBeans(Context context, String museumId)
 			throws SQLException {
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 				new DatabaseContext(context, Constant.FLODER_NAME + museumId),
 				museumId + ".db");
 		Dao<OfflineLabelBean, Integer> oDao = helper.getOfflineLabelDao();
 		List<OfflineLabelBean> list = oDao.queryForAll();
-		List<LabelBean> labels = new ArrayList<LabelBean>();
+		List<LabelModel> labels = new ArrayList<LabelModel>();
 		for (OfflineLabelBean offlineLabelBean : list) {
-			LabelBean bean = new LabelBean(offlineLabelBean.getName(),
+			LabelModel bean = new LabelModel(offlineLabelBean.getName(),
 					Arrays.asList(offlineLabelBean.getLables().split(",")));
 			labels.add(bean);
 		}
@@ -207,7 +213,7 @@ public class GetBeanFromSql {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static List<Exhibit> getExhibitsByBeaconId(Context context, String museumId,String beaconId)
+	public static List<ExhibitModel> getExhibitsByBeaconId(Context context, String museumId,String beaconId)
 					throws SQLException{
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 				new DatabaseContext(context, Constant.FLODER_NAME + museumId),
@@ -216,9 +222,9 @@ public class GetBeanFromSql {
 		QueryBuilder<OfflineExhibitBean, Integer> builder = oDao.queryBuilder();
 		builder.where().eq("beacon_id", beaconId);
 		List<OfflineExhibitBean> offlineList = builder.query();
-		List<Exhibit> exhibits = new ArrayList<Exhibit>();
+		List<ExhibitModel> exhibits = new ArrayList<ExhibitModel>();
 		for(OfflineExhibitBean bean: offlineList) {
-			Exhibit exhibit = new Exhibit();
+			ExhibitModel exhibit = new ExhibitModel();
 			exhibit.setId(bean.getId());
 			exhibit.setName(bean.getName());
 			exhibit.setBeaconUId(bean.getBeaconId());
@@ -229,12 +235,12 @@ public class GetBeanFromSql {
 			exhibit.setlExhibitBeanId(bean.getLexhibit());
 			exhibit.setrExhibitBeanId(bean.getRexhibit());
 			String imgOptions[] = bean.getImgsurl().split(",");
-			List<ImageOption> imgList = new ArrayList<ImageOption>();
+			List<ImageModel> imgList = new ArrayList<ImageModel>();
 			imgList.clear();
 			String options[] ;
 			for (int i = 0; i < imgOptions.length; i++) {
 				options = imgOptions[i].split("\\*");
-				ImageOption option = new ImageOption(
+				ImageModel option = new ImageModel(
 						Constant.getImageDownloadPath(options[0], museumId),
 						Integer.valueOf(options[1]));
 				imgList.add(option);
@@ -293,7 +299,7 @@ public class GetBeanFromSql {
 	/**
 	 * 根据博物馆id获取博物馆的详细bean，用以展示博物馆 
 	 */
-	public static MuseumDetailBean getMuseunDetailBean(Context context,
+	public static MuseumModel getMuseunDetailBean(Context context,
 			String museumId) throws SQLException {
 		OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 				new DatabaseContext(context, Constant.FLODER_NAME + museumId),
@@ -302,9 +308,9 @@ public class GetBeanFromSql {
 		QueryBuilder<OfflineMuseumBean, Integer> builder = oDao.queryBuilder();
 		builder.where().eq("id", museumId);
 		OfflineMuseumBean bean = builder.queryForFirst();
-		MuseumDetailBean museum = null;
+		MuseumModel museum = null;
 		if (bean != null) {
-			museum = new MuseumDetailBean();
+			museum = new MuseumModel();
 			museum.setName(bean.getName());
 			museum.setTextUrl(bean.getTexturl());
 			museum.setAudioUrl(bean.getAudiourl());

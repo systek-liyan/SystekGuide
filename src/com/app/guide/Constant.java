@@ -31,6 +31,31 @@ public class Constant {
 	public static final String AUTO_UPDATE_IN_WIFI = "auto update in wifi";
 
 	/**
+	 * 常量,自动模式
+	 */
+	public static final boolean GUIDE_MODE_AUTO = true;
+	
+	/**
+	 * 常量，手动模式
+	 */
+	public static final boolean GUIDE_MODE_MANUALLY =  false;
+	
+	/**
+	 * 网络状态常量  无网络状态
+	 */
+	public static final int NETWORK_NONE = 0x100;
+	
+	/**
+	 * 网络状态常量  当前网络为WIFI
+	 */
+	public static final int NETWORK_WIFI = 0x101;
+	
+	/**
+	 * 网络状态常量  当前网络为GPRS
+	 */
+	public static final int NETWORK_GPRS = 0x102;
+	
+	/**
 	 * 表示离线数据的存放根目录
 	 */
 	public static final String FLODER_NAME = "Guide/";

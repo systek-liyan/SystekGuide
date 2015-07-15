@@ -1,10 +1,15 @@
-package com.app.guide.bean;
+package com.app.guide.model;
 
-public class Menu {
+/**
+ * 菜单项  数据存储类，用以显示菜单
+ * 
+ * @author yetwish
+ */
+public class MenuModel {
 	private int iconResId;
 	private String title;
 
-	public Menu(int iconResId, String title) {
+	public MenuModel(int iconResId, String title) {
 		this.iconResId = iconResId;
 		this.title = title;
 	}

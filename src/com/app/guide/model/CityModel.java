@@ -1,4 +1,4 @@
-package com.app.guide.bean;
+package com.app.guide.model;
 
 /**
  * 存储城市列表的信息

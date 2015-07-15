@@ -1,13 +1,13 @@
-package com.app.guide.bean;
+package com.app.guide.model;
 
 import java.util.List;
 
-public class LabelBean {
+public class LabelModel {
 
 	private String name;
 	private List<String> labels;
 
-	public LabelBean(String name, List<String> list) {
+	public LabelModel(String name, List<String> list) {
 		super();
 		this.name = name;
 		this.labels = list;

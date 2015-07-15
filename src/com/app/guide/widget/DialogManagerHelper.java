@@ -14,6 +14,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog.OnSweetClickListener;
 
 import com.app.guide.AppConfig;
 import com.app.guide.AppContext;
+import com.app.guide.Constant;
 import com.app.guide.R;
 
 import edu.xidian.NearestBeacon.BeaconSearcher;
@@ -186,7 +187,7 @@ public class DialogManagerHelper {
 									SweetAlertDialog sweetAlertDialog) {
 								// TODO Auto-generated method stub
 								beaconSearcher.enableBluetooth();
-								((AppContext)mContext.getApplicationContext()).setGuideMode(true);
+								((AppContext)mContext.getApplicationContext()).setGuideMode(Constant.GUIDE_MODE_AUTO);
 								sa.dismiss();
 
 							}
@@ -196,7 +197,7 @@ public class DialogManagerHelper {
 							@Override
 							public void onClick(
 									SweetAlertDialog sweetAlertDialog) {
-								((AppContext)mContext.getApplicationContext()).setGuideMode(false);
+								((AppContext)mContext.getApplicationContext()).setGuideMode(Constant.GUIDE_MODE_MANUALLY);
 								((AppContext)mContext.getApplicationContext()).setBleEnable(false);
 								sa.dismiss();
 							}
@@ -204,7 +205,7 @@ public class DialogManagerHelper {
 				sa.show();
 			} else {
 				// 蓝牙已开启
-				((AppContext)mContext.getApplicationContext()).setGuideMode(true);
+				((AppContext)mContext.getApplicationContext()).setGuideMode(Constant.GUIDE_MODE_AUTO);
 			}
 		} catch (BleNotAvailableException e) {
 			// 不支持蓝牙4.0

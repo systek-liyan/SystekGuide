@@ -13,8 +13,8 @@ import android.widget.ListView;
 
 import com.app.guide.R;
 import com.app.guide.adapter.DownloadCompletedAdapter;
+import com.app.guide.beanhelper.GetBeanFromSql;
 import com.app.guide.download.DownloadBean;
-import com.app.guide.offline.GetBeanFromSql;
 
 public class DownloadCompletedFragment extends Fragment {
 

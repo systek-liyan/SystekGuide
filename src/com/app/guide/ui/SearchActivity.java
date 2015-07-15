@@ -22,7 +22,7 @@ import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
 import com.app.guide.bean.ExhibitBean;
-import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.beanhelper.GetBeanFromSql;
 import com.app.guide.widget.AutoLoadListView;
 import com.app.guide.widget.AutoLoadListView.OnLoadListener;
 import com.app.guide.widget.DialogManagerHelper;
@@ -285,7 +285,7 @@ public class SearchActivity extends BaseActivity implements
 				// 跳转到随身导游界面
 				((AppContext) getApplication()).currentExhibitId = shownResults
 						.get(position).getId();
-				((AppContext) getApplication()).setGuideMode(false);
+				((AppContext) getApplication()).setGuideMode(Constant.GUIDE_MODE_MANUALLY);
 				((AppContext) getApplication()).isSelectedInSearch = true;
 				finish();
 

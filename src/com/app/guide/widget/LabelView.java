@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.app.guide.R;
 import com.app.guide.adapter.GridAdapter;
 import com.app.guide.adapter.GridAdapter.GridItemClickListener;
-import com.app.guide.bean.LabelBean;
+import com.app.guide.model.LabelModel;
 
 /**
  * 选择器 view，包含一个textView(组标签) 和一个gridView(子标签集)
@@ -41,7 +41,7 @@ public class LabelView extends LinearLayout {
 	 * bean,标签的数据源。<br>
 	 * 一个LabelBean代表一组标签，由name:标签组名 和labels：标签项 组成
 	 */
-	private LabelBean mData;
+	private LabelModel mData;
 
 	/**
 	 * 标签项的Adapter
@@ -50,7 +50,7 @@ public class LabelView extends LinearLayout {
 	
 	private GridItemClickListener mListener;
 
-	public LabelView(Context context, LabelBean data) {
+	public LabelView(Context context, LabelModel data) {
 		super(context);
 		this.mContext = context;
 		this.mData = data;

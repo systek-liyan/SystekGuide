@@ -1,27 +1,26 @@
 package com.app.guide.ui;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.Html;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.style.ImageSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -39,8 +38,8 @@ import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
 import com.app.guide.bean.ExhibitBean;
-import com.app.guide.bean.MuseumDetailBean;
-import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.beanhelper.GetBeanFromSql;
+import com.app.guide.model.MuseumModel;
 import com.app.guide.utils.BitmapUtils;
 import com.app.guide.widget.AutoLoadListView;
 import com.app.guide.widget.AutoLoadListView.OnLoadListener;
@@ -82,7 +81,13 @@ public class MuseumIntroduceFragment extends Fragment {
 
 	private String mMuseumId;
 
-	private MuseumDetailBean mMuseumDetailBean;
+	private MuseumModel mMuseumDetailBean;
+
+	private ImageView ivPlay;
+
+	private MediaPlayer mPlayer;
+
+	private static final String URL = "http://192.168.191.1:8080/daoyou/userfiles/1/files/baoli/audio/baochao.wav";
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -99,6 +104,38 @@ public class MuseumIntroduceFragment extends Fragment {
 		exhibitAdapter = new ExhibitAdapter(activity, exhibits,
 				R.layout.item_exhibit);
 
+	}
+
+	/**
+	 * 准备播放音乐
+	 */
+	private void prepareAudio() {
+		if (mPlayer != null) {
+			if (mPlayer.isPlaying()) {
+				mPlayer.stop();
+			}
+			mPlayer.reset();
+		} else {
+			mPlayer = new MediaPlayer();
+			mPlayer.setOnCompletionListener(new OnCompletionListener() {
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+					ivPlay.setImageResource(R.drawable.home_tab_subject_normal_img);
+				}
+			});
+		}
+		try {
+			mPlayer.setDataSource(URL);
+			mPlayer.prepare();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -229,13 +266,32 @@ public class MuseumIntroduceFragment extends Fragment {
 		// 解析html文本
 		Spanned text = Html.fromHtml(mMuseumDetailBean.getTextUrl());
 		tvIntroduction.setText(text);
-		// 获取播放按钮的bitmap
-		Bitmap bitmap = BitmapFactory.decodeResource(this.getActivity()
-				.getResources(), R.drawable.home_tab_subject_normal_img);
-		ImageSpan imgSpan = new ImageSpan(this.getActivity(), bitmap);
-		SpannableString spanString = new SpannableString("icon");
-		spanString.setSpan(imgSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		tvIntroduction.append(spanString);
+		ivPlay = (ImageView) headerLayout.findViewById(R.id.frag_main_iv_play);
+
+		ivPlay.setClickable(true);
+		ivPlay.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (mPlayer == null)
+					return;
+				if (mPlayer.isPlaying()) {
+					mPlayer.pause();
+					ivPlay.setImageResource(R.drawable.home_tab_subject_normal_img);
+				} else {
+					mPlayer.start();
+					ivPlay.setImageResource(R.drawable.home_tab_subject_pressed_img);
+				}
+			}
+		});
+
+		// // 获取播放按钮的bitmap
+		// Bitmap bitmap = BitmapFactory.decodeResource(this.getActivity()
+		// .getResources(), R.drawable.home_tab_subject_normal_img);
+		// ImageSpan imgSpan = new ImageSpan(this.getActivity(), bitmap);
+		// SpannableString spanString = new SpannableString("icon");
+		// spanString.setSpan(imgSpan, 0, 4,
+		// Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		// tvIntroduction.append(spanString);
 
 		// 获取listview
 		lvExhibit = (AutoLoadListView) view
@@ -249,18 +305,33 @@ public class MuseumIntroduceFragment extends Fragment {
 		HomeActivity.getMenu().addIgnoredView(viewPager);
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		prepareAudio();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		if (mPlayer != null) {
+			mPlayer.stop();
+			ivPlay.setImageResource(R.drawable.home_tab_subject_normal_img);
+		}
+	}
+
 	private void initListView() {
 		lvExhibit.setOnLoadListener(new OnLoadListener() {
 			@Override
 			public void onLoad() {
-				// TODO Auto-generated method stub
+				// TODO Autogenerated method stub
 				page++;
 				loadOnPage();
 			}
 
 			@Override
 			public void onRetry() {
-				// TODO Auto-generated method stub
+				// TODO Autogenerated method stub
 				loadOnPage();
 			}
 		});
@@ -272,7 +343,7 @@ public class MuseumIntroduceFragment extends Fragment {
 				((AppContext) getActivity().getApplication()).currentExhibitId = exhibits
 						.get(position - 1).getId();
 				((AppContext) getActivity().getApplication())
-						.setGuideMode(false);
+						.setGuideMode(Constant.GUIDE_MODE_MANUALLY);
 				// 不能使用HomeActivity.mRadioGroup.check(R.id.home_tab_follow);
 				// 因为该方法会重复调用onCheckedChanged()方法
 				// ，从而导致java.lang.IllegalStateException异常
@@ -292,7 +363,7 @@ public class MuseumIntroduceFragment extends Fragment {
 			data = GetBeanFromSql.getExhibitBeans(getActivity(), mMuseumId,
 					page);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			// TODO Autogenerated catch block
 			e.printStackTrace();
 		}
 		if (data != null) {
@@ -324,13 +395,13 @@ public class MuseumIntroduceFragment extends Fragment {
 
 			@Override
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
-				// TODO Auto-generated method stub
+				// TODO Autogenerated method stub
 
 			}
 
 			@Override
 			public void onPageScrollStateChanged(int arg0) {
-				// TODO Auto-generated method stub
+				// TODO Autogenerated method stub
 
 			}
 		};

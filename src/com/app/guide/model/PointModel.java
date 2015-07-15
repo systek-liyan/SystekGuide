@@ -1,6 +1,6 @@
-package com.app.guide.bean;
+package com.app.guide.model;
 
-public class PointM {
+public class PointModel {
 
 	private float mapX;
 	private float mapY;

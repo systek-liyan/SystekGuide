@@ -24,17 +24,18 @@ import android.widget.ToggleButton;
 import com.app.guide.AppContext;
 import com.app.guide.AppContext.OnBluetoothStateChangedListener;
 import com.app.guide.AppContext.OnGuideModeChangedListener;
+import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.CommonAdapter;
 import com.app.guide.adapter.ViewHolder;
-import com.app.guide.bean.Menu;
+import com.app.guide.model.MenuModel;
 
 public class MenuFragment extends Fragment implements
 		OnGuideModeChangedListener, OnBluetoothStateChangedListener {
 
 	private HomeClick homeClick;
 	private ListView lvMenu;
-	private List<Menu> mData;
+	private List<MenuModel> mData;
 	private Context mContext;
 
 	private static final int ITEM_CITY = 0;
@@ -75,7 +76,7 @@ public class MenuFragment extends Fragment implements
 					boolean isChecked) {
 				// TODO Auto-generated method stub
 				if (isChecked) {
-					((AppContext)mContext.getApplicationContext()).setGuideMode(true);
+					((AppContext)mContext.getApplicationContext()).setGuideMode(Constant.GUIDE_MODE_AUTO);
 //					Toast.makeText(mContext, "进入自动导航模式",
 //							Toast.LENGTH_SHORT).show();
 				} else {
@@ -86,7 +87,7 @@ public class MenuFragment extends Fragment implements
 			}
 		});
 		lvMenu = (ListView) view.findViewById(R.id.frag_menu_lv_menu);
-		lvMenu.setAdapter(new CommonAdapter<Menu>(this.getActivity(), mData,
+		lvMenu.setAdapter(new CommonAdapter<MenuModel>(this.getActivity(), mData,
 				R.layout.item_menu) {
 			@Override
 			public void convert(ViewHolder holder, int position) {
@@ -138,9 +139,9 @@ public class MenuFragment extends Fragment implements
 				R.drawable.sliding_menu_download,
 				R.drawable.sliding_menu_setting, R.drawable.sliding_menu_more,
 				R.drawable.sliding_menu_back };
-		mData = new ArrayList<Menu>();
+		mData = new ArrayList<MenuModel>();
 		for (int i = 0; i < titles.length; i++)
-			mData.add(new Menu(iconResources[i], titles[i]));
+			mData.add(new MenuModel(iconResources[i], titles[i]));
 	}
 
 	public void setHomeClick(HomeClick homeClick) {

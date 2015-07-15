@@ -25,7 +25,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.app.guide.R;
-import com.app.guide.bean.LyricObject;
+import com.app.guide.model.LyricModel;
 
 public class LyricView extends View {
 
@@ -33,7 +33,7 @@ public class LyricView extends View {
 	private static final int SIZE_LENGTH = 1600;// 显示歌词的高度
 	public static int SIZE_TEXT_DISPLAY = 400;
 
-	private TreeMap<Integer, LyricObject> lrc_map;
+	private TreeMap<Integer, LyricModel> lrc_map;
 	private float mX; // 屏幕X轴的中点，此值固定，保持歌词在X中间显示
 	private static boolean blLrc = false;
 	private float touchY; // 当触摸歌词View时，保存为当前触点的Y轴坐标
@@ -76,7 +76,7 @@ public class LyricView extends View {
 			paintHL.setTextSize(wordSize);
 			paint.setTextSize(wordSize);
 			// TODO
-			LyricObject temp = lrc_map.get(lrcIndex);
+			LyricModel temp = lrc_map.get(lrcIndex);
 			if (temp == null)
 				return;
 			canvas.drawText(temp.lrc, mX, offsetY + (wordSize + INTERVAL)
@@ -134,7 +134,7 @@ public class LyricView extends View {
 	}
 
 	private void init() {
-		lrc_map = new TreeMap<Integer, LyricObject>();
+		lrc_map = new TreeMap<Integer, LyricModel>();
 		// Log.e("tag", "heightSpec:"+heightSpec);
 		paint = new Paint();
 		paint.setTextAlign(Paint.Align.CENTER);
@@ -173,7 +173,7 @@ public class LyricView extends View {
 		int width = dm.widthPixels;
 		int max = lrc_map.get(0).lrc.length();
 		for (int i = 1; i < lrc_map.size(); i++) {
-			LyricObject lrcStrLength = lrc_map.get(i);
+			LyricModel lrcStrLength = lrc_map.get(i);
 			if (max < lrcStrLength.lrc.length()) {
 				max = lrcStrLength.lrc.length();
 			}
@@ -234,7 +234,7 @@ public class LyricView extends View {
 		}
 		int index = 0;
 		for (int i = 0; i < lrc_map.size(); i++) {
-			LyricObject temp = lrc_map.get(i);
+			LyricModel temp = lrc_map.get(i);
 			if (temp.begintime < time) {
 				++index;
 			}
@@ -254,7 +254,7 @@ public class LyricView extends View {
 	 * 
 	 */
 	private void read(String file) {
-		TreeMap<Integer, LyricObject> lrc_read = new TreeMap<Integer, LyricObject>();
+		TreeMap<Integer, LyricModel> lrc_read = new TreeMap<Integer, LyricModel>();
 		String data = "";
 		try {
 			File saveFile = new File(file);
@@ -287,7 +287,7 @@ public class LyricView extends View {
 							int s = Integer.parseInt(timedata[1]); // 秒
 							int ms = Integer.parseInt(timedata[2]); // 毫秒
 							int currTime = (m * 60 + s) * 1000 + ms * 10;
-							LyricObject item1 = new LyricObject();
+							LyricModel item1 = new LyricModel();
 							item1.begintime = currTime;
 							item1.lrc = "";
 							lrc_read.put(currTime, item1);
@@ -307,7 +307,7 @@ public class LyricView extends View {
 							int s = Integer.parseInt(timedata[1]); // 秒
 							int ms = Integer.parseInt(timedata[2]); // 毫秒
 							int currTime = (m * 60 + s) * 1000 + ms * 10;
-							LyricObject item1 = new LyricObject();
+							LyricModel item1 = new LyricModel();
 							item1.begintime = currTime;
 							item1.lrc = lrcContenet;
 							lrc_read.put(currTime, item1);// 将currTime当标签
@@ -327,17 +327,17 @@ public class LyricView extends View {
 		lrc_map.clear();
 		data = "";
 		Iterator<Integer> iterator = lrc_read.keySet().iterator();
-		LyricObject oldval = null;
+		LyricModel oldval = null;
 		int i = 0;
 		while (iterator.hasNext()) {
 			Object ob = iterator.next();
 
-			LyricObject val = (LyricObject) lrc_read.get(ob);
+			LyricModel val = (LyricModel) lrc_read.get(ob);
 
 			if (oldval == null)
 				oldval = val;
 			else {
-				LyricObject item1 = new LyricObject();
+				LyricModel item1 = new LyricModel();
 				item1 = oldval;
 				item1.timeline = val.begintime - oldval.begintime;
 				lrc_map.put(i, item1);

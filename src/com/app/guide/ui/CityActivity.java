@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import com.app.guide.R;
 import com.app.guide.adapter.CityAdapter;
-import com.app.guide.bean.CityModel;
+import com.app.guide.model.CityModel;
 import com.app.guide.sql.CityDBManager;
 import com.app.guide.widget.DialogManagerHelper;
 import com.app.guide.widget.QuicLocationBar;

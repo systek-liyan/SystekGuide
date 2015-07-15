@@ -18,7 +18,7 @@ import com.app.guide.R;
 import com.app.guide.adapter.CommonAdapter;
 import com.app.guide.adapter.ViewHolder;
 import com.app.guide.bean.MuseumBean;
-import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.beanhelper.GetBeanFromSql;
 import com.app.guide.widget.TopBar;
 
 /**

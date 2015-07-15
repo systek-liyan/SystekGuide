@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.app.guide.R;
-import com.app.guide.bean.CityModel;
+import com.app.guide.model.CityModel;
 
 /**
  * 城市列表Adapter

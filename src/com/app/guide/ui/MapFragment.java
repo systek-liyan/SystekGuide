@@ -31,8 +31,8 @@ import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.CommonAdapter;
 import com.app.guide.adapter.ViewHolder;
-import com.app.guide.bean.MapExhibitBean;
-import com.app.guide.offline.GetBeanFromSql;
+import com.app.guide.beanhelper.GetBeanFromSql;
+import com.app.guide.model.MapExhibitModel;
 import com.app.guide.offline.OfflineMapBean;
 import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
 import com.app.guide.widget.MarkObject;
@@ -51,8 +51,8 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 	private ListView mListView;// 用于现实展品列表
 	private PopMapMenu mPopMapMenu;
 	private Button showMenuBtn;
-	private CommonAdapter<MapExhibitBean> adapter;
-	private List<MapExhibitBean> mapExhibitBeans;
+	private CommonAdapter<MapExhibitModel> adapter;
+	private List<MapExhibitModel> mapExhibitBeans;
 
 	/**
 	 * 人所在地图X坐标,0.5表示在地图的水平中点
@@ -152,7 +152,7 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		adapter = new CommonAdapter<MapExhibitBean>(getActivity(),
+		adapter = new CommonAdapter<MapExhibitModel>(getActivity(),
 				mapExhibitBeans, R.layout.item_map_exhibit) {
 
 			@Override
@@ -172,7 +172,7 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				// TODO Auto-generated method stub
-				MapExhibitBean bean = adapter.getItem(position);
+				MapExhibitModel bean = adapter.getItem(position);
 				sceneMap.adjust(bean.getMapX(), bean.getMapY());
 				MapDialog dialog = new MapDialog(getActivity(), bean);
 				int offsetX = (int) sceneMap.convertToScreenX(bean.getMapX());
@@ -246,7 +246,7 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 			}
 			adapter.notifyDataSetChanged();
 		}
-		if (((AppContext) getActivity().getApplication()).isAutoGuide()) {
+		if (((AppContext) getActivity().getApplication()).getGuideMode()) {
 			HomeActivity.setBeaconLocateType(NearestBeacon.GET_LOCATION_BEACON);
 			HomeActivity.setBeaconSearcherListener(this);
 		}
@@ -254,7 +254,7 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 		bitmap = BitmapFactory.decodeFile(Constant.getImageDownloadPath(
 				mFloorUrls.get(currentFloor), mMuseumId));
 		sceneMap.setBitmap(bitmap);
-		for (final MapExhibitBean bean : mapExhibitBeans) {
+		for (final MapExhibitModel bean : mapExhibitBeans) {
 			MarkObject object = new MarkObject();
 			object.setMapX(bean.getMapX());
 			object.setMapY(bean.getMapY());
