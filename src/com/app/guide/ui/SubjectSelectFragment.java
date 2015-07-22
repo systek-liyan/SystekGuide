@@ -1,6 +1,5 @@
 package com.app.guide.ui;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +28,8 @@ import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
 import com.app.guide.adapter.GridAdapter.GridItemClickListener;
 import com.app.guide.bean.ExhibitBean;
-import com.app.guide.beanhelper.GetBeanFromSql;
+import com.app.guide.beanhelper.GetBeanCallBack;
+import com.app.guide.beanhelper.GetBeanHelper;
 import com.app.guide.model.LabelModel;
 import com.app.guide.widget.AutoLoadListView;
 import com.app.guide.widget.AutoLoadListView.OnLoadListener;
@@ -48,8 +48,9 @@ import com.app.guide.widget.LabelView;
  */
 public class SubjectSelectFragment extends Fragment {
 
-	private static final String TAG = SubjectSelectFragment.class.getSimpleName();
-	
+	private static final String TAG = SubjectSelectFragment.class
+			.getSimpleName();
+
 	/**
 	 * 存储标签视图的数据,修改为数据库加载方式
 	 */
@@ -144,8 +145,13 @@ public class SubjectSelectFragment extends Fragment {
 	 * 已选择的标签组的点击监听接口
 	 */
 	private SelectedItemListener mSelectedListener;
-	
+
 	private SelectorItemListener mSelectorListener;
+
+	/**
+	 * 判断是否已加载完数据
+	 */
+	private boolean isCompleted = false;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -158,7 +164,7 @@ public class SubjectSelectFragment extends Fragment {
 		initData();
 		pDialog.dismiss();
 		pDialog = null;
-		//初始化两个点击监听器
+		// 初始化两个点击监听器
 		mSelectedListener = new SelectedItemListener();
 		mSelectorListener = new SelectorItemListener();
 	}
@@ -183,12 +189,15 @@ public class SubjectSelectFragment extends Fragment {
 	 * 从数据库中 获取当前博物馆下的所有的标签数据;
 	 */
 	private void initSelectorData() {
-		try {
-			labelBeans = GetBeanFromSql.getLabelBeans(mContext, mMuseumId);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		GetBeanHelper.getInstance(mContext).getLabelList(mMuseumId,
+				new GetBeanCallBack<List<LabelModel>>() {
+
+					@Override
+					public void onGetBeanResponse(List<LabelModel> response) {
+						labelBeans = response;
+
+					}
+				});
 	}
 
 	/**
@@ -197,31 +206,38 @@ public class SubjectSelectFragment extends Fragment {
 	private void initExhibitData() {
 		exhibits = new ArrayList<ExhibitBean>();
 		page = 0;
-		try {
-			List<ExhibitBean> data = null;
-			do { //加载当前博物馆下的所有展品，用以匹配筛选
-				data = GetBeanFromSql
-						.getExhibitBeans(mContext, mMuseumId, page);
-				if (data != null) {
-					for (int i = 0; i < data.size(); i++) {
-						exhibits.add(data.get(i));
-					}
-					page++;
-				}
-			} while (data != null && data.size() == Constant.PAGE_COUNT);
-			//初始化已选择展品列表
-			selectedExhibits = new ArrayList<ExhibitBean>(exhibits);
-			//初始化展示展品列表
-			shownExhibits = new ArrayList<ExhibitBean>();
-			for (int i = 0; i < Constant.PAGE_COUNT
-					&& i < selectedExhibits.size(); i++) {
-				shownExhibits.add(selectedExhibits.get(i));
-			}
-			page = 0;
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		do { // 加载当前博物馆下的所有展品，用以匹配筛选
+			GetBeanHelper.getInstance(mContext).getExhibitList(mMuseumId, page,
+					new GetBeanCallBack<List<ExhibitBean>>() {
+
+						@Override
+						public void onGetBeanResponse(List<ExhibitBean> response) {
+							if (response != null) {
+								exhibits.addAll(response);
+								page++;
+							}
+							if (response == null ||response.size() < Constant.PAGE_COUNT) {
+								// 加载完成
+								notifyLoadExhibitListCompleted();
+							}
+
+						}
+					});
+		} while (!isCompleted);
+
+	}
+
+	private void notifyLoadExhibitListCompleted() {
+		isCompleted = true;
+		//初始化已选择展品列表
+		selectedExhibits = new ArrayList<ExhibitBean>(exhibits);
+		//初始化展示展品列表
+		shownExhibits = new ArrayList<ExhibitBean>();
+		for (int i = 0; i < Constant.PAGE_COUNT
+				&& i < selectedExhibits.size(); i++) {
+			shownExhibits.add(selectedExhibits.get(i));
 		}
+		page = 0;
 	}
 
 	/**
@@ -283,12 +299,12 @@ public class SubjectSelectFragment extends Fragment {
 						ids += selectedExhibits.get(i).getId() + ",";
 				}
 				Log.w(TAG, ids);
-				//TODO 似乎有些小问题
+				// TODO 似乎有些小问题
 				((AppContext) getActivity().getApplication()).exhibitsIds = ids;
 				((RadioButton) HomeActivity.mRadioGroup
 						.findViewById(R.id.home_tab_map)).setChecked(true);
-//				Toast.makeText(mContext, "完成筛选，跳转到map", Toast.LENGTH_SHORT)
-//						.show();
+				// Toast.makeText(mContext, "完成筛选，跳转到map", Toast.LENGTH_SHORT)
+				// .show();
 			}
 		});
 		// 获取展品列表view
@@ -318,25 +334,25 @@ public class SubjectSelectFragment extends Fragment {
 				}
 			}
 		});
-		//给展品列表设置子项点击监听
+		// 给展品列表设置子项点击监听
 		lvExhibits.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				//更新全局变量中的当前展品ID
+				// 更新全局变量中的当前展品ID
 				((AppContext) getActivity().getApplication()).currentExhibitId = exhibits
 						.get(position - invisItem - 1).getId();
-				//更新全局变量的导航模式为手动导航
+				// 更新全局变量的导航模式为手动导航
 				((AppContext) getActivity().getApplication())
 						.setGuideMode(Constant.GUIDE_MODE_MANUALLY);
-				//跳转至随行导游界面
+				// 跳转至随行导游界面
 				RadioButton btn = (RadioButton) HomeActivity.mRadioGroup
 						.findViewById(R.id.home_tab_follow);
 				btn.setChecked(true);
 				btn.setEnabled(true);
 			}
 		});
-		//设置上拉加载更多
+		// 设置上拉加载更多
 		lvExhibits.setOnLoadListener(new OnLoadListener() {
 
 			/**
@@ -418,7 +434,7 @@ public class SubjectSelectFragment extends Fragment {
 				selectedData.add(itemName); // 更新data
 				// Toast.makeText(mContext, itemName,
 				// Toast.LENGTH_SHORT).show();
-				selectedHeader.notifyDataSetChanged();//通知数据已更新
+				selectedHeader.notifyDataSetChanged();// 通知数据已更新
 				invisView.notifyDataSetChanged();
 				// 根据selected data筛选list view
 				updateSelectResult();
@@ -428,7 +444,7 @@ public class SubjectSelectFragment extends Fragment {
 
 	}
 
-	private class SelectedItemListener implements GridItemClickListener  {
+	private class SelectedItemListener implements GridItemClickListener {
 
 		@Override
 		public void onClick(View view) {
@@ -448,15 +464,15 @@ public class SubjectSelectFragment extends Fragment {
 				btnItem.setClickable(true);
 				selectedData.remove(itemName);// 更新data
 				selectedHeader.notifyDataSetChanged();
-//				updateView(selectedData);// 更新已选择view 和悬浮头部
+				// updateView(selectedData);// 更新已选择view 和悬浮头部
 				invisView.notifyDataSetChanged();
-//				updateView(selectedData);
+				// updateView(selectedData);
 				updateSelectResult();
 				exhibitAdapter.notifyDataSetChanged();
 			}
-			//重绘视图，使得item可点击 TODO 在切换的期间到底做了什么
+			// 重绘视图，使得item可点击 TODO 在切换的期间到底做了什么
 			selectedHeader.invalidate();
-			if(invisView.getVisibility() == View.VISIBLE){
+			if (invisView.getVisibility() == View.VISIBLE) {
 				invisView.invalidate();
 			}
 

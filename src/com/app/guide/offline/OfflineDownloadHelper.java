@@ -181,7 +181,7 @@ public class OfflineDownloadHelper {
 	 */
 	private void downloadMuseum(final Context context, final String museumId) {
 		String url = Constant.HOST_HEAD
-				+ "/daoyou/a/api/museum/treeData?musumId=" + museumId;
+				+ "/daoyou/a/api/museum/treeData?id=" + museumId;
 		FastJsonArrayRequest<OfflineMuseumBean> jsonRequest = new FastJsonArrayRequest<OfflineMuseumBean>(
 				url, OfflineMuseumBean.class,
 				new Response.Listener<List<OfflineMuseumBean>>() {

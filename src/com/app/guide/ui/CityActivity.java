@@ -2,10 +2,10 @@ package com.app.guide.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
@@ -16,10 +16,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 import com.app.guide.R;
 import com.app.guide.adapter.CityAdapter;
-import com.app.guide.model.CityModel;
-import com.app.guide.sql.CityDBManager;
+import com.app.guide.bean.CityBean;
+import com.app.guide.beanhelper.GetBeanCallBack;
+import com.app.guide.beanhelper.GetBeanHelper;
+import com.app.guide.beanhelper.GetBeanCallBack;
 import com.app.guide.widget.DialogManagerHelper;
 import com.app.guide.widget.QuicLocationBar;
 import com.app.guide.widget.QuicLocationBar.OnTouchLetterChangedListener;
@@ -40,16 +44,14 @@ public class CityActivity extends BaseActivity {
 	private QuicLocationBar mQuicLocationBar;
 	private HashMap<String, Integer> alphaIndexer;
 	private SQLiteDatabase database;
-	private ArrayList<CityModel> mCityNames;
-
+	private List<CityBean> mCityNames;
+	private DialogManagerHelper mDialogHelper;
+	private SweetAlertDialog pDialog;
 	@Override
 	@SuppressLint("InlinedApi")
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_city);
-		
-		//检测gps是否打开 
-		new DialogManagerHelper(this).showGPSSettingDialog();
 		
 		mQuicLocationBar = (QuicLocationBar) findViewById(R.id.city_loactionbar);
 		mQuicLocationBar
@@ -60,46 +62,48 @@ public class CityActivity extends BaseActivity {
 		mLocationClient = new LocationClient(this);
 		mQuicLocationBar.setTextDialog(overlay);
 		initLocation();
-		initList();
+		mDialogHelper = new DialogManagerHelper(this);
+		pDialog = mDialogHelper.showLoadingProgressDialog();
+		initData();
+		
 	}
+	private void initData(){
+		GetBeanHelper.getInstance(this).getCityList(new GetBeanCallBack<List<CityBean>>() {
+			
+			@Override
+			public void onGetBeanResponse(List<CityBean> cityList) {
+				// TODO Auto-generated method stub
+				mCityNames = cityList;
+				pDialog.dismiss();
+				pDialog = null;
+				initList();
+			}
+		});
+	}
+	
 
 	private void initList() {
-		mCityNames = getCityNames();
+//		mCityNames = getCityNames();
+//		mCityNames = new ArrayList<CityModel>();
+		mDialogHelper.showGPSSettingDialog();
 		CityAdapter adapter = new CityAdapter(CityActivity.this, mCityNames,R.layout.item_city);
 		mCityLit.setAdapter(adapter);
 		alphaIndexer = adapter.getCityMap();
 		mCityLit.setOnItemClickListener(new CityListOnItemClick());
 	}
-
-	private ArrayList<CityModel> getCityNames() {
-		CityDBManager dbManager = new CityDBManager(CityActivity.this);
-		database = dbManager.openDateBase();;
-		ArrayList<CityModel> names = new ArrayList<CityModel>();
-		Cursor cursor = database.rawQuery(
-				"SELECT * FROM T_City ORDER BY NameSort", null);
-		for (int i = 0; i < cursor.getCount(); i++) {
-			cursor.moveToPosition(i);
-			CityModel cityModel = new CityModel();
-			cityModel.setCityName(cursor.getString(cursor
-					.getColumnIndex("CityName")));
-			cityModel.setNameSort(cursor.getString(cursor
-					.getColumnIndex("NameSort")));
-			names.add(cityModel);
-		}
-		database.close();
-		return names;
-	}
+	
 
 	private class CityListOnItemClick implements OnItemClickListener {
 
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
 				long arg3) {
-			CityModel cityModel = (CityModel) mCityLit.getAdapter()
+			CityBean cityModel = (CityBean) mCityLit.getAdapter()
 					.getItem(pos);
-			Toast.makeText(CityActivity.this, cityModel.getCityName(),
+			Toast.makeText(CityActivity.this, cityModel.getName(),
 					Toast.LENGTH_SHORT).show();
 			Intent intent = new Intent(CityActivity.this, MuseumActivity.class);
+			intent.putExtra("city", cityModel.getName());
 			startActivity(intent);
 		}
 
@@ -139,6 +143,7 @@ public class CityActivity extends BaseActivity {
 					loacteButton.setText(city);
 					Toast.makeText(CityActivity.this, city,Toast.LENGTH_SHORT).show();
 					Intent intent = new Intent(CityActivity.this, MuseumActivity.class);
+					intent.putExtra("city", city);
 					startActivity(intent);
 				}
 

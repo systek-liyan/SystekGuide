@@ -41,6 +41,7 @@ public class HomeActivity extends BaseActivity implements
 	private Timer timer;
 	private List<Fragment> fragments;
 	
+	
 	/**
 	 * 侧滑栏
 	 */

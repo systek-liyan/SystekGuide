@@ -1,9 +1,6 @@
 package com.app.guide.widget;
 
-import java.util.List;
-
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.GridView;
 import android.widget.LinearLayout;

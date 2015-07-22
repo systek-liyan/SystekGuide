@@ -5,11 +5,11 @@ import java.util.List;
 import android.content.Context;
 
 import com.app.guide.AppContext;
+import com.app.guide.bean.CityBean;
 import com.app.guide.bean.ExhibitBean;
 import com.app.guide.bean.MuseumAreaBean;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.download.DownloadBean;
-import com.app.guide.model.CityModel;
 import com.app.guide.model.ExhibitModel;
 import com.app.guide.model.LabelModel;
 import com.app.guide.model.MapExhibitModel;
@@ -27,12 +27,15 @@ public class GetBeanHelper {
 	private GetBeanStrategy mGetBeanStrategy;
 
 	/**
-	 * 使用单例模式 
-	 * @param getBeanStrategy 获取bean的策略
+	 * 使用单例模式
+	 * 
+	 * @param getBeanStrategy
+	 *            获取bean的策略
 	 */
 	private GetBeanHelper(GetBeanStrategy getBeanStrategy) {
 		this.mGetBeanStrategy = getBeanStrategy;
 	}
+
 	/**
 	 * 保存当前实例
 	 */
@@ -50,101 +53,114 @@ public class GetBeanHelper {
 
 	/**
 	 * 获得helper实例，通过判断当前是否有离线包而获取使用相应策略的helper TODO 考虑该同步的代码块
+	 * 
 	 * @param context
 	 * @return
 	 */
 	public static synchronized GetBeanHelper getInstance(Context context) {
-			if (instance == null) {
-				//第一次调用， 初始化 ，获取两个helper实例
-				dbHelper = new GetBeanHelper(new GetBeanFromDB(context));
-				networkHelper = new GetBeanHelper(new GetBeanFromNetwork(context));
-			}
-			//判断应该使用哪个策略获取bean，并返回使用该策略的实例
-			if (((AppContext) context.getApplicationContext()).hasOffline) {
-				instance = dbHelper;
-			} else {
-				instance = networkHelper;
-			}
+		if (instance == null) {
+			// 第一次调用， 初始化 ，获取两个helper实例
+			dbHelper = new GetBeanHelper(new GetBeanFromDB(context));
+			networkHelper = new GetBeanHelper(new GetBeanFromNetwork(context));
+		}
+		// 判断应该使用哪个策略获取bean，并返回使用该策略的实例
+		if (((AppContext) context.getApplicationContext()).hasOffline) {
+			instance = dbHelper;
+		} else {
+			instance = networkHelper;
+		}
 		return instance;
 	}
 
-	public List<CityModel> getCityList() {
-		return mGetBeanStrategy.getCityList();
+	public void getCityList(GetBeanCallBack<List<CityBean>> callBack) {
+		mGetBeanStrategy.getCityList(callBack);
 	}
 
-	public List<MuseumBean> getMuseumList(CityModel city) {
-		return mGetBeanStrategy.getMuseumList(city);
+	public void getMuseumList(String city,
+			GetBeanCallBack<List<MuseumBean>> getBeanCallBack) {
+		mGetBeanStrategy.getMuseumList(city, getBeanCallBack);
 	}
 
-	public MuseumModel getMuseumModel(String museumId) {
-		return mGetBeanStrategy.getMuseumModel(museumId);
+	public void getMuseumModel(String museumId,
+			GetBeanCallBack<MuseumModel> callBack) {
+		mGetBeanStrategy.getMuseumModel(museumId, callBack);
 	}
 
-	public List<ExhibitBean> getExhibitList(String museumId, int minPriority) {
-		return mGetBeanStrategy.getExhibitList(museumId, minPriority);
+	public void getExhibitList(String museumId, int minPriority,int page,
+			GetBeanCallBack<List<ExhibitBean>> callBack) {
+		mGetBeanStrategy.getExhibitList(museumId, minPriority, page,callBack);
 	}
 
-	public List<ExhibitBean> getExhibitList(String museumId) {
+	public void getExhibitList(String museumId,int page,
+			GetBeanCallBack<List<ExhibitBean>> callBack) {
 		// TODO Auto-generated method stub
-		return getExhibitList(museumId, 0);
+		getExhibitList(museumId, 0, page,callBack);
 	}
 
-	public List<LabelModel> getLabelList(String museumId) {
-		return mGetBeanStrategy.getLabelList(museumId);
+	public void getLabelList(String museumId,
+			GetBeanCallBack<List<LabelModel>> callBack) {
+		mGetBeanStrategy.getLabelList(museumId, callBack);
 	}
 
-	public ExhibitModel getExhibitModel(String museumId, String exhibitId) {
-		return mGetBeanStrategy.getExhibitModel(museumId, exhibitId);
+	public void getExhibitModel(String museumId, String exhibitId,
+			GetBeanCallBack<ExhibitModel> callBack) {
+		mGetBeanStrategy.getExhibitModel(museumId, exhibitId, callBack);
 	}
 
-	public List<ExhibitModel> getExhibitModelsByBeaconId(String museumId,
-			String beaconId) {
-		return mGetBeanStrategy.getExhibitModelsByBeaconId(museumId, beaconId);
+	public void getExhibitModelsByBeaconId(String museumId, String beaconId,
+			GetBeanCallBack<List<ExhibitModel>> callBack) {
+		mGetBeanStrategy.getExhibitModelsByBeaconId(museumId, beaconId,
+				callBack);
 	}
 
-	public OfflineMapBean getMapBean(String museumId, int floor) {
-		return mGetBeanStrategy.getMapBean(museumId, floor);
+	public void getMapBean(String museumId, int floor,
+			GetBeanCallBack<OfflineMapBean> callBack) {
+		mGetBeanStrategy.getMapBean(museumId, floor, callBack);
 	}
 
-	public List<OfflineMapBean> getMapList(String museumId) {
+	public void getMapList(String museumId,
+			GetBeanCallBack<List<OfflineMapBean>> callBack) {
 		// TODO Auto-generated method stub
-		return mGetBeanStrategy.getMapList(museumId);
+		mGetBeanStrategy.getMapList(museumId, callBack);
 	}
 
-	public List<MuseumAreaBean> getMuseumAreaList(String museumId, int floor) {
-		return mGetBeanStrategy.getMuseumAreaList(museumId, floor);
+	public void getMuseumAreaList(String museumId, int floor,
+			GetBeanCallBack<List<MuseumAreaBean>> callBack) {
+		mGetBeanStrategy.getMuseumAreaList(museumId, floor, callBack);
 	}
 
-	public List<MapExhibitModel> getMapExhibitList(String museumId,
-			String museumAreaId) {
-		return mGetBeanStrategy.getMapExhibitList(museumId, museumAreaId);
+	public void getMapExhibitList(String museumId, String museumAreaId,
+			GetBeanCallBack<List<MapExhibitModel>> callBack) {
+		mGetBeanStrategy.getMapExhibitList(museumId, museumAreaId, callBack);
 	}
 
-	public OfflineBeaconBean getBeaconBean(String museumId, String major,
-			String minor) {
-		return mGetBeanStrategy.getBeaconBean(museumId, major, minor);
+	public void getBeaconBean(String museumId, String major, String minor,
+			GetBeanCallBack<OfflineBeaconBean> callBack) {
+		mGetBeanStrategy.getBeaconBean(museumId, major, minor, callBack);
 	}
 
-	public List<OfflineBeaconBean> getBeaconList(String museumId, int floor) {
-		return mGetBeanStrategy.getBeaconList(museumId, floor);
+	public void getBeaconList(String museumId, int floor,
+			GetBeanCallBack<List<OfflineBeaconBean>> callBack) {
+		mGetBeanStrategy.getBeaconList(museumId, floor, callBack);
 	}
 
-	public List<DownloadBean> getDownloadList() {
-		return mGetBeanStrategy.getDownloadList();
+	public void getDownloadList(GetBeanCallBack<List<DownloadBean>> callBack) {
+		mGetBeanStrategy.getDownloadList(callBack);
 	}
 
 	/**
 	 * 获取所有正在下载中的bean
 	 */
-	public List<DownloadBean> getDownloadingBeans() {
-		return mGetBeanStrategy.getDownloadingBeans();
+	public void getDownloadingBeans(GetBeanCallBack<List<DownloadBean>> callBack) {
+		mGetBeanStrategy.getDownloadingBeans(callBack);
 	}
 
 	/**
 	 * 获取所有已下载完成的bean
 	 */
-	public List<DownloadBean> getDownloadCompletedBeans(Context context) {
-		return mGetBeanStrategy.getDownloadCompletedBeans();
+	public void getDownloadCompletedBeans(
+			GetBeanCallBack<List<DownloadBean>> callBack) {
+		mGetBeanStrategy.getDownloadCompletedBeans(callBack);
 	}
 
 }

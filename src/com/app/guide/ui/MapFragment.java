@@ -1,6 +1,5 @@
 package com.app.guide.ui;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,8 @@ import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.CommonAdapter;
 import com.app.guide.adapter.ViewHolder;
-import com.app.guide.beanhelper.GetBeanFromSql;
+import com.app.guide.beanhelper.GetBeanCallBack;
+import com.app.guide.beanhelper.GetBeanHelper;
 import com.app.guide.model.MapExhibitModel;
 import com.app.guide.offline.OfflineMapBean;
 import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
@@ -100,28 +100,56 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 		mMuseumId = ((AppContext) getActivity().getApplication()).currentMuseumId;
 		mFloorUrls = new HashMap<Integer, String>();
 		// 加载楼层数
-		try {
-			floorCount = GetBeanFromSql.getFloorCount(getActivity(), mMuseumId);
-			// 加载各个楼层的图片
-			for (int i = 0; i < floorCount; i++) {
-				OfflineMapBean bean = GetBeanFromSql.getMapBean(getActivity(),
-						mMuseumId, i + 1);
-				Log.w(TAG, (bean == null) + "");
-				if (bean != null) {
-					mFloorUrls.put(i + 1, bean.getImgurl());
-					Log.w(TAG, (i + 1) + mFloorUrls.get(i + 1));
-				} else {
-					// 表示后面没有了，不再加载
-					break;
-					// TODO 表示没有该地图资源，加载图片显示错误的图片 有一个URL
-					// mFloorUrls.put(i+1, "piture_error!");
-				}
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		floorCount = ((AppContext) getActivity().getApplication()).floorCount;
+		// 加载各个楼层的图片
+		for (int i = 0; i < floorCount; i++) {
+			final int floor = i + 1;
+			GetBeanHelper.getInstance(getActivity()).getMapBean(mMuseumId,
+					floor, new GetBeanCallBack<OfflineMapBean>() {
+
+						@Override
+						public void onGetBeanResponse(OfflineMapBean response) {
+							if (response != null) {
+
+								mFloorUrls.put(floor, response.getImgurl());
+							} else {
+								// 表示后面没有了，不再加载
+								return;
+								// TODO 表示没有该地图资源，加载图片显示错误的图片 有一个URL
+								// mFloorUrls.put(i+1, "piture_error!");
+							}
+						}
+					});
 		}
 
+		GetBeanHelper.getInstance(getActivity()).getMapExhibitList(mMuseumId,
+				"", new GetBeanCallBack<List<MapExhibitModel>>() {
+
+					@Override
+					public void onGetBeanResponse(List<MapExhibitModel> response) {
+						mapExhibitBeans = response;
+						initAdapter();
+					}
+				});
+
+	}
+
+	private void initAdapter() {
+		adapter = new CommonAdapter<MapExhibitModel>(getActivity(),
+				mapExhibitBeans, R.layout.item_map_exhibit) {
+
+			@Override
+			public void convert(ViewHolder holder, int position) {
+				holder.setTvText(R.id.item_map_exhibit_name,
+						getItem(position).getName()).setTvText(
+						R.id.item_map_exhibit_address,
+						getItem(position).getAddress());
+
+			}
+
+		};
+		if (mListView != null)
+			mListView.setAdapter(adapter);
 	}
 
 	@SuppressLint("InflateParams")
@@ -144,28 +172,9 @@ public class MapFragment extends Fragment implements onBeaconSearcherListener {
 		showMenuBtn = (Button) view.findViewById(R.id.map_btn_showmenu);
 		locaImageView = (ImageView) view.findViewById(R.id.map_location);
 		sceneMap.setShowMark(false);
-		try {
-			mapExhibitBeans = GetBeanFromSql
-					.getMapExhibit(getActivity(), ((AppContext) getActivity()
-							.getApplication()).currentMuseumId, 1);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		adapter = new CommonAdapter<MapExhibitModel>(getActivity(),
-				mapExhibitBeans, R.layout.item_map_exhibit) {
 
-			@Override
-			public void convert(ViewHolder holder, int position) {
-				holder.setTvText(R.id.item_map_exhibit_name,
-						getItem(position).getName()).
-						setTvText(R.id.item_map_exhibit_address,
-						getItem(position).getAddress());
-
-			}
-
-		};
-		mListView.setAdapter(adapter);
+		if (adapter != null) 
+			mListView.setAdapter(adapter);
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override

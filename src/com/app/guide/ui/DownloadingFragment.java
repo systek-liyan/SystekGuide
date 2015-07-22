@@ -1,6 +1,6 @@
 package com.app.guide.ui;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -16,7 +16,8 @@ import android.widget.ListView;
 
 import com.app.guide.R;
 import com.app.guide.adapter.DownloadingAdapter;
-import com.app.guide.beanhelper.GetBeanFromSql;
+import com.app.guide.beanhelper.GetBeanCallBack;
+import com.app.guide.beanhelper.GetBeanHelper;
 import com.app.guide.download.DownloadBean;
 
 public class DownloadingFragment extends Fragment {
@@ -26,6 +27,7 @@ public class DownloadingFragment extends Fragment {
 	private ListView downloadingLv;
 	private DownloadingAdapter adapter;
 	private Button addButton;
+	private List<DownloadBean> data;
 
 	@SuppressLint("InflateParams")
 	@Override
@@ -43,13 +45,17 @@ public class DownloadingFragment extends Fragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onViewCreated(view, savedInstanceState);
-		List<DownloadBean> data = null;
-		try {
-			data = GetBeanFromSql.getDownloadingBeans(getActivity());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		data = new ArrayList<DownloadBean>();
+		GetBeanHelper.getInstance(getActivity()).getDownloadCompletedBeans(
+				new GetBeanCallBack<List<DownloadBean>>() {
+					@Override
+					public void onGetBeanResponse(List<DownloadBean> response) {
+						data = response;
+						if (adapter != null)
+							adapter.notifyDataSetChanged();
+
+					}
+				});
 		adapter = new DownloadingAdapter(getActivity(), data,
 				R.layout.item_downloading);
 		downloadingLv.setAdapter(adapter);

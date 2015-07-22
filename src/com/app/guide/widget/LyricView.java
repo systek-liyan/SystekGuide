@@ -19,13 +19,12 @@ import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 
 import com.app.guide.R;
 import com.app.guide.model.LyricModel;
+import com.app.guide.utils.ScreenUtils;
 
 public class LyricView extends View {
 
@@ -166,11 +165,7 @@ public class LyricView extends View {
 		if (!blLrc) {
 			return;
 		}
-		DisplayMetrics dm = new DisplayMetrics();
-		WindowManager manager = (WindowManager) getContext().getSystemService(
-				Context.WINDOW_SERVICE);
-		manager.getDefaultDisplay().getMetrics(dm);
-		int width = dm.widthPixels;
+		int width = ScreenUtils.getScreenWidth(getContext());
 		int max = lrc_map.get(0).lrc.length();
 		for (int i = 1; i < lrc_map.size(); i++) {
 			LyricModel lrcStrLength = lrc_map.get(i);

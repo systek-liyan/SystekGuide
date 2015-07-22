@@ -12,7 +12,6 @@ import com.app.guide.bean.ExhibitBean;
 import com.app.guide.bean.MuseumAreaBean;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.download.DownloadBean;
-import com.app.guide.model.CityModel;
 import com.app.guide.model.ExhibitModel;
 import com.app.guide.model.ImageModel;
 import com.app.guide.model.LabelModel;
@@ -30,7 +29,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
 /**
- * 从本地数据库（离线数据包）中获取各种bean
+ * 从本地数据库（离线数据包）中获取各种bean //出错时应如何处理TODO
  * 
  * @author yetwish
  * 
@@ -38,23 +37,14 @@ import com.j256.ormlite.stmt.QueryBuilder;
 public class GetBeanFromDB extends GetBeanStrategy {
 
 	private static final String TAG = GetBeanFromDB.class.getSimpleName();
-	
+
 	public GetBeanFromDB(Context context) {
 		super(context);
 	}
 
 	@Override
-	public List<CityModel> getCityList() {
-//		try {
-//			
-//		} catch (SQLException e) {
-//		}
-		//TODO 
-		return null;
-	}
-
-	@Override
-	public List<MuseumBean> getMuseumList(CityModel city) {
+	public void getMuseumList(String city,
+			GetBeanCallBack<List<MuseumBean>> callBack) {
 		List<MuseumBean> list = new ArrayList<MuseumBean>();
 		try {
 			DownloadManagerHelper helper = new DownloadManagerHelper(mContext);
@@ -69,13 +59,14 @@ public class GetBeanFromDB extends GetBeanStrategy {
 					list.add(bean);
 				}
 			}
+			callBack.onGetBeanResponse(list);
 		} catch (SQLException e) {
 		}
-		return list;
 	}
 
 	@Override
-	public MuseumModel getMuseumModel(String museumId) {
+	public void getMuseumModel(String museumId,
+			GetBeanCallBack<MuseumModel> callBack) {
 		OfflineMuseumBean bean = null;
 		try {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
@@ -92,21 +83,22 @@ public class GetBeanFromDB extends GetBeanStrategy {
 		if (bean != null) {
 			museum = new MuseumModel();
 			museum.setName(bean.getName());
-			museum.setTextUrl(bean.getTexturl());
+			museum.setIntroduce(bean.getTexturl());
 			museum.setAudioUrl(bean.getAudiourl());
+			museum.setFloorCount(bean.getFloorcount());
 			List<String> imaList = new ArrayList<String>();
 			String urls[] = bean.getImgurl().split(",");
 			for (int i = 0; i < urls.length; i++) {
 				imaList.add(Constant.getImageDownloadPath(urls[i], museumId));
 			}
-			museum.setImageList(imaList);
+			museum.setImgsUrl(imaList);
 		}
-		return museum;
+		callBack.onGetBeanResponse(museum);
 	}
 
 	@Override
-	public List<ExhibitBean> getExhibitList(String museumId, int minPriority) {
-		int page = 0;// TODO
+	public void getExhibitList(String museumId, int minPriority,int page,
+			GetBeanCallBack<List<ExhibitBean>> callBack) {
 		List<OfflineExhibitBean> offlineExhibitBeans = null;
 		List<ExhibitBean> list = new ArrayList<ExhibitBean>();
 		try {
@@ -122,8 +114,8 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			offlineExhibitBeans = builder.query();
 		} catch (SQLException e) {
 		}
-		if (offlineExhibitBeans == null)
-			return null;
+		if (offlineExhibitBeans == null)// 获取不到时TODO
+			return;
 		for (OfflineExhibitBean offlineExhibitBean : offlineExhibitBeans) {
 			String lables = offlineExhibitBean.getLabels();
 			ExhibitBean bean = new ExhibitBean(offlineExhibitBean.getId(),
@@ -136,12 +128,12 @@ public class GetBeanFromDB extends GetBeanStrategy {
 		}
 		offlineExhibitBeans.clear();
 		offlineExhibitBeans = null;
-		return list;
-
+		callBack.onGetBeanResponse(list);
 	}
 
 	@Override
-	public List<LabelModel> getLabelList(String museumId) {
+	public void getLabelList(String museumId,
+			GetBeanCallBack<List<LabelModel>> callBack) {
 		List<LabelModel> labels = null;
 		try {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
@@ -155,13 +147,16 @@ public class GetBeanFromDB extends GetBeanStrategy {
 						Arrays.asList(offlineLabelBean.getLables().split(",")));
 				labels.add(bean);
 			}
+			callBack.onGetBeanResponse(labels);
 		} catch (SQLException e) {
+
 		}
-		return labels;
+
 	}
 
 	@Override
-	public ExhibitModel getExhibitModel(String museumId, String exhibitId) {
+	public void getExhibitModel(String museumId, String exhibitId,
+			GetBeanCallBack<ExhibitModel> callBack) {
 		OfflineExhibitBean bean = null;
 		try {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
@@ -201,12 +196,12 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			exhibit.setImgList(imgList);
 			exhibit.setLabels(bean.getLabels());
 		}
-		return exhibit;
+		callBack.onGetBeanResponse(exhibit);
 	}
 
 	@Override
-	public List<ExhibitModel> getExhibitModelsByBeaconId(String museumId,
-			String beaconId) {
+	public void getExhibitModelsByBeaconId(String museumId, String beaconId,
+			GetBeanCallBack<List<ExhibitModel>> callBack) {
 		List<OfflineExhibitBean> offlineList = null;
 		try {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
@@ -222,7 +217,7 @@ public class GetBeanFromDB extends GetBeanStrategy {
 		} catch (SQLException e) {
 		}
 		if (offlineList == null)
-			return null;
+			return; // TODO
 		List<ExhibitModel> exhibits = new ArrayList<ExhibitModel>();
 		for (OfflineExhibitBean bean : offlineList) {
 			ExhibitModel exhibit = new ExhibitModel();
@@ -250,11 +245,12 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			exhibit.setLabels(bean.getLabels());
 			exhibits.add(exhibit);
 		}
-		return exhibits;
+		callBack.onGetBeanResponse(exhibits);
 	}
 
 	@Override
-	public OfflineMapBean getMapBean(String museumId, int floor) {
+	public void getMapBean(String museumId, int floor,
+			GetBeanCallBack<OfflineMapBean> callBack) {
 		OfflineMapBean bean = null;
 		try {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
@@ -264,26 +260,38 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			QueryBuilder<OfflineMapBean, Integer> builder = oDao.queryBuilder();
 			builder.where().eq("floor", floor);
 			bean = builder.queryForFirst();
+			callBack.onGetBeanResponse(bean);
 		} catch (SQLException e) {
 		}
-		return bean;
 	}
 
 	@Override
-	public List<OfflineMapBean> getMapList(String museumId) {
+	public void getMapList(String museumId,
+			GetBeanCallBack<List<OfflineMapBean>> callBack) {
+		List<OfflineMapBean> list = new ArrayList<OfflineMapBean>();
+		try {
+			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
+					new DatabaseContext(mContext, Constant.FLODER_NAME
+							+ museumId), museumId + ".db");
+			Dao<OfflineMapBean, Integer> oDao = helper.getOfflineMapDao();
+			QueryBuilder<OfflineMapBean, Integer> builder = oDao.queryBuilder();
+			list = builder.query();
+			callBack.onGetBeanResponse(list);
+		} catch (SQLException e) {
+		}
+
+	}
+
+	@Override
+	public void getMuseumAreaList(String museumId, int floor,
+			GetBeanCallBack<List<MuseumAreaBean>> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public List<MuseumAreaBean> getMuseumAreaList(String museumId, int floor) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<MapExhibitModel> getMapExhibitList(String museumId,
-			String museumAreaId) {
+	public void getMapExhibitList(String museumId, String museumAreaId,
+			GetBeanCallBack<List<MapExhibitModel>> callBack) {
 		List<MapExhibitModel> list = new ArrayList<MapExhibitModel>();
 		try {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
@@ -307,14 +315,15 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			}
 			offlineExhibitBeans.clear();
 			offlineExhibitBeans = null;
+			callBack.onGetBeanResponse(list);
 		} catch (SQLException e) {
 		}
-		return list;
+
 	}
 
 	@Override
-	public OfflineBeaconBean getBeaconBean(String museumId, String major,
-			String minor) {
+	public void getBeaconBean(String museumId, String major, String minor,
+			GetBeanCallBack<OfflineBeaconBean> callBack) {
 		OfflineBeaconBean bean = null;
 		try {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
@@ -325,13 +334,15 @@ public class GetBeanFromDB extends GetBeanStrategy {
 					.queryBuilder();
 			builder.where().eq("major", major).eq("minor", minor);
 			bean = builder.queryForFirst();
+			callBack.onGetBeanResponse(bean);
 		} catch (SQLException e) {
 		}
-		return bean;
+
 	}
 
 	@Override
-	public List<OfflineBeaconBean> getBeaconList(String museumId, int floor) {
+	public void getBeaconList(String museumId, int floor,
+			GetBeanCallBack<List<OfflineBeaconBean>> callBack) {
 		List<OfflineBeaconBean> list = null;
 		try {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
@@ -343,15 +354,16 @@ public class GetBeanFromDB extends GetBeanStrategy {
 					.queryBuilder();
 			builder.where().eq("floor", floor);
 			list = builder.query();
+			callBack.onGetBeanResponse(list);
 		} catch (SQLException e) {
 		}
-		return list;
+
 	}
 
 	@Override
-	public List<DownloadBean> getDownloadList() {
+	public void getDownloadList(GetBeanCallBack<List<DownloadBean>> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 }

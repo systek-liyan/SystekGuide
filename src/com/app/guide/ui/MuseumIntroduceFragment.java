@@ -1,7 +1,6 @@
 package com.app.guide.ui;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,9 +36,11 @@ import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
 import com.app.guide.bean.ExhibitBean;
-import com.app.guide.beanhelper.GetBeanFromSql;
+import com.app.guide.beanhelper.GetBeanCallBack;
+import com.app.guide.beanhelper.GetBeanHelper;
 import com.app.guide.model.MuseumModel;
 import com.app.guide.utils.BitmapUtils;
+import com.app.guide.utils.ScreenUtils;
 import com.app.guide.widget.AutoLoadListView;
 import com.app.guide.widget.AutoLoadListView.OnLoadListener;
 import com.app.guide.widget.TopBar;
@@ -77,11 +77,9 @@ public class MuseumIntroduceFragment extends Fragment {
 	private List<ExhibitBean> exhibits;
 	private int page;
 
-	private DisplayMetrics dm;
-
 	private String mMuseumId;
 
-	private MuseumModel mMuseumDetailBean;
+	private MuseumModel mMuseumModel;
 
 	private ImageView ivPlay;
 
@@ -95,7 +93,6 @@ public class MuseumIntroduceFragment extends Fragment {
 		// 获取museumId
 		mMuseumId = ((AppContext) getActivity().getApplicationContext()).currentMuseumId;
 		Log.w("Fragment", mMuseumId + "");
-		getScreenHeight();
 		// 初始化博物馆数据
 		initMuseumData();
 		// 获取博物馆精品展品数据
@@ -142,22 +139,21 @@ public class MuseumIntroduceFragment extends Fragment {
 	 * 获取该页面需要显示的博物馆数据
 	 */
 	private void initMuseumData() {
-		try {
-			mMuseumDetailBean = GetBeanFromSql.getMuseunDetailBean(
-					getActivity(), mMuseumId);
-			Log.w("Fragment", mMuseumDetailBean.getName());
-			// 初始化图片信息
-			initMuseumImages();
-			// 初始化音频信息
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+		GetBeanHelper.getInstance(getActivity()).getMuseumModel(mMuseumId,
+				new GetBeanCallBack<MuseumModel>() {
 
-	private void getScreenHeight() {
-		dm = new DisplayMetrics();
-		this.getActivity().getWindowManager().getDefaultDisplay()
-				.getMetrics(dm);
+					@Override
+					public void onGetBeanResponse(MuseumModel response) {
+						// TODO Auto-generated method stub
+
+						mMuseumModel = response;
+						((AppContext) getActivity().getApplication()).floorCount = response
+								.getFloorCount();
+						// 初始化图片信息
+						initMuseumImages();
+						// 初始化音频信息
+					}
+				});
 	}
 
 	/**
@@ -165,12 +161,15 @@ public class MuseumIntroduceFragment extends Fragment {
 	 */
 	private void getExhibitData() {
 		page = 0;
-		try {
-			exhibits = GetBeanFromSql.getExhibitBeans(getActivity(), mMuseumId,
-					page);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		GetBeanHelper.getInstance(getActivity()).getExhibitList(mMuseumId, 2,
+				page, new GetBeanCallBack<List<ExhibitBean>>() {
+
+					@Override
+					public void onGetBeanResponse(List<ExhibitBean> response) {
+						exhibits = response;
+
+					}
+				});
 	}
 
 	/**
@@ -179,12 +178,12 @@ public class MuseumIntroduceFragment extends Fragment {
 	private void initMuseumImages() {
 		museumImages = new ArrayList<NetworkImageView>();
 		NetworkImageView networkImageView;
-		for (int i = 0; i < mMuseumDetailBean.getImageList().size(); i++) {
+		for (int i = 0; i < mMuseumModel.getImgsUrl().size(); i++) {
 			networkImageView = new NetworkImageView(this.getActivity());
 			networkImageView.setErrorImageResId(R.drawable.icon);
 			networkImageView.setDefaultImageResId(R.drawable.picture_no);
-			networkImageView.setImageUrl(mMuseumDetailBean.getImageList()
-					.get(i), BitmapUtils.getImageLoader(this.getActivity()));
+			networkImageView.setImageUrl(mMuseumModel.getImgsUrl().get(i),
+					BitmapUtils.getImageLoader(this.getActivity()));
 			networkImageView.setScaleType(ScaleType.CENTER_CROP);
 			museumImages.add(networkImageView);
 		}
@@ -196,7 +195,7 @@ public class MuseumIntroduceFragment extends Fragment {
 	private void getTips() {
 		tips = new ArrayList<ImageView>();
 		ImageView imageView;
-		for (int i = 0; i < mMuseumDetailBean.getImageList().size(); i++) {
+		for (int i = 0; i < mMuseumModel.getImgsUrl().size(); i++) {
 			imageView = new ImageView(this.getActivity());
 			imageView.setLayoutParams(new LayoutParams(10, 10));
 			tips.add(imageView);
@@ -233,7 +232,7 @@ public class MuseumIntroduceFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		fragHeader = (TopBar) view.findViewById(R.id.frag_header_main);
 		// 设置博物馆名字
-		fragHeader.setTitle(mMuseumDetailBean.getName());
+		fragHeader.setTitle(mMuseumModel.getName());
 
 		// 获取header layout
 		headerLayout = (LinearLayout) mInflater.inflate(
@@ -244,7 +243,8 @@ public class MuseumIntroduceFragment extends Fragment {
 		viewPager = (ViewPager) headerLayout.findViewById(R.id.frag_main_pager);
 		// 获取屏幕宽高度，并将viewPager的高度设为屏幕高度的2/5
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-				FrameLayout.LayoutParams.MATCH_PARENT, dm.heightPixels * 2 / 5);
+				FrameLayout.LayoutParams.MATCH_PARENT,
+				ScreenUtils.getScreenHeight(getActivity()) * 2 / 5);
 		// params.setMargins(20, 20, 20, 0);
 		viewPager.setLayoutParams(params);
 
@@ -264,7 +264,7 @@ public class MuseumIntroduceFragment extends Fragment {
 				.findViewById(R.id.frag_main_tv_introduction);
 		// 设置博物馆简介
 		// 解析html文本
-		Spanned text = Html.fromHtml(mMuseumDetailBean.getTextUrl());
+		Spanned text = Html.fromHtml(mMuseumModel.getIntroduce());
 		tvIntroduction.setText(text);
 		ivPlay = (ImageView) headerLayout.findViewById(R.id.frag_main_iv_play);
 
@@ -358,23 +358,23 @@ public class MuseumIntroduceFragment extends Fragment {
 	}
 
 	private void loadOnPage() {
-		List<ExhibitBean> data = null;
-		try {
-			data = GetBeanFromSql.getExhibitBeans(getActivity(), mMuseumId,
-					page);
-		} catch (SQLException e) {
-			// TODO Autogenerated catch block
-			e.printStackTrace();
-		}
-		if (data != null) {
-			exhibits.addAll(data);
-			if (data.size() < Constant.PAGE_COUNT) {
-				lvExhibit.setLoadFull();
-			}
-		} else {
-			lvExhibit.setLoadFailed();
-		}
-		lvExhibit.onLoadComplete();
+		GetBeanHelper.getInstance(getActivity()).getExhibitList(mMuseumId, 2,
+				page, new GetBeanCallBack<List<ExhibitBean>>() {
+
+					@Override
+					public void onGetBeanResponse(List<ExhibitBean> response) {
+						if (response.size() != 0) {
+							exhibits.addAll(response);
+							if (response.size() < Constant.PAGE_COUNT) {
+								lvExhibit.setLoadFull();
+							}
+						} else {
+							lvExhibit.setLoadFailed();
+						}
+						lvExhibit.onLoadComplete();
+
+					}
+				});
 	}
 
 	private OnPageChangeListener createPagerChangedListener() {

@@ -1,22 +1,33 @@
 package com.app.guide.beanhelper;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
+import com.app.guide.Constant;
+import com.app.guide.bean.CityBean;
 import com.app.guide.bean.ExhibitBean;
 import com.app.guide.bean.MuseumAreaBean;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.download.DownloadBean;
-import com.app.guide.model.CityModel;
 import com.app.guide.model.ExhibitModel;
 import com.app.guide.model.LabelModel;
 import com.app.guide.model.MapExhibitModel;
 import com.app.guide.model.MuseumModel;
 import com.app.guide.offline.OfflineBeaconBean;
 import com.app.guide.offline.OfflineMapBean;
+import com.app.guide.sql.CityDBManagerHelper;
 import com.app.guide.sql.DownloadManagerHelper;
+import com.app.guide.utils.FastJsonArrayRequest;
+import com.j256.ormlite.dao.Dao;
 
 /**
  * 获取Bean的策略类的抽象接口
@@ -27,9 +38,19 @@ import com.app.guide.sql.DownloadManagerHelper;
 public abstract class GetBeanStrategy {
 
 	protected Context mContext;
+	protected ErrorListener mErrorListener;
+	protected RequestQueue mQueue;
 
 	public GetBeanStrategy(Context context) {
 		this.mContext = context;
+		mQueue = Volley.newRequestQueue(context);
+		mErrorListener = new ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				// TODO Auto-generated method stub
+
+			}
+		};
 	}
 
 	/**
@@ -37,131 +58,152 @@ public abstract class GetBeanStrategy {
 	 * 
 	 * @return
 	 */
-	public abstract List<CityModel> getCityList();
+	public void getCityList(final GetBeanCallBack<List<CityBean>> callBack) {
+		// 在判断本地是否存在数据库，如果存在则从数据库中获取，不存在则通过实时API获取 或判断是否需要更新
+		CityDBManagerHelper dbHelper = new CityDBManagerHelper(mContext);
+		if (dbHelper.isDBExists()) {
+			// 获取列表
+			Dao<CityBean, Integer> cityDao = null;
+			List<CityBean> cityList = null;
+			try {
+				cityDao = dbHelper.getCityDao();
+				cityList = cityDao.queryForAll();
+			} catch (SQLException e) {
+				cityList = new ArrayList<CityBean>();
+				e.printStackTrace();
+			}
+			callBack.onGetBeanResponse(cityList);
+		}
+		String url = Constant.HOST_HEAD + "/daoyou/a/api/city/treeData";
+		FastJsonArrayRequest<CityBean> request = new FastJsonArrayRequest<CityBean>(
+				url, CityBean.class, new Response.Listener<List<CityBean>>() {
+					@Override
+					public void onResponse(List<CityBean> response) {
+						// 将数据存在本地中
+						callBack.onGetBeanResponse(response);
+						CityDBManagerHelper dbHelper = new CityDBManagerHelper(
+								mContext);
+						Dao<CityBean, Integer> cityDao = null;
+						try {
+							cityDao = dbHelper.getCityDao();
+							for (CityBean city : response) {
+								cityDao.createOrUpdate(city);
+								Log.w("TAG", city.toString());
+							}
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+					}
+				}, mErrorListener);
+		mQueue.add(request);
+	}
 
 	/**
 	 * 获取某城市下的所有博物馆MuseumBean列表
 	 * 
 	 * @param city
+	 * @param getBeanCallBack
 	 * @return
 	 */
-	public abstract List<MuseumBean> getMuseumList(CityModel city);
-
+	public abstract void getMuseumList(String city,
+			GetBeanCallBack<List<MuseumBean>> getBeanCallBack);
 
 	/**
 	 * 根据博物馆id 获取某一博物馆的页面展示数据存储类对象
 	 * 
+	 * @param callBack
+	 * 
 	 * @param MuseumId
 	 * @return
 	 */
-	public abstract MuseumModel getMuseumModel(String museumId);
+	public abstract void getMuseumModel(String museumId,
+			GetBeanCallBack<MuseumModel> callBack);
 
 	/**
 	 * 获取展品ExhibitBean列表 内部使用分页
 	 * 
 	 * @param museumId
 	 * @param minPriority
+	 * @param callBack
 	 * @return
 	 */
-	public abstract List<ExhibitBean> getExhibitList(String museumId,
-			int minPriority);
-
-//	/**
-//	 * 根据museumId获取该博物馆下的所有展品
-//	 * 
-//	 * @param museumId
-//	 * @return
-//	 */
-//	public List<ExhibitBean> getExhibitList(String museumId) {
-//		return getExhibitList(museumId, 0);
-//	}
-
-//	/**
-//	 * 根据museumId和minPriority 获取该博物馆下的所有优先级不小于minPriority的展品
-//	 * 
-//	 * @param museumId
-//	 * @param minPriority
-//	 * @return
-//	 */
-//	public List<ExhibitBean> getExhibitList(String museumId, int minPriority) {
-//		return getExhibitList(museumId, minPriority, null);
-//	}
-//
-//	/**
-//	 * 根据museumId和beaconId 获取该博物馆下的所有属于该Beacon管理的的展品
-//	 * 
-//	 * @param museumId
-//	 * @param beaconId
-//	 * @return
-//	 */
-//	public List<ExhibitBean> getExhibitList(String museumId, String beaconId) {
-//		return getExhibitList(museumId, 0, beaconId);
-//	}
+	public abstract void getExhibitList(String museumId, int minPriority,int page,
+			GetBeanCallBack<List<ExhibitBean>> callBack);
 
 	/**
 	 * 获取该博物馆下的所有标签列表
 	 * 
 	 * @param museumId
+	 * @param callBack
 	 * @return
 	 */
-	public abstract List<LabelModel> getLabelList(String museumId);
+	public abstract void getLabelList(String museumId,
+			GetBeanCallBack<List<LabelModel>> callBack);
 
 	/**
 	 * 根据museumId和exhibitId获取该博物馆下某一展品的页面展示数据存储类对象
 	 * 
 	 * @param museumId
 	 * @param exhibitId
+	 * @param callBack
 	 * @return
 	 */
-	public abstract ExhibitModel getExhibitModel(String museumId,
-			String exhibitId);
+	public abstract void getExhibitModel(String museumId, String exhibitId,
+			GetBeanCallBack<ExhibitModel> callBack);
 
 	/**
 	 * 通过
 	 * 
 	 * @param museumId
 	 * @param beaconId
+	 * @param callBack
 	 * @return
 	 */
-	public abstract List<ExhibitModel> getExhibitModelsByBeaconId(
-			String museumId, String beaconId);
+	public abstract void getExhibitModelsByBeaconId(String museumId,
+			String beaconId, GetBeanCallBack<List<ExhibitModel>> callBack);
 
 	/**
 	 * 根据museumId和楼层数floor获取某一博物馆的某一楼层的地图bean
 	 * 
 	 * @param museumId
 	 * @param floor
+	 * @param callBack
 	 * @return
 	 */
-	public abstract OfflineMapBean getMapBean(String museumId, int floor);
+	public abstract void getMapBean(String museumId, int floor,
+			GetBeanCallBack<OfflineMapBean> callBack);
 
 	/**
 	 * 根据museumId 获取某一博物馆的所有地图Bean 与#getMapBean用同一个URL，考虑能否合并
 	 * 
 	 * @param museumId
+	 * @param callBack
 	 * @return
 	 */
-	public abstract List<OfflineMapBean> getMapList(String museumId);
+	public abstract void getMapList(String museumId,
+			GetBeanCallBack<List<OfflineMapBean>> callBack);
 
 	/**
 	 * 返回博物馆某一楼层的所有展厅列表
 	 * 
 	 * @param museumId
 	 * @param floor
+	 * @param callBack
 	 * @return
 	 */
-	public abstract List<MuseumAreaBean> getMuseumAreaList(String museumId,
-			int floor);
+	public abstract void getMuseumAreaList(String museumId, int floor,
+			GetBeanCallBack<List<MuseumAreaBean>> callBack);
 
 	/**
 	 * 根据博物馆Id和展厅Id获取该展厅下的所有展品的列表
 	 * 
 	 * @param museumId
 	 * @param museumAreaId
+	 * @param callBack
 	 * @return
 	 */
-	public abstract List<MapExhibitModel> getMapExhibitList(String museumId,
-			String museumAreaId);
+	public abstract void getMapExhibitList(String museumId,
+			String museumAreaId, GetBeanCallBack<List<MapExhibitModel>> callBack);
 
 	/**
 	 * 根据beacon major和minor获取 BeaconBean
@@ -169,57 +211,68 @@ public abstract class GetBeanStrategy {
 	 * @param museumId
 	 * @param major
 	 * @param minor
+	 * @param callBack
 	 * @return
 	 */
-	public abstract OfflineBeaconBean getBeaconBean(String museumId,
-			String major, String minor);
+	public abstract void getBeaconBean(String museumId, String major,
+			String minor, GetBeanCallBack<OfflineBeaconBean> callBack);
 
 	/**
 	 * 获取博物馆某一楼层的所有BeaconBean
 	 * 
 	 * @param museumId
 	 * @param floor
+	 * @param callBack
 	 * @return
 	 */
-	public abstract List<OfflineBeaconBean> getBeaconList(String museumId,
-			int floor);
+	public abstract void getBeaconList(String museumId, int floor,
+			GetBeanCallBack<List<OfflineBeaconBean>> callBack);
 
 	/**
 	 * 获取下载列表 <br>
 	 * 现阶段，一个DownloadBean表示一个博物馆
+	 * 
+	 * @param callBack
+	 * 
 	 * @return
 	 */
-	public abstract List<DownloadBean> getDownloadList();
-	
+	public abstract void getDownloadList(
+			GetBeanCallBack<List<DownloadBean>> callBack);
+
 	/**
-	 * 获取所有正在下载中的bean 
+	 * 获取所有正在下载中的bean
+	 * 
+	 * @param callBack
 	 */
-	public List<DownloadBean> getDownloadingBeans(){
+	public void getDownloadingBeans(GetBeanCallBack<List<DownloadBean>> callBack) {
 		DownloadManagerHelper helper = new DownloadManagerHelper(mContext);
 		List<DownloadBean> list = null;
 		try {
 			list = helper.getBeanDao().queryBuilder().where()
 					.eq("isCompleted", false).query();
+			callBack.onGetBeanResponse(list);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return list;
 	}
 
 	/**
-	 * 获取所有已下载完成的bean 
+	 * 获取所有已下载完成的bean
+	 * 
+	 * @param callBack
 	 */
-	public List<DownloadBean> getDownloadCompletedBeans(){
+	public void getDownloadCompletedBeans(
+			GetBeanCallBack<List<DownloadBean>> callBack) {
 		DownloadManagerHelper helper = new DownloadManagerHelper(mContext);
 		List<DownloadBean> list = null;
 		try {
 			list = helper.getBeanDao().queryBuilder().where()
 					.eq("isCompleted", true).query();
+			callBack.onGetBeanResponse(list);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return list;
 	}
 }

@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.app.Application;
 
-import com.app.guide.beanhelper.GetBeanHelper;
 import com.app.guide.ui.HomeActivity.onBeaconSearcherListener;
 import com.baidu.mapapi.SDKInitializer;
 
@@ -42,7 +41,7 @@ public class AppContext extends Application {
 	/**
 	 * 记录博物馆的楼层数
 	 */
-	public int floorCount = -1;
+	public int floorCount = 1;
 	
 	/**
 	 * 记录当前网络状态 ,默认值为Constant.NETWORK_NONE,即没网络状态
@@ -53,7 +52,7 @@ public class AppContext extends Application {
 	/**
 	 * 判断加载的博物馆是否有离线数据,在进入博物馆时会进行初始化
 	 */
-	public boolean hasOffline = false;
+	public boolean hasOffline = true;
 	
 	/**
 	 * 判断是否有从searchActivity 跳转到homeActivity

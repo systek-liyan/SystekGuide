@@ -1,12 +1,10 @@
 package com.app.guide.ui;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,7 +20,8 @@ import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.adapter.ExhibitAdapter;
 import com.app.guide.bean.ExhibitBean;
-import com.app.guide.beanhelper.GetBeanFromSql;
+import com.app.guide.beanhelper.GetBeanCallBack;
+import com.app.guide.beanhelper.GetBeanHelper;
 import com.app.guide.widget.AutoLoadListView;
 import com.app.guide.widget.AutoLoadListView.OnLoadListener;
 import com.app.guide.widget.DialogManagerHelper;
@@ -107,11 +106,6 @@ public class SearchActivity extends BaseActivity implements
 	private List<ExhibitBean> exhibitsList;
 
 	/**
-	 * intent 对象
-	 */
-	private Intent mIntent;
-
-	/**
 	 * museum id
 	 */
 	private String mMuseumId;
@@ -125,12 +119,13 @@ public class SearchActivity extends BaseActivity implements
 
 	private SweetAlertDialog pDialog;
 
+	private boolean isCompleted = false;
+
 	@Override
 	@SuppressLint("InlinedApi")
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
-		mIntent = getIntent();
 		mMuseumId = ((AppContext) getApplicationContext()).currentMuseumId;
 		// 加载数据时耗费时间较长
 		pDialog = new DialogManagerHelper(this).showLoadingProgressDialog();
@@ -142,25 +137,26 @@ public class SearchActivity extends BaseActivity implements
 	}
 
 	/**
-	 * TODO 当展品数据量较大时，存太多数据 初始化exhibit数据
+	 * 当展品数据量较大时，存太多数据 初始化exhibit数据
 	 */
 	private void initExhibitData() {
 		exhibitsList = new ArrayList<ExhibitBean>();
-		try {
-			List<ExhibitBean> data = null;
 			do {
-				data = GetBeanFromSql.getExhibitBeans(this, mMuseumId, page);
-				if (data != null) {
-					for (int i = 0; i < data.size(); i++) {
-						exhibitsList.add(data.get(i));
+				 GetBeanHelper.getInstance(this).getExhibitList(mMuseumId, page, new GetBeanCallBack<List<ExhibitBean>>() {
+					
+					@Override
+					public void onGetBeanResponse(List<ExhibitBean> response) {
+						if(response !=null){
+							exhibitsList.addAll(response);
+							page++;
+						}
+						if (response == null ||response.size() < Constant.PAGE_COUNT) {
+							// 加载完成
+							isCompleted = true;
+						}
 					}
-					page++;
-				}
-			} while (data != null && data.size() == Constant.PAGE_COUNT);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+				});
+			} while (!isCompleted );
 	}
 
 	private void initData() {
@@ -227,16 +223,6 @@ public class SearchActivity extends BaseActivity implements
 		} else {
 			resultData.clear();
 			shownResults.clear();
-			// if ("".equals(text)) {
-			// // 当text为空时
-			// for (int i = 0, count = 0; i < exhibitsList.size(); i++) {
-			// resultData.add(exhibitsList.get(i));
-			// if (count < Constant.PAGE_COUNT) {
-			// shownResults.add(exhibitsList.get(i));
-			// count++;
-			// }
-			// }
-			// } else
 			for (int i = 0, count = 0; i < exhibitsList.size(); i++) {
 				if (exhibitsList.get(i).getName().contains(text.trim())) {
 					resultData.add(exhibitsList.get(i));
@@ -320,14 +306,16 @@ public class SearchActivity extends BaseActivity implements
 		lvResults.onLoadComplete();
 	}
 
+
 	/**
 	 * 当 edit text 文本改变时 触发的回调
 	 * 
 	 * @param text
 	 */
 	@Override
-	public void onRefreshAutoComplete(String text) {
+	public void onAutoRefreshComplete(String text) {
 		getAutoCompleteData(text);
+		
 	}
 
 	/**
@@ -353,10 +341,6 @@ public class SearchActivity extends BaseActivity implements
 		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 	}
 
-	@Override
-	public void onTipsItemClick(String text) {
-
-	}
 
 	@Override
 	protected boolean isFullScreen() {

@@ -1,6 +1,5 @@
 package com.app.guide.ui;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +12,15 @@ import android.widget.ListView;
 
 import com.app.guide.R;
 import com.app.guide.adapter.DownloadCompletedAdapter;
-import com.app.guide.beanhelper.GetBeanFromSql;
+import com.app.guide.beanhelper.GetBeanCallBack;
+import com.app.guide.beanhelper.GetBeanHelper;
 import com.app.guide.download.DownloadBean;
 
 public class DownloadCompletedFragment extends Fragment {
 
 	private ListView mListView;
+	private DownloadCompletedAdapter adapter;
+	private List<DownloadBean> data;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,15 +34,19 @@ public class DownloadCompletedFragment extends Fragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onViewCreated(view, savedInstanceState);
-		List<DownloadBean> data = new ArrayList<DownloadBean>();
-		try {
-			data = GetBeanFromSql.getDownloadCompletedBeans(getActivity());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		DownloadCompletedAdapter adapter = new DownloadCompletedAdapter(
-				getActivity(), data, R.layout.item_download_completed);
+		data = new ArrayList<DownloadBean>();
+		GetBeanHelper.getInstance(getActivity()).getDownloadCompletedBeans(
+				new GetBeanCallBack<List<DownloadBean>>() {
+					@Override
+					public void onGetBeanResponse(List<DownloadBean> response) {
+						data = response;
+						if (adapter != null)
+							adapter.notifyDataSetChanged();
+
+					}
+				});
+		adapter = new DownloadCompletedAdapter(getActivity(), data,
+				R.layout.item_download_completed);
 		mListView.setAdapter(adapter);
 	}
 

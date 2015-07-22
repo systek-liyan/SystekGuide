@@ -8,7 +8,6 @@ import com.app.guide.bean.ExhibitBean;
 import com.app.guide.bean.MuseumAreaBean;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.download.DownloadBean;
-import com.app.guide.model.CityModel;
 import com.app.guide.model.ExhibitModel;
 import com.app.guide.model.LabelModel;
 import com.app.guide.model.MapExhibitModel;
@@ -16,98 +15,100 @@ import com.app.guide.model.MuseumModel;
 import com.app.guide.offline.OfflineBeaconBean;
 import com.app.guide.offline.OfflineMapBean;
 
-public class GetBeanFromNetwork extends GetBeanStrategy{
+public class GetBeanFromNetwork extends GetBeanStrategy {
 
 	public GetBeanFromNetwork(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public List<CityModel> getCityList() {
+	public void getMuseumList(String city,
+			GetBeanCallBack<List<MuseumBean>> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public List<MuseumBean> getMuseumList(CityModel city) {
+	public void getMuseumModel(String museumId,
+			GetBeanCallBack<MuseumModel> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public MuseumModel getMuseumModel(String MuseumId) {
+	public void getExhibitList(String museumId, int minPriority,int page,
+			GetBeanCallBack<List<ExhibitBean>> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public List<ExhibitBean> getExhibitList(String museumId, int minPriority) {
+	public void getLabelList(String museumId,
+			GetBeanCallBack<List<LabelModel>> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public List<LabelModel> getLabelList(String museumId) {
+	public void getExhibitModel(String museumId, String exhibitId,
+			GetBeanCallBack<ExhibitModel> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public ExhibitModel getExhibitModel(String museumId, String exhibitId) {
+	public void getExhibitModelsByBeaconId(String museumId, String beaconId,
+			GetBeanCallBack<List<ExhibitModel>> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public List<ExhibitModel> getExhibitModelsByBeaconId(String museumId,
-			String beaconId) {
+	public void getMapBean(String museumId, int floor,
+			GetBeanCallBack<OfflineMapBean> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public OfflineMapBean getMapBean(String museumId, int floor) {
+	public void getMapList(String museumId,
+			GetBeanCallBack<List<OfflineMapBean>> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public List<OfflineMapBean> getMapList(String museumId) {
+	public void getMuseumAreaList(String museumId, int floor,
+			GetBeanCallBack<List<MuseumAreaBean>> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public List<MuseumAreaBean> getMuseumAreaList(String museumId, int floor) {
+	public void getMapExhibitList(String museumId, String museumAreaId,
+			GetBeanCallBack<List<MapExhibitModel>> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public List<MapExhibitModel> getMapExhibitList(String museumId,
-			String museumAreaId) {
+	public void getBeaconBean(String museumId, String major, String minor,
+			GetBeanCallBack<OfflineBeaconBean> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public OfflineBeaconBean getBeaconBean(String museumId, String major,
-			String minor) {
+	public void getBeaconList(String museumId, int floor,
+			GetBeanCallBack<List<OfflineBeaconBean>> callBack) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public List<OfflineBeaconBean> getBeaconList(String museumId, int floor) {
+	public void getDownloadList(GetBeanCallBack<List<DownloadBean>> callBack) {
 		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
-	public List<DownloadBean> getDownloadList() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

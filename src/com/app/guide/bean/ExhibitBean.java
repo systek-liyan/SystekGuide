@@ -13,9 +13,7 @@ public class ExhibitBean {
 	private String introduction;// 展品介绍
 	private String iconUrl;// 图标的Url地址
 	private String labels; // 标签
-	
 	private int priority; //优先级
-	private String beaconId; //展品所属beacon的Id 
 
 	public ExhibitBean(String id, String name, String address,
 			String introduction, String imgUrl, String labels) {
@@ -27,6 +25,8 @@ public class ExhibitBean {
 		this.labels = labels;
 	}
 
+		
+	
 	/**
 	 * @return the id
 	 */

@@ -96,7 +96,7 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
                 //hint list view gone and result list view show
                 lvTips.setVisibility(View.GONE);
                 if (mListener != null) {
-                	mListener.onTipsItemClick(text);
+//                	mListener.onTipsItemClick(text);
                     mListener.onSearch(text);
                 }
             }
@@ -154,7 +154,7 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
                 }
                 //更新autoComplete数据
                 if (mListener != null) {
-                    mListener.onRefreshAutoComplete(charSequence + "");
+                    mListener.onAutoRefreshComplete(charSequence + "");
                 }
             } else {
                 ivDelete.setVisibility(GONE);
@@ -197,7 +197,7 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
     	 * 更新自动补全内容
     	 * @param text
     	 */
-        void onRefreshAutoComplete(String text);
+        void onAutoRefreshComplete(String text);
 
         /**
          * 开始搜索
@@ -205,10 +205,10 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
          */
         void onSearch(String text);
 
-        /**
-         * 提示列表项点击时回调方法 (提示/自动补全)
-         */
-        void onTipsItemClick(String text);
+//        /**
+//         * 提示列表项点击时回调方法 (提示/自动补全)
+//         */
+//        void onTipsItemClick(String text);
     }
 
 }

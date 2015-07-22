@@ -88,7 +88,7 @@
     	        android:contentDescription="@string/play_pause"
     	        android:src="@drawable/title_expanded" />
     	</LinearLayout>
-    	 <com.app.guide.widget.MyHorizontalScrollView
+    	 <com.app.guide.widget.GalleryView
     	    android:visibility="gone"
 	        android:id="@+id/frag_follow_guide_pic_gallery_container"
 	        android:layout_width="wrap_content"
@@ -102,7 +102,7 @@
 	            android:layout_gravity="center_vertical"
 	            android:orientation="horizontal" >
 	        </LinearLayout>
-   	 </com.app.guide.widget.MyHorizontalScrollView>
+   	 </com.app.guide.widget.GalleryView>
     	
     	
     	<!-- 展品列表 -->
@@ -130,7 +130,7 @@
     		android:src="@drawable/title_expanded" />
         
         </LinearLayout>
-         <com.app.guide.widget.MyHorizontalScrollView
+         <com.app.guide.widget.GalleryView
              android:visibility="gone"
 	        android:id="@+id/frag_follow_guide_exhibit_gallery_container"
 	        android:layout_width="wrap_content"
@@ -146,6 +146,6 @@
 	            android:layout_gravity="center_vertical"
 	            android:orientation="horizontal" >
 	        </LinearLayout>
-    </com.app.guide.widget.MyHorizontalScrollView>
+    </com.app.guide.widget.GalleryView>
      </LinearLayout>
 </ScrollView>
