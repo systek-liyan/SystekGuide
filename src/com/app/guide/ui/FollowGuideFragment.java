@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import com.android.volley.toolbox.NetworkImageView;
@@ -309,10 +310,14 @@ public class FollowGuideFragment extends Fragment implements
 		mMuseumId = ((AppContext) getActivity().getApplication()).currentMuseumId;
 		// 获取exhibit id
 		mCurrentExhibitId = ((AppContext) getActivity().getApplication()).currentExhibitId;
-		// 根据exhibit id 获取数据
+		
 		mDialogHelper = new DialogManagerHelper(activity);
-		pDialog = mDialogHelper.showLoadingProgressDialog();
-		initData(mCurrentExhibitId);
+		
+		// 根据exhibit id 获取数据,避免自动随行导游时，此时还没有自动定位到的展品
+		if (mCurrentExhibitId != null) {  
+			pDialog = mDialogHelper.showLoadingProgressDialog();  // 显示正在加载
+		    initData(mCurrentExhibitId);
+		}
 		// initGalleryData();
 		// 初始化clickListener
 		mClickListener = new MyClickListener();
@@ -765,6 +770,12 @@ public class FollowGuideFragment extends Fragment implements
 			msg.what = MSG_EXHIBIT_CHANGED;
 			msg.obj = beaconId;
 			mHandler.sendMessage(msg);
+		} 
+		else if (mCurrentExhibit == null) { // 第一次自动定位
+			Message msg = Message.obtain();
+			msg.what = MSG_EXHIBIT_CHANGED;
+			msg.obj = beaconId;
+			mHandler.sendMessage(msg);
 		}
 	}
 
@@ -796,10 +807,14 @@ public class FollowGuideFragment extends Fragment implements
 	 * 开始播放
 	 */
 	private void notifyStartPlaying() {
-		if (mCurrentExhibit == null)
+		if (mCurrentExhibit == null) {
+			Toast.makeText(mContext, "无当前展品", Toast.LENGTH_SHORT).show();
 			return;
-		if (mLyricView == null)
+		}
+		if (mLyricView == null) {
+			Toast.makeText(mContext, "无当前歌词", Toast.LENGTH_SHORT).show();
 			return;
+		}
 		// 准备音频文件
 		mLyricView.prepare(Constant.getAudioDownloadPath(
 				mCurrentExhibit.getAudioUrl(), mMuseumId), Constant
@@ -917,6 +932,9 @@ public class FollowGuideFragment extends Fragment implements
 		if (pDialog != null) {
 			pDialog.dismiss();
 		}
+		
+		Log.d(TAG,"nearst beacon major,minor="+beacon.getId2()+","+beacon.getId3());
+		
 		// 根据搜索到的beacon的major
 		// minor获取数据库中匹配的beaconBean,以获取其id，用于检索该beacon中的exhibit
 		GetBeanHelper.getInstance(mContext).getBeaconBean(mMuseumId,

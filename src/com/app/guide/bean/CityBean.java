@@ -36,4 +36,13 @@ public class CityBean {
 		this.alpha = alpha;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		
+		return "CityBean,name:"+this.name+",alpha:"+this.alpha;
+	}
+
 }

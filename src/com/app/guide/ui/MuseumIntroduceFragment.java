@@ -85,7 +85,7 @@ public class MuseumIntroduceFragment extends Fragment {
 
 	private MediaPlayer mPlayer;
 
-	private static final String URL = "http://192.168.191.1:8080/daoyou/userfiles/1/files/baoli/audio/baochao.wav";
+	//private static final String URL = "http://192.168.0.104:8080/daoyou/userfiles/1/files/baoli/audio/baochao.wav";
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -122,7 +122,10 @@ public class MuseumIntroduceFragment extends Fragment {
 			});
 		}
 		try {
-			mPlayer.setDataSource(URL);
+			// djt modify
+			//mPlayer.setDataSource(URL);
+			mPlayer.setDataSource(Constant.getAudioDownloadPath(mMuseumModel.getAudioUrl(),mMuseumId));
+			
 			mPlayer.prepare();
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();

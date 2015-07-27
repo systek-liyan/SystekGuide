@@ -211,7 +211,7 @@ public class GetBeanFromDB extends GetBeanStrategy {
 					.getOfflineExhibitDao();
 			QueryBuilder<OfflineExhibitBean, Integer> builder = oDao
 					.queryBuilder();
-			builder.where().eq("beacon_id", beaconId);
+			builder.where().eq("beaconId", beaconId);
 			offlineList = builder.query();
 
 		} catch (SQLException e) {
@@ -332,7 +332,7 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			Dao<OfflineBeaconBean, Integer> oDao = helper.getOfflineBeaconDao();
 			QueryBuilder<OfflineBeaconBean, Integer> builder = oDao
 					.queryBuilder();
-			builder.where().eq("major", major).eq("minor", minor);
+			builder.where().eq("major", major).and().eq("minor", minor);
 			bean = builder.queryForFirst();
 			callBack.onGetBeanResponse(bean);
 		} catch (SQLException e) {

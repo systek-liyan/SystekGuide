@@ -37,6 +37,8 @@ import com.j256.ormlite.dao.Dao;
  */
 public abstract class GetBeanStrategy {
 
+	private static final String TAG = GetBeanStrategy.class.getSimpleName();
+	
 	protected Context mContext;
 	protected ErrorListener mErrorListener;
 	protected RequestQueue mQueue;
@@ -48,7 +50,7 @@ public abstract class GetBeanStrategy {
 			@Override
 			public void onErrorResponse(VolleyError error) {
 				// TODO Auto-generated method stub
-
+				Log.w(TAG,"VolleyError:"+error.getMessage());
 			}
 		};
 	}
@@ -62,6 +64,7 @@ public abstract class GetBeanStrategy {
 		// 在判断本地是否存在数据库，如果存在则从数据库中获取，不存在则通过实时API获取 或判断是否需要更新
 		CityDBManagerHelper dbHelper = new CityDBManagerHelper(mContext);
 		if (dbHelper.isDBExists()) {
+			Log.w(TAG, "db is exist!");
 			// 获取列表
 			Dao<CityBean, Integer> cityDao = null;
 			List<CityBean> cityList = null;
@@ -74,28 +77,31 @@ public abstract class GetBeanStrategy {
 			}
 			callBack.onGetBeanResponse(cityList);
 		}
-		String url = Constant.HOST_HEAD + "/daoyou/a/api/city/treeData";
-		FastJsonArrayRequest<CityBean> request = new FastJsonArrayRequest<CityBean>(
-				url, CityBean.class, new Response.Listener<List<CityBean>>() {
-					@Override
-					public void onResponse(List<CityBean> response) {
-						// 将数据存在本地中
-						callBack.onGetBeanResponse(response);
-						CityDBManagerHelper dbHelper = new CityDBManagerHelper(
-								mContext);
-						Dao<CityBean, Integer> cityDao = null;
-						try {
-							cityDao = dbHelper.getCityDao();
-							for (CityBean city : response) {
-								cityDao.createOrUpdate(city);
-								Log.w("TAG", city.toString());
+		else {  
+			String url = Constant.HOST_HEAD + "/daoyou/a/api/city/treeData";
+			FastJsonArrayRequest<CityBean> request = new FastJsonArrayRequest<CityBean>(
+					url, CityBean.class, new Response.Listener<List<CityBean>>() {
+						@Override
+						public void onResponse(List<CityBean> response) {
+							// 将数据传递给参数，并存在本地数据库中
+							callBack.onGetBeanResponse(response);
+							CityDBManagerHelper dbHelper = new CityDBManagerHelper(
+									mContext);
+							Dao<CityBean, Integer> cityDao = null;
+							try {
+								cityDao = dbHelper.getCityDao();
+								for (CityBean city : response) {
+									cityDao.createOrUpdate(city);
+									Log.w(TAG, city.toString());
+								}
+							} catch (SQLException e) {
+								e.printStackTrace();
 							}
-						} catch (SQLException e) {
-							e.printStackTrace();
 						}
-					}
-				}, mErrorListener);
-		mQueue.add(request);
+					}, mErrorListener);
+			mQueue.add(request);
+			Log.w(TAG, "db is not exist，access from network!");
+		}
 	}
 
 	/**
