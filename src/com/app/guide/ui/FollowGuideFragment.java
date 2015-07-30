@@ -137,52 +137,52 @@ public class FollowGuideFragment extends Fragment implements
 	private ProgressBar pbMusic;
 
 	/**
-	 * 多角度图片tv
+	 * 多角度展示图片tv
 	 */
 	private TextView tvTitlePics;
 
 	/**
-	 * 展品图片tv
+	 * 展品列表图片tv
 	 */
 	private TextView tvTitleExhibits;
 
 	/**
-	 * 多角度图片tv的展开iv
+	 * 多角度展示图片tv的展开iv
 	 */
 	private ImageView ivPicExpand;
 
 	/**
-	 * 展品图片tv的展开iv
+	 * 展品列表图片tv的展开iv
 	 */
 	private ImageView ivExhibitExpand;
 
 	/**
-	 * 多角度图片gallery view
+	 * 多角度展示图片gallery view
 	 */
 	private GalleryView mPicGallery;
 
 	/**
-	 * 展品图片gallery view
+	 * 展品展示图片gallery view
 	 */
 	private GalleryView mExhibitGallery;
 
 	/**
-	 * 存储多角度图片gallery的数据
+	 * 存储多角度展示图片gallery的数据
 	 */
 	private List<ImageModel> mGalleryList = null;
 
 	/**
-	 * 存储展品图片数据
+	 * 存储邻近展品列表图片数据
 	 */
 	private List<ImageModel> mExhibitImages = new ArrayList<ImageModel>();
 
 	/**
-	 * gallery adapter
+	 * gallery adapter, 负责多角度展示图片
 	 */
 	private GalleryAdapter mGalleryAdapter;
 
 	/**
-	 * exhibit Adapter;
+	 * exhibit Adapter，负责邻近展品列表
 	 */
 	private GalleryAdapter mExhibitAdapter;
 
@@ -192,7 +192,7 @@ public class FollowGuideFragment extends Fragment implements
 	private boolean picFlag = true;
 
 	/**
-	 * 标识展品图片列表是否展开
+	 * 标识展品列表图片是否展开
 	 */
 	private boolean exhibitFlag = false;
 
@@ -202,7 +202,7 @@ public class FollowGuideFragment extends Fragment implements
 	private ExhibitModel mCurrentExhibit;
 
 	/**
-	 * 附近的展品列表
+	 * 邻近的展品列表
 	 */
 	private List<ExhibitModel> mExhibitsList = new ArrayList<ExhibitModel>();
 
@@ -222,7 +222,7 @@ public class FollowGuideFragment extends Fragment implements
 	private MyClickListener mClickListener;
 
 	/**
-	 * 标记是否手动选择了展品列表中的展品
+	 * 标记手动选择展品列表中的展品为当前展品
 	 */
 	private boolean isChosed = false;
 
@@ -260,7 +260,7 @@ public class FollowGuideFragment extends Fragment implements
 				if (isChosed)
 					isChosed = false;
 				else {
-					// 没有则循环播放当前展品
+					// TODO 没有则循环播放当前展品
 					String id = mCurrentExhibitId;
 					mCurrentExhibitId = null;
 					changeCurrentExhibitById(id);
@@ -280,16 +280,21 @@ public class FollowGuideFragment extends Fragment implements
 								if (response.size() == 0)
 									return;
 								mExhibitsList = response;
-								confirmExhibitListAvailable();
+								// 该beaconId代表的第一个展品成为当前展品
+								changeCurrentExhibitById(mExhibitsList.get(0).getId());
+								
 								// 判断是否有不小于两个展品，有则显示第二个（中间那个），否则显示唯一的一个
-								if (mExhibitsList.size() >= 2)
-									updateCurrentExhibit(mExhibitsList.get(1));
-								else
-									updateCurrentExhibit(mExhibitsList.get(0));
-								updateGalleryAdapter();
-								setPicGalleryVisibility(true);
-								updateExhibitAdapter();
-								notifyStartPlaying();
+//								if (mExhibitsList.size() >= 2)		
+//									updateCurrentExhibit(mExhibitsList.get(1));
+//								else
+//									updateCurrentExhibit(mExhibitsList.get(0));
+//																
+//								// 保证一开始有X个或以上个展品在列表中 ，X为一屏展示图片数
+//								confirmExhibitListAvailable();
+//								updateGalleryAdapter();
+//								setPicGalleryVisibility(true);
+//								updateExhibitAdapter();
+//								notifyStartPlaying();
 							}
 						});
 				break;
@@ -653,6 +658,7 @@ public class FollowGuideFragment extends Fragment implements
 			HomeActivity.setBeaconSearcherListener(this);
 		} else
 			HomeActivity.setBeaconSearcherListener(null);
+		
 		// 从AppContext中获取全局exhibit id 可能为null
 		changeCurrentExhibitById(((AppContext) getActivity().getApplication()).currentExhibitId);
 	}
@@ -709,7 +715,7 @@ public class FollowGuideFragment extends Fragment implements
 		// 更新appContext中的id
 		((AppContext) getActivity().getApplication()).currentExhibitId = exhibit
 				.getId();
-		// 获取展品图片数据
+		// 获取展品多角度图片数据
 		mGalleryList = mCurrentExhibit.getImgList();
 	}
 
@@ -763,15 +769,16 @@ public class FollowGuideFragment extends Fragment implements
 	 * @param beaconId
 	 */
 	private void changeCurrentExhibitByBeaconId(String beaconId) {
+		isChosed = false;
+		// 当前有展品，并且与当前展品不同
 		if (mCurrentExhibit != null
-				&& !mCurrentExhibit.getBeaconUId().equals(beaconId)
-				&& !isChosed) {
+				&& !mCurrentExhibit.getBeaconUId().equals(beaconId)) {
 			Message msg = Message.obtain();
 			msg.what = MSG_EXHIBIT_CHANGED;
 			msg.obj = beaconId;
 			mHandler.sendMessage(msg);
 		} 
-		else if (mCurrentExhibit == null) { // 第一次自动定位
+		else if (mCurrentExhibit == null) { // 当前无展品，第一次自动定位
 			Message msg = Message.obtain();
 			msg.what = MSG_EXHIBIT_CHANGED;
 			msg.obj = beaconId;

@@ -366,6 +366,8 @@ public class LyricView extends View {
 		try {
 			mediaPlayer.setDataSource(mp3Path);
 			mediaPlayer.prepare();
+			// 默认当前展品为循环播放模式
+			mediaPlayer.setLooping(true);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
