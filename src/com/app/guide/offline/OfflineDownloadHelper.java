@@ -104,7 +104,7 @@ public class OfflineDownloadHelper {
 						// TODO Auto-generated method stub
 						OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 								context, museumid + ".db");
-						Dao<OfflineExhibitBean, Integer> exhibitDao;
+						Dao<OfflineExhibitBean, String> exhibitDao;
 						try {
 							exhibitDao = helper.getOfflineExhibitDao();
 							for (OfflineExhibitBean bean : response) {
@@ -156,7 +156,7 @@ public class OfflineDownloadHelper {
 						// TODO Auto-generated method stub
 						OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 								context, museumId + ".db");
-						Dao<OfflineMapBean, Integer> mapDao;
+						Dao<OfflineMapBean, String> mapDao;
 						try {
 							mapDao = helper.getOfflineMapDao();
 							for (OfflineMapBean bean : response) {
@@ -194,7 +194,7 @@ public class OfflineDownloadHelper {
 								context, museumId + ".db");
 						museumBean.setId(museumId);
 						try {
-							Dao<OfflineMuseumBean, Integer> museumDao = helper
+							Dao<OfflineMuseumBean, String> museumDao = helper
 									.getOfflineMuseumDao();
 							museumDao.createOrUpdate(museumBean);
 						} catch (SQLException e) {
@@ -258,7 +258,7 @@ public class OfflineDownloadHelper {
 						// TODO Auto-generated method stub
 						OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 								context, museumId + ".db");
-						Dao<OfflineBeaconBean, Integer> beaconDao;
+						Dao<OfflineBeaconBean, String> beaconDao;
 						try {
 							beaconDao = helper.getOfflineBeaconDao();
 							for (OfflineBeaconBean bean : response) {
@@ -294,7 +294,7 @@ public class OfflineDownloadHelper {
 						// TODO Auto-generated method stub
 						OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 								context, museumId + ".db");
-						Dao<OfflineLabelBean, Integer> labelDao;
+						Dao<OfflineLabelBean, String> labelDao;
 						try {
 							labelDao = helper.getOfflineLabelDao();
 							for (OfflineLabelBean bean : response) {

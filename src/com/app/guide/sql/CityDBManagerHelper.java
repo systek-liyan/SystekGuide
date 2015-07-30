@@ -16,7 +16,7 @@ import com.j256.ormlite.table.TableUtils;
 public class CityDBManagerHelper extends OrmLiteSqliteOpenHelper{
 	
 
-	private Dao<CityBean,Integer> cityDao;
+	private Dao<CityBean,String> cityDao;
 	
 	/**
 	 * 数据库名称
@@ -53,7 +53,7 @@ public class CityDBManagerHelper extends OrmLiteSqliteOpenHelper{
 		
 	}
 	
-	public Dao<CityBean, Integer> getCityDao() throws SQLException {
+	public Dao<CityBean,String> getCityDao() throws SQLException {
 		if (cityDao == null) {
 			cityDao = getDao(CityBean.class);
 		}

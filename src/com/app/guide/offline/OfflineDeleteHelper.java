@@ -56,11 +56,11 @@ public class OfflineDeleteHelper {
 				.eq("museumId", museumId).and().eq("isCompleted", true).query()
 				.size();
 		if (count > 0) {
-			DeleteBuilder<DownloadBean, Integer> deleteBuilder = helper
+			DeleteBuilder<DownloadBean, String> deleteBuilder = helper
 					.getBeanDao().deleteBuilder();
 			deleteBuilder.where().eq("museumId", museumId);
 			deleteBuilder.delete();
-			DeleteBuilder<MuseumBean, Integer> deleteBuilder2 = helper
+			DeleteBuilder<MuseumBean, String> deleteBuilder2 = helper
 					.getDownloadedDao().deleteBuilder();
 			deleteBuilder2.where().eq("museumId", museumId);
 			deleteBuilder2.delete();

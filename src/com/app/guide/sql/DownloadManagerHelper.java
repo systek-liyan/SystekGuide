@@ -24,17 +24,17 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * MuseumBean表的数据访问对象
 	 */
-	private Dao<MuseumBean, Integer> downloadedDao;
+	private Dao<MuseumBean, String> downloadedDao;
 	
 	/**
 	 * DownloadInfo表的数据访问对象
 	 */
-	private Dao<DownloadInfo, Integer> infoDao;
+	private Dao<DownloadInfo, String> infoDao;
 	
 	/**
 	 * DownloadBean表的数据访问对象
 	 */
-	private Dao<DownloadBean, Integer> beanDao;
+	private Dao<DownloadBean, String> beanDao;
 
 	public DownloadManagerHelper(Context context) {
 		super(context, "Download", null, 1);
@@ -73,7 +73,7 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Dao<MuseumBean, Integer> getDownloadedDao() throws SQLException {
+	public Dao<MuseumBean, String> getDownloadedDao() throws SQLException {
 		if (downloadedDao == null) {
 			downloadedDao = getDao(MuseumBean.class);
 		}
@@ -85,7 +85,7 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Dao<DownloadInfo, Integer> getInfoDao() throws SQLException {
+	public Dao<DownloadInfo, String> getInfoDao() throws SQLException {
 		if (infoDao == null) {
 			infoDao = getDao(DownloadInfo.class);
 		}
@@ -97,7 +97,7 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Dao<DownloadBean, Integer> getBeanDao() throws SQLException {
+	public Dao<DownloadBean, String> getBeanDao() throws SQLException {
 		if (beanDao == null) {
 			beanDao = getDao(DownloadBean.class);
 		}

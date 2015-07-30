@@ -63,12 +63,12 @@ public class DownloadClient {
 	/**
 	 * DownloadInfo表的数据访问对象，用以访问、操作downloadInfo表中的数据
 	 */
-	private Dao<DownloadInfo, Integer> infoDao;
+	private Dao<DownloadInfo, String> infoDao;
 	
 	/**
 	 * DownloadBean表的数据访问对象，用以访问、操作downloadInfo表中的数据
 	 */
-	private Dao<DownloadBean, Integer> beanDao;
+	private Dao<DownloadBean, String> beanDao;
 	
 	/**
 	 * 该downloadClient对应的downloadBean,一对一的关系 
@@ -406,7 +406,7 @@ public class DownloadClient {
 				}
 				DownloadManagerHelper helper = new DownloadManagerHelper(
 						mContext);
-				DeleteBuilder<MuseumBean, Integer> deleteBuilder = helper
+				DeleteBuilder<MuseumBean, String> deleteBuilder = helper
 						.getDownloadedDao().deleteBuilder();
 				deleteBuilder.where().eq("id", museumId);
 				deleteBuilder.delete();

@@ -66,7 +66,7 @@ public abstract class GetBeanStrategy {
 		if (dbHelper.isDBExists()) {
 			Log.w(TAG, "db is exist!");
 			// 获取列表
-			Dao<CityBean, Integer> cityDao = null;
+			Dao<CityBean, String> cityDao = null;
 			List<CityBean> cityList = null;
 			try {
 				cityDao = dbHelper.getCityDao();
@@ -87,7 +87,7 @@ public abstract class GetBeanStrategy {
 							callBack.onGetBeanResponse(response);
 							CityDBManagerHelper dbHelper = new CityDBManagerHelper(
 									mContext);
-							Dao<CityBean, Integer> cityDao = null;
+							Dao<CityBean, String> cityDao = null;
 							try {
 								cityDao = dbHelper.getCityDao();
 								for (CityBean city : response) {

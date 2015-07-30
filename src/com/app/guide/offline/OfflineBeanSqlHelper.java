@@ -22,11 +22,11 @@ public class OfflineBeanSqlHelper extends OrmLiteSqliteOpenHelper {
 	public static final String TAG = OfflineBeanSqlHelper.class.getSimpleName();
 
 	public static int DATABASE_VERSION = 1;
-	private Dao<OfflineExhibitBean, Integer> exhibitDao;
-	private Dao<OfflineBeaconBean, Integer> beaconDao;
-	private Dao<OfflineMapBean, Integer> mapDao;
-	private Dao<OfflineMuseumBean, Integer> museumDao;
-	private Dao<OfflineLabelBean, Integer> labelDao;
+	private Dao<OfflineExhibitBean, String> exhibitDao;
+	private Dao<OfflineBeaconBean, String> beaconDao;
+	private Dao<OfflineMapBean, String> mapDao;
+	private Dao<OfflineMuseumBean, String> museumDao;
+	private Dao<OfflineLabelBean, String> labelDao;
 
 	public OfflineBeanSqlHelper(Context context, String name) {
 		super(context, name, null, DATABASE_VERSION);
@@ -52,7 +52,7 @@ public class OfflineBeanSqlHelper extends OrmLiteSqliteOpenHelper {
 		// TODO Auto-generated method stub
 	}
 
-	public Dao<OfflineExhibitBean, Integer> getOfflineExhibitDao()
+	public Dao<OfflineExhibitBean, String> getOfflineExhibitDao()
 			throws SQLException {
 		if (exhibitDao == null) {
 			exhibitDao = getDao(OfflineExhibitBean.class);
@@ -60,7 +60,7 @@ public class OfflineBeanSqlHelper extends OrmLiteSqliteOpenHelper {
 		return exhibitDao;
 	}
 
-	public Dao<OfflineBeaconBean, Integer> getOfflineBeaconDao()
+	public Dao<OfflineBeaconBean, String> getOfflineBeaconDao()
 			throws SQLException {
 		if (beaconDao == null) {
 			beaconDao = getDao(OfflineBeaconBean.class);
@@ -68,14 +68,14 @@ public class OfflineBeanSqlHelper extends OrmLiteSqliteOpenHelper {
 		return beaconDao;
 	}
 
-	public Dao<OfflineMapBean, Integer> getOfflineMapDao() throws SQLException {
+	public Dao<OfflineMapBean, String> getOfflineMapDao() throws SQLException {
 		if (mapDao == null) {
 			mapDao = getDao(OfflineMapBean.class);
 		}
 		return mapDao;
 	}
 
-	public Dao<OfflineMuseumBean, Integer> getOfflineMuseumDao()
+	public Dao<OfflineMuseumBean, String> getOfflineMuseumDao()
 			throws SQLException {
 		if (museumDao == null) {
 			museumDao = getDao(OfflineMuseumBean.class);
@@ -83,7 +83,7 @@ public class OfflineBeanSqlHelper extends OrmLiteSqliteOpenHelper {
 		return museumDao;
 	}
 
-	public Dao<OfflineLabelBean, Integer> getOfflineLabelDao()
+	public Dao<OfflineLabelBean, String> getOfflineLabelDao()
 			throws SQLException {
 		if (labelDao == null) {
 			labelDao = getDao(OfflineLabelBean.class);

@@ -48,7 +48,7 @@ public class GetBeanFromDB extends GetBeanStrategy {
 		List<MuseumBean> list = new ArrayList<MuseumBean>();
 		try {
 			DownloadManagerHelper helper = new DownloadManagerHelper(mContext);
-			Dao<MuseumBean, Integer> downloaDao = helper.getDownloadedDao();
+			Dao<MuseumBean, String> downloaDao = helper.getDownloadedDao();
 			List<DownloadBean> downloadBeans = helper.getBeanDao()
 					.queryForAll();
 			for (DownloadBean downloadBean : downloadBeans) {
@@ -72,8 +72,8 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 					new DatabaseContext(mContext, Constant.FLODER_NAME
 							+ museumId), museumId + ".db");
-			Dao<OfflineMuseumBean, Integer> oDao = helper.getOfflineMuseumDao();
-			QueryBuilder<OfflineMuseumBean, Integer> builder = oDao
+			Dao<OfflineMuseumBean, String> oDao = helper.getOfflineMuseumDao();
+			QueryBuilder<OfflineMuseumBean, String> builder = oDao
 					.queryBuilder();
 			builder.where().eq("id", museumId);
 			bean = builder.queryForFirst();
@@ -105,9 +105,9 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 					new DatabaseContext(mContext, Constant.FLODER_NAME
 							+ museumId), museumId + ".db");
-			Dao<OfflineExhibitBean, Integer> oDao = helper
+			Dao<OfflineExhibitBean, String> oDao = helper
 					.getOfflineExhibitDao();
-			QueryBuilder<OfflineExhibitBean, Integer> builder = oDao
+			QueryBuilder<OfflineExhibitBean, String> builder = oDao
 					.queryBuilder();
 			builder.offset(Constant.PAGE_COUNT * page);
 			builder.limit(Constant.PAGE_COUNT);
@@ -139,7 +139,7 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 					new DatabaseContext(mContext, Constant.FLODER_NAME
 							+ museumId), museumId + ".db");
-			Dao<OfflineLabelBean, Integer> oDao = helper.getOfflineLabelDao();
+			Dao<OfflineLabelBean, String> oDao = helper.getOfflineLabelDao();
 			List<OfflineLabelBean> list = oDao.queryForAll();
 			labels = new ArrayList<LabelModel>();
 			for (OfflineLabelBean offlineLabelBean : list) {
@@ -162,9 +162,9 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 					new DatabaseContext(mContext, Constant.FLODER_NAME
 							+ museumId), museumId + ".db");
-			Dao<OfflineExhibitBean, Integer> oDao = helper
+			Dao<OfflineExhibitBean, String> oDao = helper
 					.getOfflineExhibitDao();
-			QueryBuilder<OfflineExhibitBean, Integer> builder = oDao
+			QueryBuilder<OfflineExhibitBean, String> builder = oDao
 					.queryBuilder();
 			builder.where().eq("id", exhibitId);
 			bean = builder.queryForFirst();
@@ -207,9 +207,9 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 					new DatabaseContext(mContext, Constant.FLODER_NAME
 							+ museumId), museumId + ".db");
-			Dao<OfflineExhibitBean, Integer> oDao = helper
+			Dao<OfflineExhibitBean, String> oDao = helper
 					.getOfflineExhibitDao();
-			QueryBuilder<OfflineExhibitBean, Integer> builder = oDao
+			QueryBuilder<OfflineExhibitBean, String> builder = oDao
 					.queryBuilder();
 			builder.where().eq("beaconId", beaconId);
 			offlineList = builder.query();
@@ -256,8 +256,8 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 					new DatabaseContext(mContext, Constant.FLODER_NAME
 							+ museumId), museumId + ".db");
-			Dao<OfflineMapBean, Integer> oDao = helper.getOfflineMapDao();
-			QueryBuilder<OfflineMapBean, Integer> builder = oDao.queryBuilder();
+			Dao<OfflineMapBean, String> oDao = helper.getOfflineMapDao();
+			QueryBuilder<OfflineMapBean, String> builder = oDao.queryBuilder();
 			builder.where().eq("floor", floor);
 			bean = builder.queryForFirst();
 			callBack.onGetBeanResponse(bean);
@@ -273,8 +273,8 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 					new DatabaseContext(mContext, Constant.FLODER_NAME
 							+ museumId), museumId + ".db");
-			Dao<OfflineMapBean, Integer> oDao = helper.getOfflineMapDao();
-			QueryBuilder<OfflineMapBean, Integer> builder = oDao.queryBuilder();
+			Dao<OfflineMapBean, String> oDao = helper.getOfflineMapDao();
+			QueryBuilder<OfflineMapBean, String> builder = oDao.queryBuilder();
 			list = builder.query();
 			callBack.onGetBeanResponse(list);
 		} catch (SQLException e) {
@@ -297,9 +297,9 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 					new DatabaseContext(mContext, Constant.FLODER_NAME
 							+ museumId), museumId + ".db");
-			Dao<OfflineExhibitBean, Integer> oDao = helper
+			Dao<OfflineExhibitBean, String> oDao = helper
 					.getOfflineExhibitDao();
-			QueryBuilder<OfflineExhibitBean, Integer> builder = oDao
+			QueryBuilder<OfflineExhibitBean, String> builder = oDao
 					.queryBuilder();
 			// TODO museumArea
 			List<OfflineExhibitBean> offlineExhibitBeans = builder.query();
@@ -329,8 +329,8 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 					new DatabaseContext(mContext, Constant.FLODER_NAME
 							+ museumId), museumId + ".db");
-			Dao<OfflineBeaconBean, Integer> oDao = helper.getOfflineBeaconDao();
-			QueryBuilder<OfflineBeaconBean, Integer> builder = oDao
+			Dao<OfflineBeaconBean, String> oDao = helper.getOfflineBeaconDao();
+			QueryBuilder<OfflineBeaconBean, String> builder = oDao
 					.queryBuilder();
 			builder.where().eq("major", major).and().eq("minor", minor);
 			bean = builder.queryForFirst();
@@ -348,9 +348,9 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 					new DatabaseContext(mContext, Constant.FLODER_NAME
 							+ museumId), museumId + ".db");
-			Dao<OfflineBeaconBean, Integer> beaconDao = helper
+			Dao<OfflineBeaconBean, String> beaconDao = helper
 					.getOfflineBeaconDao();
-			QueryBuilder<OfflineBeaconBean, Integer> builder = beaconDao
+			QueryBuilder<OfflineBeaconBean, String> builder = beaconDao
 					.queryBuilder();
 			builder.where().eq("floor", floor);
 			list = builder.query();
