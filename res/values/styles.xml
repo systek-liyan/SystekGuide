@@ -81,5 +81,17 @@
         <item name="android:layout_gravity">bottom</item>
         <item name="android:textSize">15sp</item>
     </style>
+    
+    <style name="toggle_btn">
+        <item name="android:button">@null</item>
+        <item name="android:background">@drawable/toggle_btn_bg</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:minWidth">60dp</item>
+        <item name="android:minHeight">40dp</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:textColor">@color/btn_text_color</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 
 </resources>

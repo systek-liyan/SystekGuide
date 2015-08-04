@@ -25,5 +25,8 @@
     
     <color name="separator_color">#a7a7a7</color>
     
-      <color name="process_color">#AEDEF4</color>
+    <color name="process_color">#AEDEF4</color>
+    
+    <color name="toggle_btn_pressed">#fff</color>
+    <color name="download_msg_color">#FF425D</color>
 </resources>

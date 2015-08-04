@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="@dimen/download_list_item_height"
+    android:layout_margin="10dp">
 
-    <TextView
-        android:id="@+id/item_download_completed_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="20dp"
-        android:textSize="18sp" />
+   <TextView 
+       android:id="@+id/tv_download_citylist_name"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:textSize="@dimen/download_text_size"
+       android:layout_centerVertical="true"
+       android:layout_marginLeft="5dp"/>
+   
+   <ImageView 
+       android:id="@+id/iv_downloadable"
+       android:layout_width="@dimen/download_icon_size"
+       android:layout_height="@dimen/download_icon_size"
+       android:layout_alignParentRight="true"
+       android:layout_marginRight="5dp"
+       android:layout_centerVertical="true"
+       android:src="@drawable/play_btn_play"/>
 
-    <Button
-        android:id="@+id/item_download_completed_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:text="删除" />
-
-    <Button
-        android:id="@+id/item_download_completed_update"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="10dp"
-        android:layout_toStartOf="@+id/item_download_completed_delete"
-        android:text="更新" />
-
+   <TextView android:id="@+id/tv_download_size"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_centerVertical="true"
+       android:layout_toLeftOf="@id/iv_downloadable"
+       android:textSize="@dimen/download_text_size"/>
+   
 </RelativeLayout>

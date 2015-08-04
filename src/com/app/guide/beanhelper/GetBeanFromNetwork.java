@@ -7,7 +7,6 @@ import android.content.Context;
 import com.app.guide.bean.ExhibitBean;
 import com.app.guide.bean.MuseumAreaBean;
 import com.app.guide.bean.MuseumBean;
-import com.app.guide.download.DownloadBean;
 import com.app.guide.model.ExhibitModel;
 import com.app.guide.model.LabelModel;
 import com.app.guide.model.MapExhibitModel;
@@ -101,12 +100,6 @@ public class GetBeanFromNetwork extends GetBeanStrategy {
 	@Override
 	public void getBeaconList(String museumId, int floor,
 			GetBeanCallBack<List<OfflineBeaconBean>> callBack) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void getDownloadList(GetBeanCallBack<List<DownloadBean>> callBack) {
 		// TODO Auto-generated method stub
 
 	}
