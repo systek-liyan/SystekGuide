@@ -170,7 +170,7 @@ public class GalleryView extends HorizontalScrollView implements
 
 	/**
 	 * 设置当前选中item
-	 * 
+	 * @param isByLyric 是否是由歌词联动切换图片
 	 * @param index
 	 */
 	public void setCurrentSelectedItem(boolean isByLyric, int index) {
@@ -413,7 +413,7 @@ public class GalleryView extends HorizontalScrollView implements
 
 	@Override
 	public void onClick(View view) {
-		Log.w("TAG", "onClick");
+		Log.w(TAG, "onClick");
 		if (mItemClickListener == null)
 			return;
 		for (int i = 0; i < mContainer.getChildCount(); i++) {

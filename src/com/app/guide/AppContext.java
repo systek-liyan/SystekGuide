@@ -18,6 +18,10 @@ import com.baidu.mapapi.SDKInitializer;
  * 调用<code>setGuideMode(boolean guideMode)</code>设置当前app的导航模式，其中true表示自动导航，false表示手动导航，切换不同导航模式时，会自动通知导航模式监听者当前导航模式已改变。
  * 调用<code>setBleEnable(boolean enable)</code>设置当前手机BLE是否可用，切换不同状态时，会通知蓝牙状态监听者蓝牙状态已改变
  * 
+ * 通过下列方式之一获得Application对象
+ * ((AppContext) mContext.getApplicationContext())
+ * ((AppContext) getActivity.getApplication()) 
+ * ((AppContext) this.getApplication())
  */
 public class AppContext extends Application {
 

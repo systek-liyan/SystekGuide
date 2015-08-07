@@ -37,7 +37,8 @@ public class AppService extends Service {
 
 	public AppService() {
 		map = new ConcurrentHashMap<String, DownloadClient>();
-		// 获取
+		
+		// 获取网络链接状态，注意,ConnectivityChangeReceiver必须有显式的默认构造函数
 		mReceiver = new ConnectivityChangeReceiver();
 	}
 
@@ -83,7 +84,7 @@ public class AppService extends Service {
 	}
 
 	public class ConnectivityChangeReceiver extends BroadcastReceiver {
-
+		
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			

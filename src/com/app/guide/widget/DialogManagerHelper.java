@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.location.LocationManager;
 import android.net.wifi.WifiManager;
 import android.provider.Settings;
+import android.widget.Toast;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import cn.pedant.SweetAlert.SweetAlertDialog.OnCheckedChangedListener;
 import cn.pedant.SweetAlert.SweetAlertDialog.OnSweetClickListener;
@@ -254,7 +255,8 @@ public class DialogManagerHelper {
 		pDialog.setCancelClickListener(new OnSweetClickListener() {
 			@Override
 			public void onClick(SweetAlertDialog sweetAlertDialog) {
-				// TODO Auto-generated method stub
+				Toast.makeText(mContext, "您取消自动随行导游，请回到主页手动选择展品！", Toast.LENGTH_LONG).show();
+				((AppContext) mContext.getApplicationContext()).setGuideMode(Constant.GUIDE_MODE_AUTO);
 				pDialog.dismiss();
 			}
 		});

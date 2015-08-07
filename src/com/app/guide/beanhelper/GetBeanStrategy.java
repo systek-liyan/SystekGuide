@@ -4,10 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -15,14 +11,13 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.app.guide.Constant;
 import com.app.guide.bean.CityBean;
 import com.app.guide.bean.ExhibitBean;
 import com.app.guide.bean.MuseumAreaBean;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.download.DownloadBean;
-import com.app.guide.download.DownloadModel;
 import com.app.guide.model.ExhibitModel;
 import com.app.guide.model.LabelModel;
 import com.app.guide.model.MapExhibitModel;
@@ -43,7 +38,7 @@ import com.j256.ormlite.dao.Dao;
 public abstract class GetBeanStrategy {
 
 	private static final String TAG = GetBeanStrategy.class.getSimpleName();
-
+	
 	protected Context mContext;
 	protected ErrorListener mErrorListener;
 	protected RequestQueue mQueue;
@@ -55,7 +50,7 @@ public abstract class GetBeanStrategy {
 			@Override
 			public void onErrorResponse(VolleyError error) {
 				// TODO Auto-generated method stub
-				Log.w(TAG, "VolleyError:" + error.getMessage());
+				Log.w(TAG,"VolleyError:"+error.getMessage());
 			}
 		};
 	}
@@ -81,12 +76,11 @@ public abstract class GetBeanStrategy {
 				e.printStackTrace();
 			}
 			callBack.onGetBeanResponse(cityList);
-		} else {
-			String url = "http://182.92.82.70/a/api/city/treeData";
-			// String url = Constant.HOST_HEAD + "/daoyou/a/api/city/treeData";
+		}
+		else {  
+			String url = Constant.HOST_HEAD + "/a/api/city/treeData";
 			FastJsonArrayRequest<CityBean> request = new FastJsonArrayRequest<CityBean>(
-					url, CityBean.class,
-					new Response.Listener<List<CityBean>>() {
+					url, CityBean.class, new Response.Listener<List<CityBean>>() {
 						@Override
 						public void onResponse(List<CityBean> response) {
 							// 将数据传递给参数，并存在本地数据库中
@@ -139,8 +133,8 @@ public abstract class GetBeanStrategy {
 	 * @param callBack
 	 * @return
 	 */
-	public abstract void getExhibitList(String museumId, int minPriority,
-			int page, GetBeanCallBack<List<ExhibitBean>> callBack);
+	public abstract void getExhibitList(String museumId, int minPriority,int page,
+			GetBeanCallBack<List<ExhibitBean>> callBack);
 
 	/**
 	 * 获取该博物馆下的所有标签列表
@@ -248,74 +242,8 @@ public abstract class GetBeanStrategy {
 	 * 
 	 * @return
 	 */
-	public void getDownloadList(
-			final GetBeanCallBack<List<DownloadModel>> callBack) {
-		// 在判断本地是否存在数据库，如果存在则从数据库中获取，不存在则通过实时API获取 或判断是否需要更新
-		DownloadManagerHelper dbHelper = new DownloadManagerHelper(mContext);
-		if (dbHelper.isDownloadListExist()) {
-			Log.w(TAG, "db is exist!");
-			// 获取列表
-			Dao<DownloadModel, String> modelDao = null;
-			List<DownloadModel> downloadList = null;
-			try {
-				modelDao = dbHelper.getModelDao();
-				downloadList = modelDao.queryForAll();
-			} catch (SQLException e) {
-				downloadList = new ArrayList<DownloadModel>();
-				e.printStackTrace();
-			}
-			callBack.onGetBeanResponse(downloadList);
-		} else {
-			String url = "http://182.92.82.70/a/api/assets/treeData";
-			JsonArrayRequest request = new JsonArrayRequest(url,
-					new Response.Listener<JSONArray>() {
-						@Override
-						public void onResponse(final JSONArray response) {
-							DownloadManagerHelper dbHelper = new DownloadManagerHelper(
-									mContext);
-							Dao<DownloadModel, String> modelDao = null;
-							List<DownloadModel> downloadList = new ArrayList<DownloadModel>(
-									response.length());
-							List<DownloadBean> downloadBeans = null;
-							JSONObject object = null;
-							DownloadModel downloadModel = null;
-							DownloadBean downloadBean = null;
-							try {
-								modelDao = dbHelper.getModelDao();
-								for (int i = 0; i < response.length(); i++) {
-									object = response.getJSONObject(i);
-									downloadModel = new DownloadModel();
-									downloadModel.setCity(object
-											.getString("city"));
-									JSONArray museums = object
-											.getJSONArray("museumList");
-									downloadBeans = new ArrayList<DownloadBean>(
-											museums.length());
-									for (int j = 0; j < museums.length(); j++) {
-										object = museums.getJSONObject(j);
-										downloadBean = new DownloadBean();
-										downloadBean.setMuseumId(object
-												.getString("museumId"));
-										downloadBean.setName(object
-												.getString("name"));
-										downloadBean.setTotal(object
-												.getLong("size"));
-										downloadBeans.add(downloadBean);
-									}
-									modelDao.createOrUpdate(downloadModel);
-									downloadList.add(downloadModel);
-									callBack.onGetBeanResponse(downloadList);
-								}
-							} catch (JSONException e) {
-								// TODO: handle exception
-							} catch (SQLException e1) {
-
-							}
-						}
-					}, mErrorListener);
-			mQueue.add(request);
-		}
-	}
+	public abstract void getDownloadList(
+			GetBeanCallBack<List<DownloadBean>> callBack);
 
 	/**
 	 * 获取所有正在下载中的bean

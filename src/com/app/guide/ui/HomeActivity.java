@@ -41,13 +41,13 @@ public class HomeActivity extends BaseActivity implements
 	private Timer timer;
 	private List<Fragment> fragments;
 	
-	
 	/**
-	 * 侧滑栏
+	 * 侧滑栏,访问BaseActivity中的sm
 	 */
 	private static SlidingMenu sm;
 
 	/**
+	 * 侧滑栏,访问BaseActivity中的sm
 	 * @return the instance of slidingMenu
 	 */
 	public static SlidingMenu getMenu() {
@@ -303,9 +303,9 @@ public class HomeActivity extends BaseActivity implements
 
 		mBeaconSearcher = BeaconSearcher.getInstance(this);
 		// 设定用于展品定位的最小停留时间(ms)
-		mBeaconSearcher.setMin_stay_milliseconds(5000);
+		mBeaconSearcher.setMin_stay_milliseconds(2000);
 		// 设定用于展品定位的最小距离(m)
-		mBeaconSearcher.setExhibit_distance(5.0);
+		mBeaconSearcher.setExhibit_distance(3.0);
 		// 设置获取距离最近的beacon类型
 		// NearestBeacon.GET_EXHIBIT_BEACON：游客定位beacon。可以不用设置上述的最小停留时间和最小距离
 		// NearestBeacon.GET_EXHIBIT_BEACON：展品定位beacon

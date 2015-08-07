@@ -91,6 +91,7 @@
             android:enabled="true"
             android:exported="false" />
         
+        <!--  ConnectivityChangeReceiver在AppService中注册，这里的接收器要正常工作，必须使ConnectivityChangeReceiver独立，不能放在AppService中，否则当AppService不存在时，接收器无法正常工作。
         <receiver 
             android:name="com.app.guide.service.AppService$ConnectivityChangeReceiver"
             android:label="NetworkConnection">
@@ -98,6 +99,7 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
+        -->
     </application>
 
 </manifest>

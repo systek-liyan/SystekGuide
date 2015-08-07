@@ -222,9 +222,9 @@ public class FollowGuideFragment extends Fragment implements
 	private MyClickListener mClickListener;
 
 	/**
-	 * 标记手动选择展品列表中的展品为当前展品
+	 * 标记手动选择展品列表中的展品为当前展品,不用区分了
 	 */
-	private boolean isChosed = false;
+	//private boolean isChosed = false;
 
 	/**
 	 * 加载对话框
@@ -256,15 +256,17 @@ public class FollowGuideFragment extends Fragment implements
 				}
 				break;
 			case MSG_MEDIA_PLAY_COMPLETE:
-				// 判断是否有手动选择展品，有则将isChosed标志位置为False
-				if (isChosed)
-					isChosed = false;
-				else {
-					// TODO 没有则循环播放当前展品
-					String id = mCurrentExhibitId;
-					mCurrentExhibitId = null;
-					changeCurrentExhibitById(id);
-				}
+				// 由于在LyricView中把播放器设为循环播放，因此，应该没有此事件发生；除非给播放器一个不存在的
+				Toast.makeText(getActivity(), "播放结束", Toast.LENGTH_LONG).show();
+//				// 判断是否有手动选择展品，有则将isChosed标志位置为False
+//				if (isChosed)
+//					isChosed = false;
+//				else {
+//					// TODO 没有则循环播放当前展品
+//					String id = mCurrentExhibitId;
+//					mCurrentExhibitId = null;
+//					changeCurrentExhibitById(id);
+//				}
 				break;
 			case MSG_EXHIBIT_CHANGED:
 				// beacon切换时，获取新beacon的展品列表
@@ -308,8 +310,9 @@ public class FollowGuideFragment extends Fragment implements
 	 * ,openSearcher and setBeaconRangingListener
 	 */
 	@Override
-	public void onAttach(Activity activity) {
+	public void onAttach(Activity activity) {	
 		super.onAttach(activity);
+		Log.d(TAG,"onAttach()");
 		mContext = activity;
 		// 获取intent
 		mMuseumId = ((AppContext) getActivity().getApplication()).currentMuseumId;
@@ -329,8 +332,7 @@ public class FollowGuideFragment extends Fragment implements
 
 		HomeActivity.setBeaconLocateType(NearestBeacon.GET_EXHIBIT_BEACON);
 
-		((AppContext) getActivity().getApplication())
-				.addGuideModeChangedListener(this);
+		((AppContext) getActivity().getApplication()).addGuideModeChangedListener(this);
 	}
 
 	/**
@@ -366,6 +368,7 @@ public class FollowGuideFragment extends Fragment implements
 											.getName());
 								}
 							}
+							// 取消显示正在加载对话框
 							if (pDialog != null && pDialog.isShowing()) {
 								pDialog.dismiss();
 								pDialog = null;
@@ -452,6 +455,7 @@ public class FollowGuideFragment extends Fragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.frag_follow_guide, null);
+		Log.d(TAG,"onCreateView()");
 		return view;
 
 	}
@@ -462,6 +466,7 @@ public class FollowGuideFragment extends Fragment implements
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		Log.d(TAG,"onViewCreated");
 		// init fragment header
 		fragHeader = (TopBar) view.findViewById(R.id.frag_header_follow_guide);
 		if (mCurrentExhibit != null)
@@ -616,7 +621,7 @@ public class FollowGuideFragment extends Fragment implements
 				// 切换展品
 				changeCurrentExhibitById(mExhibitsList.get(position).getId());
 				// 将手动选择切换标记位置为true
-				isChosed = true;
+//				isChosed = true;
 			}
 		});
 
@@ -649,23 +654,27 @@ public class FollowGuideFragment extends Fragment implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		// 自动、手动导航模式切换
+		Log.d(TAG,"onResume()");
+		// 自动随行导游
 		if (((AppContext) getActivity().getApplication()).getGuideMode()) {
-			// 判断是否需要弹出对话框
-			if (pDialog == null && !isChosed)
+			// 判断是否需要弹出对话框,第一次由博物馆主页按随行导游按键进入
+			if (pDialog == null)
 				pDialog = mDialogHelper.showSearchingProgressDialog();
 			// 设置beacon监听
 			HomeActivity.setBeaconSearcherListener(this);
-		} else
+		} 
+		else { // 手动由博物馆主页选择展品
 			HomeActivity.setBeaconSearcherListener(null);
-		
-		// 从AppContext中获取全局exhibit id 可能为null
-		changeCurrentExhibitById(((AppContext) getActivity().getApplication()).currentExhibitId);
+			// 从AppContext中获取全局exhibit id 可能为null
+			changeCurrentExhibitById(((AppContext) getActivity().getApplication()).currentExhibitId);
+		}
+			
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
+		Log.d(TAG,"onStop()");
 		// 移出监听
 		((AppContext) getActivity().getApplication())
 				.removeGuideModeListener(this);
@@ -679,6 +688,7 @@ public class FollowGuideFragment extends Fragment implements
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		Log.d(TAG,"onDestroy()");
 		if (mLyricView != null) {
 			mLyricView.destroy();
 		}
@@ -769,7 +779,7 @@ public class FollowGuideFragment extends Fragment implements
 	 * @param beaconId
 	 */
 	private void changeCurrentExhibitByBeaconId(String beaconId) {
-		isChosed = false;
+//		isChosed = false;
 		// 当前有展品，并且与当前展品不同
 		if (mCurrentExhibit != null
 				&& !mCurrentExhibit.getBeaconUId().equals(beaconId)) {
@@ -934,11 +944,13 @@ public class FollowGuideFragment extends Fragment implements
 	 */
 	@Override
 	public void onNearestBeaconDiscovered(int type, Beacon beacon) {
-		if (beacon == null)// 不做处理
-			return;
-		if (pDialog != null) {
+		// 取消显示搜索beacon对话框
+		if (pDialog != null && pDialog.isShowing()) {
 			pDialog.dismiss();
 		}
+		
+		if (beacon == null)// 不做处理
+			return;
 		
 		Log.d(TAG,"nearst beacon major,minor="+beacon.getId2()+","+beacon.getId3());
 		
@@ -953,7 +965,6 @@ public class FollowGuideFragment extends Fragment implements
 						if (response != null) {
 							changeCurrentExhibitByBeaconId(response.getId());
 						}
-
 					}
 				});
 
@@ -966,14 +977,14 @@ public class FollowGuideFragment extends Fragment implements
 			RadioButton rb = (RadioButton) HomeActivity.mRadioGroup
 					.findViewById(R.id.home_tab_follow);
 			rb.setChecked(true);
-			// 进入自动导航
-			if (pDialog != null)
-				pDialog.show();
-			else {
-				pDialog = mDialogHelper.showSearchingProgressDialog();
-			}
+			// 显示搜索beacon
+			pDialog = mDialogHelper.showSearchingProgressDialog();
 			// 设置beacon监听
 			HomeActivity.setBeaconSearcherListener(this);
+		}
+		else {
+			// 显示正在加载展品
+			pDialog = mDialogHelper.showLoadingProgressDialog();
 		}
 	}
 

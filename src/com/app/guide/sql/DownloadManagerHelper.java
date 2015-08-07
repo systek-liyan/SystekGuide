@@ -1,6 +1,5 @@
 package com.app.guide.sql;
 
-import java.io.File;
 import java.sql.SQLException;
 
 import android.content.Context;
@@ -9,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.download.DownloadBean;
 import com.app.guide.download.DownloadInfo;
-import com.app.guide.download.DownloadModel;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
@@ -37,11 +35,6 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 	 * DownloadBean表的数据访问对象
 	 */
 	private Dao<DownloadBean, String> beanDao;
-	
-	/**
-	 * downloadModel表的数据访问对象
-	 */
-	private Dao<DownloadModel, String> modelDao;
 
 	public DownloadManagerHelper(Context context) {
 		super(context, "Download", null, 1);
@@ -59,7 +52,6 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTableIfNotExists(arg1, MuseumBean.class);
 			TableUtils.createTableIfNotExists(arg1, DownloadInfo.class);
 			TableUtils.createTableIfNotExists(arg1, DownloadBean.class);
-			TableUtils.createTableIfNotExists(arg1, DownloadModel.class);
 		} catch (java.sql.SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -110,21 +102,6 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 			beanDao = getDao(DownloadBean.class);
 		}
 		return beanDao;
-	}
-	
-	public Dao<DownloadModel,String> getModelDao()throws SQLException{
-		if(modelDao == null){
-			modelDao = getDao(DownloadModel.class);
-		}
-		return modelDao;
-	}
-	
-	private static final String DB_PATH = "";
-	private static final String DB_NAME = "";
-
-	public boolean isDownloadListExist(){
-		File file = new File( DB_PATH + "/" + DB_NAME);
-		return file.exists();
 	}
 
 }

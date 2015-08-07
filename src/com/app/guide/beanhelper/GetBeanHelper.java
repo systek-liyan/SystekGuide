@@ -10,7 +10,6 @@ import com.app.guide.bean.ExhibitBean;
 import com.app.guide.bean.MuseumAreaBean;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.download.DownloadBean;
-import com.app.guide.download.DownloadModel;
 import com.app.guide.model.ExhibitModel;
 import com.app.guide.model.LabelModel;
 import com.app.guide.model.MapExhibitModel;
@@ -145,7 +144,7 @@ public class GetBeanHelper {
 		mGetBeanStrategy.getBeaconList(museumId, floor, callBack);
 	}
 
-	public void getDownloadList(GetBeanCallBack<List<DownloadModel>> callBack) {
+	public void getDownloadList(GetBeanCallBack<List<DownloadBean>> callBack) {
 		mGetBeanStrategy.getDownloadList(callBack);
 	}
 

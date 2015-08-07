@@ -94,7 +94,7 @@ public class OfflineDownloadHelper {
 	private void downloadExhibit(final Context context, final String museumid)
 			throws SQLException, NumberFormatException, IOException {
 		String url = Constant.HOST_HEAD
-				+ "/daoyou/a/api/exhibit/treeData?musumId=" + museumId;
+				+ "/a/api/exhibit/treeData?musumId=" + museumId;
 		FastJsonArrayRequest<OfflineExhibitBean> request = new FastJsonArrayRequest<OfflineExhibitBean>(
 				url, OfflineExhibitBean.class,
 				new Response.Listener<List<OfflineExhibitBean>>() {
@@ -146,7 +146,7 @@ public class OfflineDownloadHelper {
 	private void downloadMap(final Context context, final String museumId)
 			throws SQLException {
 		String url = Constant.HOST_HEAD
-				+ "/daoyou/a/api/museumMap/treeData?musumId=" + museumId;
+				+ "/a/api/museumMap/treeData?musumId=" + museumId;
 		FastJsonArrayRequest<OfflineMapBean> request = new FastJsonArrayRequest<OfflineMapBean>(
 				url, OfflineMapBean.class,
 				new Response.Listener<List<OfflineMapBean>>() {
@@ -181,7 +181,7 @@ public class OfflineDownloadHelper {
 	 */
 	private void downloadMuseum(final Context context, final String museumId) {
 		String url = Constant.HOST_HEAD
-				+ "/daoyou/a/api/museum/treeData?id=" + museumId;
+				+ "/a/api/museum/treeData?id=" + museumId;
 		FastJsonArrayRequest<OfflineMuseumBean> jsonRequest = new FastJsonArrayRequest<OfflineMuseumBean>(
 				url, OfflineMuseumBean.class,
 				new Response.Listener<List<OfflineMuseumBean>>() {
@@ -248,7 +248,7 @@ public class OfflineDownloadHelper {
 	private void downloadBeacon(final Context context, final String museumId) {
 		// TODO Auto-generated method stub
 		String url = Constant.HOST_HEAD
-				+ "/daoyou/a/api/beacon/treeData?musumId=" + museumId;
+				+ "/a/api/beacon/treeData?musumId=" + museumId;
 		FastJsonArrayRequest<OfflineBeaconBean> request = new FastJsonArrayRequest<OfflineBeaconBean>(
 				url, OfflineBeaconBean.class,
 				new Response.Listener<List<OfflineBeaconBean>>() {
@@ -284,7 +284,7 @@ public class OfflineDownloadHelper {
 			throws SQLException {
 
 		String url = Constant.HOST_HEAD
-				+ "/daoyou/a/api/labels/treeData?musumId=" + museumId;
+				+ "/a/api/labels/treeData?musumId=" + museumId;
 		FastJsonArrayRequest<OfflineLabelBean> request = new FastJsonArrayRequest<OfflineLabelBean>(
 				url, OfflineLabelBean.class,
 				new Response.Listener<List<OfflineLabelBean>>() {
@@ -316,7 +316,7 @@ public class OfflineDownloadHelper {
 	 */
 	private void downloadFiles() {
 
-		String url = Constant.HOST_HEAD + "/daoyou/a/api/assets/download?id="
+		String url = Constant.HOST_HEAD + "/a/api/assets/download?id="
 				+ museumId;
 
 		JsonObjectRequest request = new JsonObjectRequest(url, null,

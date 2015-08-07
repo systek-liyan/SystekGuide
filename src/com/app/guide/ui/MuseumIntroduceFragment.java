@@ -122,6 +122,7 @@ public class MuseumIntroduceFragment extends Fragment {
 			});
 		}
 		try {
+			// TODO 改为fromDB or fromNetwork
 			// djt modify
 			//mPlayer.setDataSource(URL);
 			mPlayer.setDataSource(Constant.getAudioDownloadPath(mMuseumModel.getAudioUrl(),mMuseumId));
@@ -304,6 +305,7 @@ public class MuseumIntroduceFragment extends Fragment {
 		// 设置adapter
 		lvExhibit.setAdapter(exhibitAdapter);
 		initListView();
+		
 		// 解决slidingMenu和viewPager 滑动冲突
 		HomeActivity.getMenu().addIgnoredView(viewPager);
 	}
