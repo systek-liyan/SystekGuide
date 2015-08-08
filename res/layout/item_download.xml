@@ -3,7 +3,8 @@
     android:background="@color/color_white"
     android:layout_margin="10dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="10dp">
     
     <TextView 
         android:id="@+id/tv_download_museum_name"
@@ -20,13 +21,10 @@
         android:textSize="@dimen/download_text_size"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"/>
-    
-    <!-- 下载完成后就变成更新按钮，下载过程中是开始/按钮 -->
-    <ImageView 
+      <ImageView 
         android:id="@+id/iv_download_start"
         android:layout_alignParentRight="true"
         android:layout_margin="5dp"
-        android:layout_alignBottom="@id/tv_download_museum_name"
         android:layout_width="@dimen/download_icon_size"
         android:layout_height="@dimen/download_icon_size"
         android:src="@drawable/play_btn_play"/>
@@ -48,7 +46,8 @@
         android:max="100"
         android:layout_width="match_parent"                                                                                                         
         android:layout_height="wrap_content"
-        style="@android:style/Widget.ProgressBar.Horizontal"/>
+        style="?android:attr/progressBarStyleHorizontal" />
     
-
+     <!-- 下载完成后就变成更新按钮，下载过程中是开始/按钮 -->
+  
 </RelativeLayout>

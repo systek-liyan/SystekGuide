@@ -38,8 +38,8 @@
     <!-- 自动导游和手动导游 -->
     <string name="auto_guide">自动导游</string>
     <string name="manally_guide">手动导游</string>
-    <string name="download_text_ing">正在下载</string>
-    <string name="download_text_completed">下载完成</string>
+    <string name="downloading_text">正在下载</string>
+    <string name="downloaded_text">下载完成</string>
     <string name="map_menu_loca">loca</string>
     <string name="map_menu_friend">frie</string>
     <string name="map_menu_toggle_list">toggle</string>

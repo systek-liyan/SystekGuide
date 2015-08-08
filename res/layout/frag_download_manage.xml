@@ -3,17 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 	<TextView 
+	    android:paddingLeft="10dp"
+	    android:text="@string/downloading_text"
 	    android:id="@+id/tv_download_ing"
 	    android:layout_height="wrap_content"
 	    android:layout_width="match_parent"
 	    android:background="@color/lightgray"/>
     <ListView
+        
         android:layout_below="@id/tv_download_ing"
         android:id="@+id/lv_download_ing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>
 	<TextView 
+	     android:paddingLeft="10dp"
+	    android:text="@string/downloaded_text"
 	    android:layout_below="@id/lv_download_ing"
 	    android:id="@+id/tv_download_complete"
 	    android:layout_height="wrap_content"
@@ -28,6 +33,9 @@
     <TextView 
         android:visibility="gone"
         android:id="@+id/tv_download_no_items"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
         android:layout_centerInParent="true"
         android:textSize="20sp"
         android:text="@string/download_no_items"

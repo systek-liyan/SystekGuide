@@ -93,8 +93,9 @@ public class OfflineDownloadHelper {
 	 */
 	private void downloadExhibit(final Context context, final String museumid)
 			throws SQLException, NumberFormatException, IOException {
-		String url = Constant.HOST_HEAD
-				+ "/a/api/exhibit/treeData?musumId=" + museumId;
+//		String url = Constant.HOST_HEAD
+//				+ "/a/api/exhibit/treeData?musumId=" + museumId;
+		String url = "http://182.92.82.70/a/api/exhibit/treeData?museum.id="+museumid;
 		FastJsonArrayRequest<OfflineExhibitBean> request = new FastJsonArrayRequest<OfflineExhibitBean>(
 				url, OfflineExhibitBean.class,
 				new Response.Listener<List<OfflineExhibitBean>>() {
@@ -145,8 +146,9 @@ public class OfflineDownloadHelper {
 	 */
 	private void downloadMap(final Context context, final String museumId)
 			throws SQLException {
-		String url = Constant.HOST_HEAD
-				+ "/a/api/museumMap/treeData?musumId=" + museumId;
+//		String url = Constant.HOST_HEAD
+//				+ "/a/api/museumMap/treeData?musumId=" + museumId;
+		String url = "http://182.92.82.70/a/api/museumMap/treeData?museum.id="+museumId;
 		FastJsonArrayRequest<OfflineMapBean> request = new FastJsonArrayRequest<OfflineMapBean>(
 				url, OfflineMapBean.class,
 				new Response.Listener<List<OfflineMapBean>>() {
@@ -180,8 +182,9 @@ public class OfflineDownloadHelper {
 	 * @param museumId
 	 */
 	private void downloadMuseum(final Context context, final String museumId) {
-		String url = Constant.HOST_HEAD
-				+ "/a/api/museum/treeData?id=" + museumId;
+//		String url = Constant.HOST_HEAD
+//				+ "/a/api/museum/treeData?id=" + museumId;
+		String url = "http://182.92.82.70/a/api/museum/treeData?id="+museumId;
 		FastJsonArrayRequest<OfflineMuseumBean> jsonRequest = new FastJsonArrayRequest<OfflineMuseumBean>(
 				url, OfflineMuseumBean.class,
 				new Response.Listener<List<OfflineMuseumBean>>() {
@@ -189,6 +192,8 @@ public class OfflineDownloadHelper {
 					@Override
 					public void onResponse(List<OfflineMuseumBean> response) {
 						// TODO Auto-generated method stub
+						if(response.size() == 0)
+							return ;
 						OfflineMuseumBean museumBean = response.get(0);
 						OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 								context, museumId + ".db");
@@ -246,9 +251,9 @@ public class OfflineDownloadHelper {
 	 * @param museumId
 	 */
 	private void downloadBeacon(final Context context, final String museumId) {
-		// TODO Auto-generated method stub
-		String url = Constant.HOST_HEAD
-				+ "/a/api/beacon/treeData?musumId=" + museumId;
+//		String url = Constant.HOST_HEAD
+//				+ "/a/api/beacon/treeData?musumId=" + museumId;
+		String url = "http://182.92.82.70/a/api/beacon/treeData?museum.id="+museumId;
 		FastJsonArrayRequest<OfflineBeaconBean> request = new FastJsonArrayRequest<OfflineBeaconBean>(
 				url, OfflineBeaconBean.class,
 				new Response.Listener<List<OfflineBeaconBean>>() {
@@ -283,8 +288,9 @@ public class OfflineDownloadHelper {
 	private void downloadLabel(final Context context, final String museumId)
 			throws SQLException {
 
-		String url = Constant.HOST_HEAD
-				+ "/a/api/labels/treeData?musumId=" + museumId;
+//		String url = Constant.HOST_HEAD
+//				+ "/a/api/labels/treeData?musumId=" + museumId;
+		String url  = "http://182.92.82.70/a/api/labels/treeData?museum.id="+museumId;
 		FastJsonArrayRequest<OfflineLabelBean> request = new FastJsonArrayRequest<OfflineLabelBean>(
 				url, OfflineLabelBean.class,
 				new Response.Listener<List<OfflineLabelBean>>() {
@@ -316,9 +322,9 @@ public class OfflineDownloadHelper {
 	 */
 	private void downloadFiles() {
 
-		String url = Constant.HOST_HEAD + "/a/api/assets/download?id="
-				+ museumId;
-
+//		String url = Constant.HOST_HEAD + "/a/api/assets/download?id="
+//				+ museumId;
+		String url = "http://182.92.82.70/a/api/assets/download?id="+museumId;
 		JsonObjectRequest request = new JsonObjectRequest(url, null,
 				new Response.Listener<JSONObject>() {
 

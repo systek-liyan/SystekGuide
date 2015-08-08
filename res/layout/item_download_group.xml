@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:background="@color/color_white"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+    
+    <TextView 
+        android:id="@+id/tv_download_group_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"/>
+    
+    <ImageView 
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:id="@+id/iv_download_group_icon"
+        android:layout_width="@dimen/download_icon_size"
+        android:layout_height="@dimen/download_icon_size"
+        android:src="@drawable/arrow"
+        android:layout_marginRight="10dp"/>
+
+</RelativeLayout>

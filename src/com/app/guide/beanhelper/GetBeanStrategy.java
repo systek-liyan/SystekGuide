@@ -296,6 +296,8 @@ public abstract class GetBeanStrategy {
 									downloadModel = new DownloadModel();
 									downloadModel.setCity(object
 											.getString("city"));
+									Log.w("TAG", "CITY"+object
+											.getString("city"));
 									JSONArray museums = object
 											.getJSONArray("museumList");
 									Log.w("TAG", "中层,"+museums.toString());
@@ -314,8 +316,9 @@ public abstract class GetBeanStrategy {
 										downloadBeans.add(downloadBean);
 									}
 									downloadModel.setMuseumsUrl(downloadBeans);
-									modelDao.createOrUpdate(downloadModel);
+//									modelDao.createOrUpdate(downloadModel);
 									downloadList.add(downloadModel);
+									
 									callBack.onGetBeanResponse(downloadList);
 								}
 							} catch (JSONException e) {

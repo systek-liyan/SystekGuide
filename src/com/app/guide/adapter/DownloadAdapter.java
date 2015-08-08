@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -15,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.toolbox.ClearCacheRequest;
 import com.app.guide.R;
 import com.app.guide.download.DownloadBean;
 import com.app.guide.download.DownloadClient;
@@ -33,26 +36,61 @@ public class DownloadAdapter extends CommonAdapter<DownloadBean> {
 	 */
 	private Map<Integer, ProgressBar> progressMap;
 
+	private Map<String,View> viewMap;
+	private Map<String,DownloadClient> clientMap;
+	
+	private OnItemDeleteListener mItemDeleteListener;
+	
+	private OnDownloadCompleteListener mDownloadCompleteListener;
+	
+	public void setItemDeleteListener(OnItemDeleteListener listener){
+		this.mItemDeleteListener = listener;
+	}
+	
+	public void setDownloadCompleteListener(OnDownloadCompleteListener listener){
+		this.mDownloadCompleteListener = listener;
+	}
+	
 	public DownloadAdapter(Context context, List<DownloadBean> data,
 			int layoutId) {
 		super(context, data, layoutId);
 		progressMap = new HashMap<Integer, ProgressBar>();
+//		clientMap = new HashMap<String, DownloadClient>();
+//		for(DownloadBean bean : mData){
+//			clientMap.put(bean.getMuseumId(), AppService.getDownloadClient(mContext,bean.getMuseumId()));
+//		}
+		viewMap = new HashMap<String, View>();
 	}
 
-	public void add(DownloadBean downloadBean) {
-		// TODO Auto-generated method stub
-		this.mData.add(downloadBean);
-		notifyDataSetChanged();
+	@Override
+	public void notifyDataSetChanged() {
+		super.notifyDataSetChanged();
+//		for(DownloadBean bean : mData){
+//			clientMap.put(bean.getMuseumId(), AppService.getDownloadClient(mContext,bean.getMuseumId()));
+//		}
 	}
-
+	
 	public void remove(int position) {
 		this.mData.remove(position);
 		notifyDataSetChanged();
 	}
+	
+//	public void startDownload(String museumId){
+//		DownloadClient client = clientMap.get(museumId);
+//		try {
+//			client.start();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} catch (NumberFormatException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	@Override
 	public void convert(ViewHolder holder, final int position) {
-
+		viewMap.put(getItem(position).getMuseumId(), holder.getConvertView());
 		holder.setTvText(R.id.tv_download_museum_name,
 				getItem(position).getName()).setTvText(R.id.tv_download_size,
 				getItem(position).getTotal() + "");
@@ -65,6 +103,7 @@ public class DownloadAdapter extends CommonAdapter<DownloadBean> {
 
 		tvMsg.setText("");
 		String museumId = getItem(position).getMuseumId();
+		Log.w("TAG", museumId);
 		final DownloadClient client = AppService.getDownloadClient(mContext,
 				museumId);
 		client.setOnProgressListener(new OnProgressListener() {
@@ -75,6 +114,9 @@ public class DownloadAdapter extends CommonAdapter<DownloadBean> {
 				// TODO Auto-generated method stub
 				Toast.makeText(mContext, getItem(position).getName() + "下载完成",
 						Toast.LENGTH_SHORT).show();
+				if(mDownloadCompleteListener != null){
+					mDownloadCompleteListener.onDownloadComplete(getItem(position));
+				}
 				remove(position);
 			}
 
@@ -86,10 +128,10 @@ public class DownloadAdapter extends CommonAdapter<DownloadBean> {
 
 			@Override
 			public void onProgress(long total, long current) {
-				progress = (int)(current/total)*100;
-				progressMap.get(position).setProgress(progress);
+				Log.w("TAG", current+","+total+"adapter");
+				progress = (int)(current*100/total);
+				progressMap.get(0).setProgress(progress);
 				tvMsg.setText("正在下载"+progress+"%");
-				
 			}
 
 			@Override
@@ -124,102 +166,30 @@ public class DownloadAdapter extends CommonAdapter<DownloadBean> {
 			}
 		});
 
-		holder.getConvertView().setOnLongClickListener(mLongClickListener);
+		holder.getConvertView().setOnLongClickListener(new OnLongClickListener() {
+
+			@Override
+			public boolean onLongClick(View v) {
+				// TODO Auto-generated method stub
+				Toast.makeText(mContext, "删除", Toast.LENGTH_SHORT).show();
+				if(mItemDeleteListener!=null){
+					mItemDeleteListener.onItemDeleted(getItem(position));
+				}
+				remove(position);
+				return true;
+			}
+		});
 
 	}
 
-	private OnLongClickListener mLongClickListener = new OnLongClickListener() {
-
-		@Override
-		public boolean onLongClick(View v) {
-			// TODO Auto-generated method stub
-			Toast.makeText(mContext, "删除", Toast.LENGTH_SHORT).show();
-			return true;
-		}
-	};
+//	private OnLongClickListener mLongClickListener = ;
+	public interface OnDownloadCompleteListener{
+		void onDownloadComplete(DownloadBean bean);
+	}
 	
-	
-	public interface OnItemDeletedListener{
+	public interface OnItemDeleteListener{
 		
-		void onItemDeletedListener();
+		void onItemDeleted(DownloadBean bean);
 	}
 
-	// //设置下载项 的名字（博物馆名）
-	// holder.setTvText(R.id.item_downloading_name,
-	// getItem(position).getName());
-	// //获取显示提示语的tv
-	// final TextView tvMsg = holder.getView(R.id.item_downloading_msg);
-	// //获取开始按钮
-	// final Button btnStart = holder.getView(R.id.item_downloading_btn_start);
-	// //获取博物馆id
-	// String museumId = getItem(position).getMuseumId();
-	// //根据获取的博物馆id通过AppService取得一个DownloadClient 用以下载
-	// final DownloadClient client = AppService.getDownloadClient(mContext,
-	// museumId);
-	// //给downloadClient设置下载进度监听
-	// client.setOnProgressListener(new OnProgressListener() {
-	// @Override
-	// public void onSuccess() {
-	// Toast.makeText(mContext,
-	// client.getDownloadBean().getName() + "下载完成",
-	// Toast.LENGTH_SHORT).show();
-	// // 移除view
-	// remove(position);
-	// }
-	//
-	// @Override
-	// public void onStart() {
-	// // 开始下载 TODO 设置进度
-	// tvMsg.setText("正在下载...");
-	// }
-	//
-	// @Override
-	// public void onProgress(long total, long current) {
-	// ProgressBar progressBar = progressMap.get(position);
-	// if (progressBar != null) {
-	// progressBar.setProgress((int) (current * 100 / total));
-	// }
-	// Log.w("Adapter", "total:" + total + "  current:" + current);
-	// }
-	//
-	// @Override
-	// public void onFailed(String url, String msg) {
-	// // 下载失败 TODO
-	// Toast.makeText(mContext, "请检查网络状态", Toast.LENGTH_SHORT).show();
-	// }
-	// });
-	// //给开始按钮设置点击监听
-	// btnStart.setOnClickListener(new OnClickListener() {
-	// @Override
-	// public void onClick(View v) {
-	// if (client.getState() == STATE.NONE) {
-	// tvMsg.setText("准备中...");
-	// try {
-	// client.start();
-	// } catch (SQLException e) {
-	// e.printStackTrace();
-	// } catch (NumberFormatException e) {
-	// e.printStackTrace();
-	// } catch (IOException e) {
-	// e.printStackTrace();
-	// }
-	// btnStart.setText("暂停");
-	// } else if (client.getState() == STATE.DOWNLOADING) {
-	// client.pause();
-	// btnStart.setText("开始");
-	// } else if (client.getState() == STATE.PAUSE) {
-	// client.resume();
-	// btnStart.setText("暂停");
-	// }
-	// }
-	// });
-	// //获取下载进度条，并添加到Map中。不将progressBar放入holder，是因为复用之后无法更新进度
-	// //TODO查查看是否可以复用
-	// ProgressBar progress = (ProgressBar) holder.getConvertView()
-	// .findViewById(R.id.item_downloading_progress);
-	// if (!progressMap.containsKey(position)) {
-	// progress.setMax(100);
-	// progressMap.put(position, progress);
-	// }
-	// }
 }

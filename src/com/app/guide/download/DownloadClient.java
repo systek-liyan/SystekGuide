@@ -8,6 +8,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.app.guide.Constant;
@@ -122,6 +124,7 @@ public class DownloadClient {
 			@Override
 			public void onSuccess(ResponseInfo<File> responseInfo) {
 				Log.w(TAG, "success once:" );
+//				Log.w("TAG", "SIZE"+FileUtils.getFileSize(queue.peek().getTarget()));
 				//调用下载成功的方法
 				downloadOnceCompleted(FileUtils.getFileSize(queue.peek().getTarget()));
 				
@@ -148,15 +151,22 @@ public class DownloadClient {
 				downloadNext(); 
 			}
 
-			//加载下载任务时回调该方法，为什么每次都会调用两次， 一次为0  一次非0
 			@Override
-			public void onLoading(long total, long current, boolean isUploading) {
+			public void onLoading(long total, final long current, boolean isUploading) {
 				// TODO Auto-generated method stub
 				super.onLoading(total, current, isUploading);
 				Log.w(TAG, "Loading");
 				if (mProgressListener != null) {
-					mProgressListener.onProgress(downloadBean.getTotal(),
-							(downloadBean.getCurrent() + current));
+					Log.w("TAG", downloadBean.getCurrent()+","+current);
+					mainHandler.post(new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							mProgressListener.onProgress(downloadBean.getTotal(),
+									(downloadBean.getCurrent() + current));
+						}
+					});
 				}
 			}
 
@@ -170,6 +180,8 @@ public class DownloadClient {
 			e.printStackTrace();
 		}
 	}
+	private Handler mainHandler = new Handler(Looper.getMainLooper());
+
 
 	/**
 	 * 每次下载成功一个文件后调用此方法。 更新DownloadBean和DownloadInfo表。
@@ -182,6 +194,7 @@ public class DownloadClient {
 		tryTime = 0;
 		try {
 			downloadBean.setCurrent(downloadBean.getCurrent() + length);
+//			Log.w("TAG", downloadBean.getCurrent()+"");
 			beanDao.createOrUpdate(downloadBean);
 			infoDao.delete(deleteInfo);
 		} catch (SQLException e) {

@@ -356,7 +356,9 @@ public class MyMap extends SurfaceView implements SurfaceHolder.Callback {
 	}
 
 	private void draw() {
-		mDrawThread.mHandler.sendEmptyMessage(0);
+		if(mDrawThread.mHandler!=null){
+			mDrawThread.mHandler.sendEmptyMessage(0);
+		}
 	}
 
 	@Override

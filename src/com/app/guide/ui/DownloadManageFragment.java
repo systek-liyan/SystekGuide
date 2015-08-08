@@ -1,5 +1,6 @@
 package com.app.guide.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -10,16 +11,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app.guide.R;
 import com.app.guide.adapter.DownloadAdapter;
-import com.app.guide.adapter.DownloadAdapter.OnItemDeletedListener;
+import com.app.guide.adapter.DownloadAdapter.OnDownloadCompleteListener;
+import com.app.guide.adapter.DownloadAdapter.OnItemDeleteListener;
 import com.app.guide.beanhelper.GetBeanCallBack;
 import com.app.guide.beanhelper.GetBeanHelper;
 import com.app.guide.download.DownloadBean;
+import com.app.guide.ui.DownloadListFragment.OnDownloadBeginListener;
 
 public class DownloadManageFragment extends Fragment implements
-		OnItemDeletedListener {
+		OnItemDeleteListener, OnDownloadBeginListener ,OnDownloadCompleteListener{
 
 	private static final String TAG = DownloadManageFragment.class
 			.getSimpleName();
@@ -27,10 +31,10 @@ public class DownloadManageFragment extends Fragment implements
 	private DownloadAdapter mDownloadingAdapter;
 
 	private DownloadAdapter mDownloadedAdapter;
-	// private Button addButton;
-	private List<DownloadBean> downloadingList;
 
-	private List<DownloadBean> downloadCompletedList;
+	private List<DownloadBean> downloadingList = new ArrayList<DownloadBean>();
+
+	private List<DownloadBean> downloadCompletedList = new ArrayList<DownloadBean>();
 
 	/**
 	 * 正在下载的listview
@@ -46,7 +50,7 @@ public class DownloadManageFragment extends Fragment implements
 	 * 正在下载标题栏 tv
 	 */
 	private TextView tvDownloading;
-	
+
 	/**
 	 * 下载完成标题栏tv
 	 */
@@ -61,6 +65,7 @@ public class DownloadManageFragment extends Fragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		DownloadListFragment.setDownloadListener(this);
 		initData();
 	}
 
@@ -72,9 +77,7 @@ public class DownloadManageFragment extends Fragment implements
 					@Override
 					public void onGetBeanResponse(List<DownloadBean> response) {
 						downloadingList = response;
-						mDownloadingAdapter = new DownloadAdapter(
-								getActivity(), downloadingList,
-								R.layout.item_downloading_lv);
+
 					}
 				});
 
@@ -84,11 +87,13 @@ public class DownloadManageFragment extends Fragment implements
 					@Override
 					public void onGetBeanResponse(List<DownloadBean> response) {
 						downloadCompletedList = response;
-						mDownloadedAdapter = new DownloadAdapter(getActivity(),
-								downloadCompletedList,R.layout.item_downloading_lv);
 
 					}
 				});
+		mDownloadingAdapter = new DownloadAdapter(getActivity(),
+				downloadingList, R.layout.item_download);
+		mDownloadedAdapter = new DownloadAdapter(getActivity(),
+				downloadCompletedList, R.layout.item_download);
 	}
 
 	@SuppressLint("InflateParams")
@@ -103,29 +108,23 @@ public class DownloadManageFragment extends Fragment implements
 		tvDownloading = (TextView) view.findViewById(R.id.tv_download_ing);
 		tvDownloaded = (TextView) view.findViewById(R.id.tv_download_complete);
 		tvNoItems = (TextView) view.findViewById(R.id.tv_download_no_items);
-
+		lvDownloading.setAdapter(mDownloadingAdapter);
+		lvDownloadComplete.setAdapter(mDownloadedAdapter);
+		updateTvVisibility();
 		return view;
 	}
 
-	/**
-	 * 当有子项移除时调用该回调
-	 */
-	@Override
-	public void onItemDeletedListener() {
-		// 更新tvNoItems的可见性
-		updateTvVisibility();
-
-	}
-
 	private void updateTvVisibility() {
-		if(mDownloadedAdapter.getCount() == 0)
+		if (mDownloadedAdapter.getCount() == 0)
 			tvDownloaded.setVisibility(View.GONE);
-		else tvDownloaded.setVisibility(View.VISIBLE);
-		
-		if(mDownloadingAdapter.getCount() == 0)
+		else
+			tvDownloaded.setVisibility(View.VISIBLE);
+
+		if (mDownloadingAdapter.getCount() == 0)
 			tvDownloading.setVisibility(View.GONE);
-		else tvDownloading.setVisibility(View.VISIBLE);
-		
+		else
+			tvDownloading.setVisibility(View.VISIBLE);
+
 		if (mDownloadingAdapter.getCount() + mDownloadedAdapter.getCount() == 0) {
 			tvNoItems.setVisibility(View.VISIBLE);
 		} else {
@@ -133,36 +132,33 @@ public class DownloadManageFragment extends Fragment implements
 		}
 	}
 
-	// @Override
-	// public void onViewCreated(View view, Bundle savedInstanceState) {
-	// // TODO Auto-generated method stub
-	// super.onViewCreated(view, savedInstanceState);
-	// data = new ArrayList<DownloadBean>();
-	// GetBeanHelper.getInstance(getActivity()).getDownloadCompletedBeans(
-	// new GetBeanCallBack<List<DownloadBean>>() {
-	// @Override
-	// public void onGetBeanResponse(List<DownloadBean> response) {
-	// data = response;
-	// if (adapter != null)
-	// adapter.notifyDataSetChanged();
-	//
-	// }
-	// });
-	// adapter = new DownloadingAdapter(getActivity(), data,
-	// R.layout.item_downloading);
-	// downloadingLv.setAdapter(adapter);
-	// addButton.setOnClickListener(new OnClickListener() {
-	//
-	// @Override
-	// public void onClick(View v) {
-	// // TODO Auto-generated method stub
-	// String museumId = "fb468fcd9a894dbf8108f9b8bbc88109";
-	// DownloadBean bean = new DownloadBean();
-	// bean.setMuseumId(museumId);
-	// bean.setName("首都博物馆");
-	// adapter.add(bean);
-	// }
-	// });
-	// }
+	@Override
+	public void onDownload(DownloadBean downloadBean) {
+		Toast.makeText(getActivity(), "开始下载", Toast.LENGTH_SHORT).show();
+		downloadingList.add(downloadBean);
+		mDownloadingAdapter.notifyDataSetChanged();
+//		mDownloadingAdapter.startDownload(downloadBean.getMuseumId());
+		updateTvVisibility();
+
+	}
+
+	@Override
+	public void onUpgrate() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onItemDeleted(DownloadBean bean) {
+		// TODO Auto-generated method stub
+		updateTvVisibility();
+	}
+
+	@Override
+	public void onDownloadComplete(DownloadBean bean) {
+		// TODO Auto-generated method stub
+		downloadCompletedList.add(bean);
+		mDownloadedAdapter.notifyDataSetChanged();
+	}
 
 }

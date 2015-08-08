@@ -2,18 +2,27 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/download_list_item_height"
-    android:layout_margin="10dp">
+    android:padding="10dp">
 
    <TextView 
-       android:id="@+id/tv_download_citylist_name"
+       android:id="@+id/tv_download_child_name"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
        android:textSize="@dimen/download_text_size"
        android:layout_centerVertical="true"
        android:layout_marginLeft="5dp"/>
    
+   <TextView 
+       android:id="@+id/tv_download_child_state"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_toRightOf="@+id/tv_download_child_name"
+       android:layout_centerVertical="true"
+       android:textSize="11sp"
+       android:layout_marginLeft="5dp"/>
+   
    <ImageView 
-       android:id="@+id/iv_downloadable"
+       android:id="@+id/iv_download_child_icon"
        android:layout_width="@dimen/download_icon_size"
        android:layout_height="@dimen/download_icon_size"
        android:layout_alignParentRight="true"
@@ -21,11 +30,12 @@
        android:layout_centerVertical="true"
        android:src="@drawable/play_btn_play"/>
 
-   <TextView android:id="@+id/tv_download_size"
+   <TextView android:id="@+id/tv_download_child_size"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
        android:layout_centerVertical="true"
-       android:layout_toLeftOf="@id/iv_downloadable"
+       android:layout_toLeftOf="@id/iv_download_child_icon"
+       android:layout_marginRight="8dp"
        android:textSize="@dimen/download_text_size"/>
    
 </RelativeLayout>
