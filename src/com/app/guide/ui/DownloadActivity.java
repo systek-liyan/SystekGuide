@@ -1,47 +1,99 @@
 package com.app.guide.ui;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentTabHost;
-import android.widget.TabHost.TabSpec;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
 
 import com.app.guide.R;
+import com.app.guide.widget.MyToggleButton;
+import com.app.guide.widget.MyToggleButton.OnStateChangedListener;
 
 public class DownloadActivity extends BaseActivity {
 
-	private FragmentTabHost mTabHost;
-	private static final Class<?>[] fragments = { DownloadingFragment.class,
-			DownloadCompletedFragment.class };
-	private static final int[] title = { R.string.download_text_ing,
-			R.string.download_text_completed };
+	private DownloadManageFragment downloadingFragment;
+	
+	private DownloadListFragment downloadedFragment;
+	
+	private Fragment mCurrentFragment;
+	
+	private FragmentManager mFragmentManager;
+	
+	private MyToggleButton tbTitle;
+	
+	private ImageView ivBack;
+	
+	private static final String Bundle_key = "state";
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_download);
 		initViews();
 		if (savedInstanceState != null) {
-			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
+			tbTitle.setCurrentState(savedInstanceState.getInt(Bundle_key));
 		}
 		
 	}
 
+	/**
+	 * 初始化视图
+	 */
 	private void initViews() {
-		mTabHost = (FragmentTabHost) findViewById(R.id.download_tabhost);
-		mTabHost.setup(this, getSupportFragmentManager(), R.id.tab_content);
-		for (int i = 0; i < fragments.length; i++) {
-			// 为每一个Tab按钮设置图标、文字和内容
-			TabSpec tabSpec = mTabHost.newTabSpec(getString(title[i]))
-					.setIndicator(getString(title[i]));
-			// 将Tab按钮添加进Tab选项卡中
-			mTabHost.addTab(tabSpec, fragments[i], null);
-		}
+		
+		tbTitle = (MyToggleButton) findViewById(R.id.toggle_btn);
+		ivBack = (ImageView) findViewById(R.id.iv_back);
+		ivBack.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+		tbTitle.setStateChangedListener(new OnStateChangedListener() {
+			
+			@Override
+			public void onSwitchOn() {
+				if(mCurrentFragment != null)
+					mCurrentFragment.onPause();
+				mCurrentFragment = downloadingFragment;
+				beginTransaction();
+			}
+			
+
+			@Override
+			public void onSwitchOff() {
+				if(mCurrentFragment != null)
+					mCurrentFragment.onPause();
+				mCurrentFragment = downloadedFragment;
+				beginTransaction();
+				
+			}
+		});
+		mFragmentManager = getSupportFragmentManager();
+		downloadingFragment = new DownloadManageFragment();
+		downloadedFragment = new DownloadListFragment();
+		if(tbTitle.getCurrentState() == MyToggleButton.STATE_ON)
+			mCurrentFragment = downloadingFragment;
+		else 
+			mCurrentFragment = downloadedFragment;
+		beginTransaction();
+		
+	}
+	
+	private void beginTransaction() {
+		FragmentTransaction ft = mFragmentManager.beginTransaction();
+		ft.replace(R.id.download_container, mCurrentFragment);
+		ft.commit();
+		mCurrentFragment.onResume();
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putString("tab", mTabHost.getCurrentTabTag());
+		outState.putInt(Bundle_key, tbTitle.getCurrentState());
 	}
 
 	@Override

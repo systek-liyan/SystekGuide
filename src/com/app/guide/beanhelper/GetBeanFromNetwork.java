@@ -105,10 +105,5 @@ public class GetBeanFromNetwork extends GetBeanStrategy {
 
 	}
 
-	@Override
-	public void getDownloadList(GetBeanCallBack<List<DownloadBean>> callBack) {
-		// TODO Auto-generated method stub
-
-	}
 
 }
