@@ -17,7 +17,8 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content">
-
+            
+            <!-- 搜索文本输入框 -->
             <EditText
                 android:id="@+id/search_et_input"
                 android:layout_gravity="center_vertical"
@@ -31,7 +32,7 @@
                 android:imeOptions="actionSearch"
                 android:inputType="text"
                 android:hint="@string/search_hint"/>
-
+            <!-- 删除输入文本  -->
             <ImageView
                 android:contentDescription="@string/search_delect_descriction"
                 android:visibility="gone"
@@ -43,6 +44,7 @@
                 android:layout_height="wrap_content"/>
         </FrameLayout>
 
+        <!-- 返回按键 -->
         <Button
             android:id="@+id/search_btn_back"
             android:layout_marginRight="10dp"
@@ -56,6 +58,7 @@
             android:textColor="@color/color_white"/>
     </LinearLayout>
 
+    <!-- 搜索结果列表 -->
     <ListView
         android:visibility="gone"
         android:id="@+id/search_lv_tips"
