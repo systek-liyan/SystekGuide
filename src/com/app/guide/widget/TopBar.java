@@ -126,7 +126,6 @@ public class TopBar extends LinearLayout{
 					break;
 				case R.id.frag_header_iv_search:
 					Intent intent = new Intent(mContext,SearchActivity.class);
-					intent.putExtra(Constant.EXTRA_MUSEUM_ID, 1);
 					mContext.startActivity(intent);
 					break;
 			}
