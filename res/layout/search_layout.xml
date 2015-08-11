@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 自定义搜索view -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:background="@color/lightgray"
               android:layout_width="match_parent"
@@ -58,7 +59,7 @@
             android:textColor="@color/color_white"/>
     </LinearLayout>
 
-    <!-- 搜索结果列表 -->
+    <!-- 搜索提示列表 -->
     <ListView
         android:visibility="gone"
         android:id="@+id/search_lv_tips"

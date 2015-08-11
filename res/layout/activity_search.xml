@@ -3,10 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+    <!-- 自定义搜索view -->
     <com.app.guide.widget.SearchView
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+    <!-- 搜索结果view -->
 	<com.app.guide.widget.AutoLoadListView
 	    android:id="@+id/search_lv_results"
 	    android:layout_width="match_parent"
