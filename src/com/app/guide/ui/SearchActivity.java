@@ -42,7 +42,7 @@ public class SearchActivity extends BaseActivity implements
 	private AutoLoadListView lvResults;
 
 	/**
-	 * 精品adapter
+	 * 推荐精品adapter
 	 */
 	private ArrayAdapter<String> hintAdapter;
 
@@ -57,7 +57,7 @@ public class SearchActivity extends BaseActivity implements
 	private ExhibitAdapter resultAdapter;
 
 	/**
-	 * 热搜版数据
+	 * 热搜版数据（推荐精品）
 	 */
 	private List<String> hintData;
 
@@ -91,7 +91,7 @@ public class SearchActivity extends BaseActivity implements
 	private List<ExhibitBean> resultData;
 
 	/**
-	 * 搜索view
+	 * 自定义的搜索view
 	 */
 	private SearchView searchView;
 

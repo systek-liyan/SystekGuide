@@ -46,27 +46,28 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
     private Context mContext;
 
     /**
-     * 弹出列表
+     * 弹出列表，显示精品推荐的展品或自动补全文本的展品
+     * 在空文本下点击输入框显示前者，输入文本后显示后者
      */
     private ListView lvTips;
     
     /**
-     * 提示adapter （推荐adapter）
+     * 提示adapter （精品推荐adapter）
      */
     private ArrayAdapter<String> mHintAdapter; 
     
     /**
-     * 自动补全adapter 只显示名字
+     * 自动补全adapter 仅显示展品名称
      */
     private ArrayAdapter<String> mAutoCompleteAdapter;
 
     /**
-     * 搜索回调接口
+     * 搜索回调接口,搜索结果传递给实现者
      */
     private SearchViewListener mListener;
 
     /**
-     * 设置搜索回调接口
+     * 设置搜索回调接口,搜索结果传递给实现者
      * @param listener
      */
     public void setSearchViewListener(SearchViewListener listener) {
@@ -107,6 +108,7 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
 
         etInput.addTextChangedListener(new EditChangedListener());
         etInput.setOnClickListener(this);
+        // 用户输入了输入法中的搜索按钮（回车键）的回调
         etInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -122,7 +124,7 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
     }
 
     /**
-     * 设置热搜版提示 adapter
+     * 设置热搜版（精品推荐）提示 adapter，如果提示框的ListView是空的，显示精品推荐展品名称
      */
     public void setTipsHintAdapter(ArrayAdapter<String> adapter) {
         this.mHintAdapter = adapter;
@@ -146,7 +148,7 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-        	if (!"".equals(charSequence.toString())) {
+        	if (!"".equals(charSequence.toString())) { // 自动匹配补全
                 ivDelete.setVisibility(VISIBLE);
                 lvTips.setVisibility(VISIBLE);
                 if (mAutoCompleteAdapter != null && lvTips.getAdapter() != mAutoCompleteAdapter) {
@@ -156,7 +158,7 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
                 if (mListener != null) {
                     mListener.onAutoRefreshComplete(charSequence + "");
                 }
-            } else {
+            } else { // 没有输入内容，显示精品推荐的展品名称
                 ivDelete.setVisibility(GONE);
                 if (mHintAdapter != null) {
                     lvTips.setAdapter(mHintAdapter);
