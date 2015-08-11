@@ -62,9 +62,29 @@ public class ListBitmapCache implements ImageCache {
 				Bitmap tempBitmap = BitmapFactory.decodeFile(path,
 						decodeOptions);
 				if (tempBitmap != null) {
+					/**
+					 * Creates a new bitmap, scaled from an existing bitmap, when possible. 
+					 * If the specified width and height are the same as the current width and height of 
+					 * the source bitmap, the source bitmap is returned and no new bitmap is created.
+					 */
 					bitmap = Bitmap.createScaledBitmap(tempBitmap, maxWidth,
 							maxHeight, true);
-					tempBitmap.recycle();
+					Log.d("ListBitmapCache","maxWidth,maxHeight="+maxWidth+","+maxHeight);
+					Log.d("ListBitmapCache","bitmap,tempBitmap="+bitmap+","+tempBitmap);
+					
+					/**
+					 * Given another bitmap, return true if it has the same dimensions, config, and pixel data as this bitmap. 
+					 * If any of those differ, return false. If other is null, return false.
+					 */
+					if (bitmap.sameAs(tempBitmap)) {
+						Log.d("ListBitmapCache","bitmap,tempBitmap is same! Cannot be recycled!!");
+					}
+					else {
+						Log.d("ListBitmapCache","bitmap,tempBitmap is Not same! Can be recycled!!");
+						tempBitmap.recycle();
+					}
+					// 源程序在此没有判断直接回收，导致crash
+					//tempBitmap.recycle();
 				}
 				if (bitmap != null) {
 					mCache.put(url, bitmap);
