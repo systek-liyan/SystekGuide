@@ -109,8 +109,8 @@ public class GetBeanFromDB extends GetBeanStrategy {
 					.getOfflineExhibitDao();
 			QueryBuilder<OfflineExhibitBean, String> builder = oDao
 					.queryBuilder();
-			builder.offset(Constant.PAGE_COUNT * page);
-			builder.limit(Constant.PAGE_COUNT);
+			builder.offset((long)Constant.PAGE_COUNT * page);
+			builder.limit((long)Constant.PAGE_COUNT);
 			offlineExhibitBeans = builder.query();
 		} catch (SQLException e) {
 		}
