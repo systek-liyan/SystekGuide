@@ -132,13 +132,12 @@ public abstract class GetBeanStrategy {
 			GetBeanCallBack<MuseumModel> callBack);
 
 	/**
-	 * 获取展品ExhibitBean列表 内部使用分页（从1开始）
+	 * 获取展品ExhibitBean列表 内部使用分页（从0开始）
 	 * 
 	 * @param museumId 博物馆id
 	 * @param minPriority 最小优先级(即，比该优先级大的博物馆是推荐的博物馆)
-	 * @param page 从1开始
+	 * @param page 0,1,2,3... 表示第1,2,3...页
 	 * @param callBack ExhibitBean列表
-	 * @return
 	 */
 	public abstract void getExhibitList(String museumId, int minPriority,int page,
 			GetBeanCallBack<List<ExhibitBean>> callBack);

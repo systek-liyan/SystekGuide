@@ -97,13 +97,12 @@ public class GetBeanFromDB extends GetBeanStrategy {
 	}
 
 	/**
-	 * 获取展品ExhibitBean列表 内部使用分页
+	 * 获取展品ExhibitBean列表 内部使用分页（从0开始）
 	 * 
 	 * @param museumId 博物馆id
 	 * @param minPriority 最小优先级(即，比该优先级大的博物馆是推荐的博物馆)
-	 * @param page 从1开始
+	 * @param page 0,1,2,3... 表示第1,2,3...页
 	 * @param callBack ExhibitBean列表
-	 * @return
 	 */
 	@Override
 	public void getExhibitList(String museumId, int minPriority,int page,
@@ -118,7 +117,7 @@ public class GetBeanFromDB extends GetBeanStrategy {
 					.getOfflineExhibitDao();
 			QueryBuilder<OfflineExhibitBean, String> builder = oDao
 					.queryBuilder();
-			builder.offset((long)Constant.PAGE_COUNT * (page-1));
+			builder.offset((long)Constant.PAGE_COUNT * page);
 			builder.limit((long)Constant.PAGE_COUNT);
 			offlineExhibitBeans = builder.query();
 		} catch (SQLException e) {
