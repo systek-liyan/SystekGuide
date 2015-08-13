@@ -5,6 +5,7 @@
     android:gravity="center"
     android:orientation="horizontal" >
 
+    <!-- 已加载全部 -->
     <TextView
         android:id="@+id/footer_loadFull"
         android:layout_width="wrap_content"
@@ -14,6 +15,7 @@
         android:text="@string/load_full"
         android:visibility="gone" />
 
+    <!-- 暂无数据 -->
     <TextView
         android:id="@+id/footer_noData"
         android:layout_width="wrap_content"
@@ -23,6 +25,7 @@
         android:text="@string/no_data"
         android:visibility="gone" />
 
+    <!-- 加载中 -->
     <TextView
         android:id="@+id/footer_more"
         android:layout_width="wrap_content"
@@ -31,6 +34,7 @@
         android:padding="5dp"
         android:text="@string/more" />
 
+    <!-- 加载中显示进度条  -->
     <ProgressBar
         android:id="@+id/footer_loading"
         style="@style/CustomProgressBar" />

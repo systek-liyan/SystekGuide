@@ -2,6 +2,7 @@ package com.app.guide.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsListView;
@@ -11,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.app.guide.R;
+import com.app.guide.ui.SearchActivity;
 
 /**
  * 
@@ -20,19 +22,28 @@ import com.app.guide.R;
  * 
  */
 public class AutoLoadListView extends ListView implements OnScrollListener {
-	private static final String TAG = "AutoLoadListView";
 
+	private static final String TAG = AutoLoadListView.class.getSimpleName();
+	
 	private LayoutInflater inflater;
+	/** 在本类表示的ListView的末尾添加此view */
 	private View footer;
 
+	/** 加载失败(暂无数据)  */
 	private TextView loadFail;
+	/** 已加载全部 */
 	private TextView loadFull;
+	/** 加载中 */
 	private TextView loadIng;
+	/** 加载中，进度条 */
 	private ProgressBar progressBar;
 
-	private boolean isLoading;// 判断是否正在加载
-
+	/** 判断是否正在加载 */
+	private boolean isLoading = false;
+	
+	/** 加载监听，调用者实现 */
 	private OnLoadListener mOnLoadListener;
+	/** 滑动监听, 内部使用 */
 	private OnScrollListener mOnScrollListener;
 
 	public AutoLoadListView(Context context) {
@@ -55,12 +66,13 @@ public class AutoLoadListView extends ListView implements OnScrollListener {
 		inflater = LayoutInflater.from(context);
 		footer = inflater.inflate(R.layout.listview_footer, null);
 		loadFull = (TextView) footer.findViewById(R.id.footer_loadFull);
-		loadFail = (TextView) footer.findViewById(R.id.footer_noData);
+		loadFail = (TextView) footer.findViewById(R.id.footer_noData);  
+		
+		/** 点击加载失败(暂无数据) */
 		loadFail.setOnClickListener(new OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+				Log.d(TAG,"点击加载失败");
 				setloading();
 				if (mOnLoadListener != null) {
 					mOnLoadListener.onRetry();
@@ -69,7 +81,8 @@ public class AutoLoadListView extends ListView implements OnScrollListener {
 		});
 		loadIng = (TextView) footer.findViewById(R.id.footer_more);
 		progressBar = (ProgressBar) footer.findViewById(R.id.footer_loading);
-		//设置footer不可点击
+		
+		//设置footer不可点击，因此loadFail.setOnClickListener()无效
 		addFooterView(footer,null,false);
 		setOnScrollListener(this);
 	}
@@ -83,8 +96,14 @@ public class AutoLoadListView extends ListView implements OnScrollListener {
 		}
 	}
 
+	/**
+	 * 滑动ListView，如果isLoading=false,并且能够看见最后一行,
+	 * 执行mOnLoadListener.onLoad();   即继续加载。
+	 * @param scrollState The current scroll state. One of SCROLL_STATE_TOUCH_SCROLL or SCROLL_STATE_IDLE.
+	 */
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		Log.d(TAG,"onScrollStateChanged(),scrollState="+scrollState);
 		if (!isLoading && view.getLastVisiblePosition() == view.getCount() - 1) {
 			isLoading = true;
 			setloading();
@@ -97,12 +116,12 @@ public class AutoLoadListView extends ListView implements OnScrollListener {
 		}
 	}
 
-	// 用于加载更多结束后的回调
+	/** 用于加载更多结束后的回调 */
 	public void onLoadComplete() {
 		isLoading = false;
 	}
 
-	// 加载失败时footer显示
+	/** 加载失败时footer显示 */
 	public void setLoadFailed() {
 		loadIng.setVisibility(View.GONE);
 		loadFull.setVisibility(GONE);
@@ -110,7 +129,7 @@ public class AutoLoadListView extends ListView implements OnScrollListener {
 		loadFail.setVisibility(VISIBLE);
 	}
 
-	// 加载完成时footer显示
+	/** 加载完成时footer显示  */
 	public void setLoadFull() {
 		loadIng.setVisibility(View.GONE);
 		loadFull.setVisibility(VISIBLE);
@@ -118,7 +137,7 @@ public class AutoLoadListView extends ListView implements OnScrollListener {
 		loadFail.setVisibility(GONE);
 	}
 
-	// 正在加载时footer显示
+	/** 正在加载时footer显示 */
 	private void setloading() {
 		loadIng.setVisibility(View.VISIBLE);
 		loadFull.setVisibility(GONE);
@@ -126,7 +145,7 @@ public class AutoLoadListView extends ListView implements OnScrollListener {
 		loadFail.setVisibility(GONE);
 	}
 
-	// 加载更多监听
+	/** 加载更多监听  */
 	public void setOnLoadListener(OnLoadListener onLoadListener) {
 		mOnLoadListener = onLoadListener;
 	}
@@ -135,8 +154,11 @@ public class AutoLoadListView extends ListView implements OnScrollListener {
 		this.mOnScrollListener = onScrollListener;
 	}
 
+	/** 加载更多监听接口  */
 	public interface OnLoadListener {
+		/** 执行加载更多的方法 */
 		public void onLoad();
+		/** 执行加载失败时的重新加载 */
 		public void onRetry();
 	}
 

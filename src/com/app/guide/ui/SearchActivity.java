@@ -6,12 +6,12 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Toast;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -35,9 +35,11 @@ import com.app.guide.widget.SearchView;
  */
 public class SearchActivity extends BaseActivity implements
 		SearchView.SearchViewListener {
-
+	
+	private static final String TAG = SearchActivity.class.getSimpleName();
+	
 	/**
-	 * 结果list view
+	 * 搜索结果显示list view
 	 */
 	private AutoLoadListView lvResults;
 
@@ -86,7 +88,7 @@ public class SearchActivity extends BaseActivity implements
 	private List<String> autoCompleteData;
 
 	/**
-	 * 结果列表数据
+	 * 搜索结果列表数据
 	 */
 	private List<ExhibitBean> resultData;
 
@@ -96,12 +98,12 @@ public class SearchActivity extends BaseActivity implements
 	private SearchView searchView;
 
 	/**
-	 * 返回按钮
+	 * 返回按钮,在SearchView中已经捕获，不用在此处理
 	 */
-	private Button btnBack;
+	// private Button btnBack;
 
 	/**
-	 * 储存展品列表
+	 * 储存展品列表,目前是博物馆的所有展品
 	 */
 	private List<ExhibitBean> exhibitsList;
 
@@ -111,10 +113,11 @@ public class SearchActivity extends BaseActivity implements
 	private String mMuseumId;
 
 	/**
-	 * page
+	 * page=0,1,2... 代表第1,2,3...页
 	 */
 	private int page = 0;
 
+	/** 存储当前显示的搜索结果 */
 	private List<ExhibitBean> shownResults;
 
 	private SweetAlertDialog pDialog;
@@ -138,6 +141,7 @@ public class SearchActivity extends BaseActivity implements
 
 	/**
 	 * 当展品数据量较大时，存太多数据 初始化exhibit数据
+	 * 目前，将博物馆所有展品存入exhibitsList中
 	 */
 	private void initExhibitData() {
 		exhibitsList = new ArrayList<ExhibitBean>();
@@ -146,6 +150,7 @@ public class SearchActivity extends BaseActivity implements
 					
 					@Override
 					public void onGetBeanResponse(List<ExhibitBean> response) {
+						Log.d(TAG,"reponse.size,page="+response.size()+","+page);
 						if(response !=null){
 							exhibitsList.addAll(response);
 							page++;
@@ -153,6 +158,7 @@ public class SearchActivity extends BaseActivity implements
 						if (response == null ||response.size() < Constant.PAGE_COUNT) {
 							// 加载完成
 							isCompleted = true;
+							Log.d(TAG,"加载完成,共"+page+"页");
 						}
 					}
 				});
@@ -167,7 +173,7 @@ public class SearchActivity extends BaseActivity implements
 	}
 
 	/**
-	 * TODO 从服务端中获取到数据库 ，再数据库中获得 获取精品数据
+	 * TODO 从服务端中获取到数据库 ，再从数据库中获得 获取精品推荐数据
 	 */
 	private void getHintData() {
 		hintData = new ArrayList<String>(mHintSize);
@@ -208,26 +214,18 @@ public class SearchActivity extends BaseActivity implements
 	 * 根据 搜索name 获取result data 从数据库中获取 获取搜索结果data
 	 */
 	private void getResultData(String text) {
-		// // 获取搜索词
-		// String[] words;
-		// if (text.contains(" "))
-		// words = text.split(" ");
-		// else {
-		// words = new String[1];
-		// words[0] = text;
-		// }
 		if (resultData == null) {
 			// 初始化
 			resultData = new ArrayList<ExhibitBean>();
 			shownResults = new ArrayList<ExhibitBean>();
 		} else {
-			resultData.clear();
-			shownResults.clear();
+			resultData.clear();  // 存储搜索结果
+			shownResults.clear(); // 存储当前将要显示的搜索结果
 			for (int i = 0, count = 0; i < exhibitsList.size(); i++) {
 				if (exhibitsList.get(i).getName().contains(text.trim())) {
 					resultData.add(exhibitsList.get(i));
 					if (count < Constant.PAGE_COUNT) {
-						shownResults.add(exhibitsList.get(i));
+						shownResults.add(exhibitsList.get(i)); // 添加一页的显示数据
 						count++;
 					}
 				}
@@ -236,24 +234,14 @@ public class SearchActivity extends BaseActivity implements
 		if (resultAdapter == null) {
 			resultAdapter = new ExhibitAdapter(this, shownResults,
 					R.layout.item_exhibit);
-		} else {
-			resultAdapter.notifyDataSetChanged();
 		}
+		resultAdapter.notifyDataSetChanged();
 	}
 
 	private void initViews() {
 		// find views
 		lvResults = (AutoLoadListView) findViewById(R.id.search_lv_results);
 		searchView = (SearchView) findViewById(R.id.search_view);
-		btnBack = (Button) findViewById(R.id.search_btn_back);
-
-		// 给返回按钮设置点击监听
-		btnBack.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				finish();
-			}
-		});
 
 		// 设置搜索监听回调
 		searchView.setSearchViewListener(this);
@@ -271,7 +259,7 @@ public class SearchActivity extends BaseActivity implements
 				// 跳转到随身导游界面
 				((AppContext) getApplication()).currentExhibitId = shownResults
 						.get(position).getId();
-				((AppContext) getApplication()).setGuideMode(Constant.GUIDE_MODE_MANUALLY);
+				//((AppContext) getApplication()).setGuideMode(Constant.GUIDE_MODE_MANUALLY);
 				((AppContext) getApplication()).isSelectedInSearch = true;
 				finish();
 
@@ -281,14 +269,11 @@ public class SearchActivity extends BaseActivity implements
 
 			@Override
 			public void onLoad() {
-				// TODO Auto-generated method stub
-				page++;
 				loadOnPage();
 			}
 
 			@Override
 			public void onRetry() {
-				// TODO Auto-generated method stub
 				loadOnPage();
 			}
 		});
@@ -301,12 +286,14 @@ public class SearchActivity extends BaseActivity implements
 				&& i < resultData.size(); i++) {
 			shownResults.add(resultData.get(i));
 		}
-		if (resultData.size() == 0 || shownResults.size() == resultData.size())
-			lvResults.setLoadFull();
+		if (resultData.size() == 0 || shownResults.size() == resultData.size()) {
+		   	lvResults.setLoadFull();     	    	    		
+    	}
+			
 		lvResults.onLoadComplete();
+		
 	}
-
-
+	
 	/**
 	 * 当 edit text 文本改变时 触发的回调
 	 * 
@@ -315,7 +302,6 @@ public class SearchActivity extends BaseActivity implements
 	@Override
 	public void onAutoRefreshComplete(String text) {
 		getAutoCompleteData(text);
-		
 	}
 
 	/**
@@ -341,10 +327,9 @@ public class SearchActivity extends BaseActivity implements
 		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 	}
 
-
-	@Override
-	protected boolean isFullScreen() {
-		return true;
-	}
+//	@Override
+//	protected boolean isFullScreen() {
+//		return true;
+//	}
 
 }

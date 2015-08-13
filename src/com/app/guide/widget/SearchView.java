@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.app.guide.R;
+import com.app.guide.beanhelper.GetBeanFromDB;
 
 /**
  * Created by yetwish on 2015-05-11
@@ -25,6 +27,8 @@ import com.app.guide.R;
 
 public class SearchView extends LinearLayout implements View.OnClickListener {
 
+	private static final String TAG = SearchView.class.getSimpleName();
+	
 	/**
 	 * 输入框
 	 */
@@ -185,6 +189,7 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
                 ivDelete.setVisibility(GONE);
                 break;
             case R.id.search_btn_back:
+            	Log.d(TAG,"返回键,search_btn_back");
                 ((Activity) mContext).finish();
                 break;
         }
