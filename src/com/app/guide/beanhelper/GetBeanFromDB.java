@@ -190,16 +190,23 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			exhibit.setTextUrl(bean.getTexturl());
 			exhibit.setlExhibitBeanId(bean.getLexhibit());
 			exhibit.setrExhibitBeanId(bean.getRexhibit());
-			String imgOptions[] = bean.getImgsurl().split(",");
+			
 			List<ImageModel> imgList = new ArrayList<ImageModel>();
-			imgList.clear();
-			String options[];
-			for (int i = 0; i < imgOptions.length; i++) {
-				options = imgOptions[i].split("\\*");
-				ImageModel option = new ImageModel(
-						Constant.getImageDownloadPath(options[0], museumId),
-						Integer.valueOf(options[1]));
+			// 如果没有多角度图片，用主图作为第一个多角度图片,从0开始播放
+			if (bean.getImgsurl() == null || bean.getImgsurl().equals(""))  {
+				ImageModel option = new ImageModel(exhibit.getIconUrl(),0);
 				imgList.add(option);
+			}
+			else {
+				String imgOptions[] = bean.getImgsurl().split(",");
+				String options[];
+				for (int i = 0; i < imgOptions.length; i++) {
+					options = imgOptions[i].split("\\*");
+					ImageModel option = new ImageModel(
+							Constant.getImageDownloadPath(options[0], museumId),
+							Integer.valueOf(options[1]));
+					imgList.add(option);
+				}
 			}
 			exhibit.setImgList(imgList);
 			exhibit.setLabels(bean.getLabels());

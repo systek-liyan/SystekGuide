@@ -94,7 +94,7 @@ public class OfflineDownloadHelper {
 	private void downloadExhibit(final Context context, final String museumid)
 			throws SQLException, NumberFormatException, IOException {
 		String url = Constant.HOST_HEAD
-				+ "/a/api/exhibit/treeData?musumId=" + museumId;
+				+ "/a/api/exhibit/treeData?museum.id=" + museumId;
 		FastJsonArrayRequest<OfflineExhibitBean> request = new FastJsonArrayRequest<OfflineExhibitBean>(
 				url, OfflineExhibitBean.class,
 				new Response.Listener<List<OfflineExhibitBean>>() {
@@ -146,7 +146,7 @@ public class OfflineDownloadHelper {
 	private void downloadMap(final Context context, final String museumId)
 			throws SQLException {
 		String url = Constant.HOST_HEAD
-				+ "/a/api/museumMap/treeData?musumId=" + museumId;
+				+ "/a/api/museumMap/treeData?museum.id=" + museumId;
 		FastJsonArrayRequest<OfflineMapBean> request = new FastJsonArrayRequest<OfflineMapBean>(
 				url, OfflineMapBean.class,
 				new Response.Listener<List<OfflineMapBean>>() {
@@ -249,7 +249,7 @@ public class OfflineDownloadHelper {
 	 */
 	private void downloadBeacon(final Context context, final String museumId) {
 		String url = Constant.HOST_HEAD
-				+ "/a/api/beacon/treeData?musumId=" + museumId;
+				+ "/a/api/beacon/treeData?museum.id=" + museumId;
 		FastJsonArrayRequest<OfflineBeaconBean> request = new FastJsonArrayRequest<OfflineBeaconBean>(
 				url, OfflineBeaconBean.class,
 				new Response.Listener<List<OfflineBeaconBean>>() {
@@ -285,7 +285,7 @@ public class OfflineDownloadHelper {
 			throws SQLException {
 
 		String url = Constant.HOST_HEAD
-				+ "/a/api/labels/treeData?musumId=" + museumId;
+				+ "/a/api/labels/treeData?museum.id=" + museumId;
 		FastJsonArrayRequest<OfflineLabelBean> request = new FastJsonArrayRequest<OfflineLabelBean>(
 				url, OfflineLabelBean.class,
 				new Response.Listener<List<OfflineLabelBean>>() {
