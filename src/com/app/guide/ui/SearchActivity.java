@@ -29,9 +29,14 @@ import com.app.guide.widget.DialogManagerHelper;
 import com.app.guide.widget.SearchView;
 
 /**
- * 搜索界面 TODO adapter
+ * 搜索界面主要分为两个部分：SearchView（自定义搜索View）+搜索结果列表(ListView)。
  * 
- * @author yetwish
+ * 自定义SearchView应该包含两个结构：输入栏+弹出框。
+ * 弹出框包含两个功能——用于自动补全和热门搜索推荐，所以应分为两个列表：自动补全列表和热门搜索列表
+ * 提示框的数据与输入框输入的文本是实时联动的，随着文本输入内容，弹出框显示与之匹配的展品名称,最多显示DEFAULT_HINT_SIZE个
+ * 在输入框为空时，点击输入框，弹出框显示热门搜索列表。
+ * 点击软键盘搜索键，显示搜索结果
+ * 输入栏最右端，在有输入内容时，显示'X',代表清除输入内容
  * 
  */
 public class SearchActivity extends BaseActivity implements
@@ -270,35 +275,8 @@ public class SearchActivity extends BaseActivity implements
 
 			}
 		});
-//		lvResults.setOnLoadListener(new OnLoadListener() {
-//
-//			@Override
-//			public void onLoad() {
-//				loadOnPage();
-//			}
-//
-//			@Override
-//			public void onRetry() {
-//				loadOnPage();
-//			}
-//		});
-
 	}
 
-	private void loadOnPage() {
-		for (int i = shownResults.size(); i < shownResults.size()
-				+ Constant.PAGE_COUNT
-				&& i < resultData.size(); i++) {
-			shownResults.add(resultData.get(i));
-		}
-//		if (resultData.size() == 0 || shownResults.size() == resultData.size()) {
-//		   	lvResults.setLoadFull();     	    	    		
-//    	}
-//			
-//		lvResults.onLoadComplete();
-		
-	}
-	
 	/**
 	 * 当 edit text 文本改变时 触发的回调
 	 * 
@@ -331,10 +309,4 @@ public class SearchActivity extends BaseActivity implements
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 	}
-
-//	@Override
-//	protected boolean isFullScreen() {
-//		return true;
-//	}
-
 }

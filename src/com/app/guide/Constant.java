@@ -62,8 +62,7 @@ public class Constant {
 	public static final String FLODER = ROOT_SDCARD + "/" + FLODER_NAME;
 
 	public static final String HOST_HEAD = "http://182.92.82.70";
-	//public static final String HOST_HEAD = "http://192.168.1.105/daoyou";
-	//public static final String HOST_HEAD = "http://192.168.1.105";
+	//public static final String HOST_HEAD = "http://192.168.1.115";
 
 	/**
 	 * 获取合法的下载地址<br>

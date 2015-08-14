@@ -274,7 +274,7 @@ public abstract class GetBeanStrategy {
 			}
 			callBack.onGetBeanResponse(downloadList);
 		} else {
-			String url = "http://182.92.82.70/a/api/assets/treeData";
+			String url = Constant.HOST_HEAD + "/a/api/assets/treeData";
 			JsonArrayRequest request = new JsonArrayRequest(url,
 					new Response.Listener<JSONArray>() {
 						@Override
