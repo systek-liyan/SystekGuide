@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -41,7 +42,9 @@ public class SearchActivity extends BaseActivity implements
 	/**
 	 * 搜索结果显示list view
 	 */
-	private AutoLoadListView lvResults;
+	//private AutoLoadListView lvResults;
+	private ListView lvResults;
+
 
 	/**
 	 * 推荐精品adapter
@@ -240,7 +243,7 @@ public class SearchActivity extends BaseActivity implements
 
 	private void initViews() {
 		// find views
-		lvResults = (AutoLoadListView) findViewById(R.id.search_lv_results);
+		lvResults = (ListView) findViewById(R.id.search_lv_results);
 		searchView = (SearchView) findViewById(R.id.search_view);
 
 		// 设置搜索监听回调
@@ -259,24 +262,26 @@ public class SearchActivity extends BaseActivity implements
 				// 跳转到随身导游界面
 				((AppContext) getApplication()).currentExhibitId = shownResults
 						.get(position).getId();
-				//((AppContext) getApplication()).setGuideMode(Constant.GUIDE_MODE_MANUALLY);
+				// 目前，认为这样的选择展品，自动变为手动选择
+				((AppContext) getApplication()).setGuideMode(Constant.GUIDE_MODE_MANUALLY);
+				// 表示是通过搜索选择的展品
 				((AppContext) getApplication()).isSelectedInSearch = true;
 				finish();
 
 			}
 		});
-		lvResults.setOnLoadListener(new OnLoadListener() {
-
-			@Override
-			public void onLoad() {
-				loadOnPage();
-			}
-
-			@Override
-			public void onRetry() {
-				loadOnPage();
-			}
-		});
+//		lvResults.setOnLoadListener(new OnLoadListener() {
+//
+//			@Override
+//			public void onLoad() {
+//				loadOnPage();
+//			}
+//
+//			@Override
+//			public void onRetry() {
+//				loadOnPage();
+//			}
+//		});
 
 	}
 
@@ -286,11 +291,11 @@ public class SearchActivity extends BaseActivity implements
 				&& i < resultData.size(); i++) {
 			shownResults.add(resultData.get(i));
 		}
-		if (resultData.size() == 0 || shownResults.size() == resultData.size()) {
-		   	lvResults.setLoadFull();     	    	    		
-    	}
-			
-		lvResults.onLoadComplete();
+//		if (resultData.size() == 0 || shownResults.size() == resultData.size()) {
+//		   	lvResults.setLoadFull();     	    	    		
+//    	}
+//			
+//		lvResults.onLoadComplete();
 		
 	}
 	
