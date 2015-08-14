@@ -345,8 +345,11 @@ public class MuseumIntroduceFragment extends Fragment {
 					int position, long arg3) {
 				((AppContext) getActivity().getApplication()).currentExhibitId = exhibits
 						.get(position - 1).getId();
+				
+				// 目前，认为这样的选择展品，自动变为手动选择
 				((AppContext) getActivity().getApplication())
 						.setGuideMode(Constant.GUIDE_MODE_MANUALLY);
+				
 				// 不能使用HomeActivity.mRadioGroup.check(R.id.home_tab_follow);
 				// 因为该方法会重复调用onCheckedChanged()方法
 				// ，从而导致java.lang.IllegalStateException异常
@@ -372,10 +375,11 @@ public class MuseumIntroduceFragment extends Fragment {
 								lvExhibit.setLoadFull();
 							}
 						} 
-//////////////////////// 认为已经下载全部了
-//						else {
-//							lvExhibit.setLoadFailed();
-//						}
+                        ////////////////////// 认为已经下载全部了
+						else {
+							//lvExhibit.setLoadFailed();
+							lvExhibit.setLoadFull();
+						}
 						lvExhibit.onLoadComplete();
 					}
 				});
