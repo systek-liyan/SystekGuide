@@ -91,6 +91,16 @@ public class GetBeanHelper {
 			GetBeanCallBack<List<ExhibitBean>> callBack) {
 		mGetBeanStrategy.getExhibitList(museumId, minPriority, page,callBack);
 	}
+	
+	/**
+	 * 获得名称中含有name的展品列表
+	 * @param name
+	 * @param callBack null 表示无此条件的展品返回
+	 */
+	public void getExhibitList_name(String museumId,String name,
+			GetBeanCallBack<List<ExhibitBean>> callBack) {
+		mGetBeanStrategy.getExhibitList_name(museumId,name,callBack);
+	}
 
 	public void getExhibitList(String museumId,int page,
 			GetBeanCallBack<List<ExhibitBean>> callBack) {

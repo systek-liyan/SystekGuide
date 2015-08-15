@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.app.guide.Constant;
 import com.app.guide.bean.ExhibitBean;
@@ -122,8 +123,53 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			offlineExhibitBeans = builder.query();
 		} catch (SQLException e) {
 		}
-		if (offlineExhibitBeans == null)// 获取不到时TODO
-			return;
+		if (offlineExhibitBeans == null) {
+			Log.d(TAG, "database "+ museumId + ".db, has not the table OfflineExhibitBean!!");
+			return; 
+		}
+		for (OfflineExhibitBean offlineExhibitBean : offlineExhibitBeans) {
+			String lables = offlineExhibitBean.getLabels();
+			ExhibitBean bean = new ExhibitBean(offlineExhibitBean.getId(),
+					offlineExhibitBean.getName(),
+					offlineExhibitBean.getAddress(),
+					offlineExhibitBean.getIntroduce(),
+					Constant.getImageDownloadPath(
+							offlineExhibitBean.getIconurl(), museumId), lables);
+			list.add(bean);
+		}
+		offlineExhibitBeans.clear();
+		offlineExhibitBeans = null;
+		callBack.onGetBeanResponse(list);
+	}
+	
+	/**
+	 * 获得名称中含有name的展品列表
+	 * @param name
+	 * @param callBack null 表示无此条件的展品返回
+	 */
+	@Override
+	public void getExhibitList_name(String museumId,String name,
+			GetBeanCallBack<List<ExhibitBean>> callBack) {
+		List<OfflineExhibitBean> offlineExhibitBeans = null;
+		List<ExhibitBean> list = new ArrayList<ExhibitBean>();
+		try {
+			OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
+					new DatabaseContext(mContext, Constant.FLODER_NAME
+							+ museumId), museumId + ".db");
+			Dao<OfflineExhibitBean, String> oDao = helper
+					.getOfflineExhibitDao();
+			QueryBuilder<OfflineExhibitBean, String> builder = oDao
+					.queryBuilder();
+			builder.where().like("name", "%"+name+"%");
+			offlineExhibitBeans = builder.query();
+		} catch (SQLException e) {
+		}
+		
+		//  无此条件的展品返回null
+		if (offlineExhibitBeans == null) {
+			callBack.onGetBeanResponse(null);
+			return; 
+		}
 		for (OfflineExhibitBean offlineExhibitBean : offlineExhibitBeans) {
 			String lables = offlineExhibitBean.getLabels();
 			ExhibitBean bean = new ExhibitBean(offlineExhibitBean.getId(),
@@ -231,8 +277,10 @@ public class GetBeanFromDB extends GetBeanStrategy {
 
 		} catch (SQLException e) {
 		}
-		if (offlineList == null)
-			return; // TODO
+		if (offlineList == null) {
+			Log.d(TAG, "database "+ museumId + ".db, has not the table OfflineExhibitBean!!");
+			return; 
+		}
 		List<ExhibitModel> exhibits = new ArrayList<ExhibitModel>();
 		for (OfflineExhibitBean bean : offlineList) {
 			ExhibitModel exhibit = new ExhibitModel();

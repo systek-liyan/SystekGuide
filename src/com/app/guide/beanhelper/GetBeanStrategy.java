@@ -141,6 +141,14 @@ public abstract class GetBeanStrategy {
 	 */
 	public abstract void getExhibitList(String museumId, int minPriority,int page,
 			GetBeanCallBack<List<ExhibitBean>> callBack);
+	
+	/**
+	 * 获得名称中含有name的展品列表
+	 * @param name
+	 * @param callBack null 表示无此条件的展品返回
+	 */
+	public abstract void getExhibitList_name(String museumId,String name,
+			GetBeanCallBack<List<ExhibitBean>> callBack);
 
 	/**
 	 * 获取该博物馆下的所有标签列表

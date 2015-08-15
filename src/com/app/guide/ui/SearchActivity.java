@@ -6,7 +6,6 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -23,8 +22,6 @@ import com.app.guide.adapter.ExhibitAdapter;
 import com.app.guide.bean.ExhibitBean;
 import com.app.guide.beanhelper.GetBeanCallBack;
 import com.app.guide.beanhelper.GetBeanHelper;
-import com.app.guide.widget.AutoLoadListView;
-import com.app.guide.widget.AutoLoadListView.OnLoadListener;
 import com.app.guide.widget.DialogManagerHelper;
 import com.app.guide.widget.SearchView;
 
@@ -44,32 +41,45 @@ public class SearchActivity extends BaseActivity implements
 	
 	private static final String TAG = SearchActivity.class.getSimpleName();
 	
+	///////////////////////// 搜索结果 ListView+data+adapter
 	/**
-	 * 搜索结果显示list view
+	 * 搜索结果list view
 	 */
-	//private AutoLoadListView lvResults;
 	private ListView lvResults;
-
-
 	/**
-	 * 推荐精品adapter
+	 * 搜索结果列表数据
 	 */
-	private ArrayAdapter<String> hintAdapter;
-
-	/**
-	 * 自动补全adapter
-	 */
-	private ArrayAdapter<String> autoCompleteAdapter;
-
+	private List<ExhibitBean> resultData;
 	/**
 	 * 结果adapter
 	 */
 	private ExhibitAdapter resultAdapter;
 
+	//////////////////////////////////////////////////
+	/**
+	 * 自定义的搜索view
+	 */
+	private SearchView searchView;
+
+    ///////////////////////// 自定义搜索SearchView 提示框 data+adapter
 	/**
 	 * 热搜版数据（推荐精品）
 	 */
 	private List<String> hintData;
+	/**
+	 * 热搜版adapter
+	 */
+	private ArrayAdapter<String> hintAdapter;
+
+    ///////////////////////// 自定义搜索SearchView 提示框 data+adapter
+	/**
+	 * 搜索过程中自动补全数据
+	 */
+	private List<String> autoCompleteData;
+	/**
+	 * 自动补全adapter
+	 */
+	private ArrayAdapter<String> autoCompleteAdapter;
 
 	/**
 	 * 默认提示列表的数据项个数
@@ -91,46 +101,9 @@ public class SearchActivity extends BaseActivity implements
 	}
 
 	/**
-	 * 搜索过程中自动补全数据
-	 */
-	private List<String> autoCompleteData;
-
-	/**
-	 * 搜索结果列表数据
-	 */
-	private List<ExhibitBean> resultData;
-
-	/**
-	 * 自定义的搜索view
-	 */
-	private SearchView searchView;
-
-	/**
-	 * 返回按钮,在SearchView中已经捕获，不用在此处理
-	 */
-	// private Button btnBack;
-
-	/**
-	 * 储存展品列表,目前是博物馆的所有展品
-	 */
-	private List<ExhibitBean> exhibitsList;
-
-	/**
 	 * museum id
 	 */
 	private String mMuseumId;
-
-	/**
-	 * page=0,1,2... 代表第1,2,3...页
-	 */
-	private int page = 0;
-
-	/** 存储当前显示的搜索结果 */
-	private List<ExhibitBean> shownResults;
-
-	private SweetAlertDialog pDialog;
-
-	private boolean isCompleted = false;
 
 	@Override
 	@SuppressLint("InlinedApi")
@@ -138,50 +111,52 @@ public class SearchActivity extends BaseActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
 		mMuseumId = ((AppContext) getApplicationContext()).currentMuseumId;
-		// 加载数据时耗费时间较长
-		pDialog = new DialogManagerHelper(this).showLoadingProgressDialog();
-		// 初始化数据
-		initData();
-		pDialog.dismiss();
-		pDialog = null;
 		initViews();
 	}
-
-	/**
-	 * 当展品数据量较大时，存太多数据 初始化exhibit数据
-	 * 目前，将博物馆所有展品存入exhibitsList中
-	 */
-	private void initExhibitData() {
-		exhibitsList = new ArrayList<ExhibitBean>();
-			do {
-				 GetBeanHelper.getInstance(this).getExhibitList(mMuseumId, page, new GetBeanCallBack<List<ExhibitBean>>() {
-					
-					@Override
-					public void onGetBeanResponse(List<ExhibitBean> response) {
-						Log.d(TAG,"reponse.size,page="+response.size()+","+page);
-						if(response !=null){
-							exhibitsList.addAll(response);
-							page++;
-						}
-						if (response == null ||response.size() < Constant.PAGE_COUNT) {
-							// 加载完成
-							isCompleted = true;
-							Log.d(TAG,"加载完成,共"+page+"页");
-						}
-					}
-				});
-			} while (!isCompleted );
-	}
-
-	private void initData() {
-		initExhibitData();
+	
+	private void initViews() {
+		// 搜索结果
+		lvResults = (ListView) findViewById(R.id.search_lv_results);
+		
+		// 自定义SearchView应该包含两个结构：输入栏+弹出框。
+		searchView = (SearchView) findViewById(R.id.search_view);	
+		// 设置搜索监听回调
+		searchView.setSearchViewListener(this);
+		
+		// 从服务端中获取到数据库 ，再从数据库中获得 获取精品推荐数据(热度搜索)
 		getHintData();
-		getAutoCompleteData("");
-		getResultData("");
-	}
+		// 设置热度adapter,精品推荐，热度搜索
+		searchView.setTipsHintAdapter(hintAdapter);
 
+		// 自动补全提示框：数据+adapter
+		autoCompleteData = new ArrayList<String>(mHintSize);
+		autoCompleteAdapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1, autoCompleteData);
+		searchView.setAutoCompleteAdapter(autoCompleteAdapter);
+		
+		// 搜索结果ListView: 数据+adapter
+		resultData = new ArrayList<ExhibitBean>();
+		resultAdapter = new ExhibitAdapter(this, resultData,R.layout.item_exhibit);
+
+		lvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view,
+					int position, long l) {
+				// 跳转到随身导游界面
+				((AppContext) getApplication()).currentExhibitId = resultData
+						.get(position).getId();
+				// 目前，认为这样的选择展品，自动变为手动选择
+				((AppContext) getApplication()).setGuideMode(Constant.GUIDE_MODE_MANUALLY);
+				// 表示是通过搜索选择的展品
+				((AppContext) getApplication()).isSelectedInSearch = true;
+				
+				finish();
+			}
+		});
+	}
+	
 	/**
-	 * TODO 从服务端中获取到数据库 ，再从数据库中获得 获取精品推荐数据
+	 * TODO 从服务端中获取到数据库 ，再从数据库中获得 获取精品推荐数据(热度搜索)
 	 */
 	private void getHintData() {
 		hintData = new ArrayList<String>(mHintSize);
@@ -194,91 +169,39 @@ public class SearchActivity extends BaseActivity implements
 
 	/**
 	 * 获取所有的exhibitBean 匹配每个的name 获取自动补全data 和adapter
+	 * 当有文字输入时:
+	 * 在提示框显示自动补全的茶品名称，最多mHintSize个
+	 * 填充resultData，提供搜索结果展品
 	 */
 	private void getAutoCompleteData(String text) {
-		if (autoCompleteData == null) {
-			// 初始化
-			autoCompleteData = new ArrayList<String>(mHintSize);
-		} else {
-			// 根据text 获取auto data
-			autoCompleteData.clear();
-			for (int i = 0, count = 0; i < exhibitsList.size()
-					&& count < mHintSize; i++) {
-				if (exhibitsList.get(i).getName().contains(text.trim())) {
-					autoCompleteData.add(exhibitsList.get(i).getName());
-					count++;
-				}
-			}
-		}
-		if (autoCompleteAdapter == null) {
-			autoCompleteAdapter = new ArrayAdapter<String>(this,
-					android.R.layout.simple_list_item_1, autoCompleteData);
-		} else {
-			autoCompleteAdapter.notifyDataSetChanged();
-		}
-	}
-
-	/**
-	 * 根据 搜索name 获取result data 从数据库中获取 获取搜索结果data
-	 */
-	private void getResultData(String text) {
-		if (resultData == null) {
-			// 初始化
-			resultData = new ArrayList<ExhibitBean>();
-			shownResults = new ArrayList<ExhibitBean>();
-		} else {
-			resultData.clear();  // 存储搜索结果
-			shownResults.clear(); // 存储当前将要显示的搜索结果
-			for (int i = 0, count = 0; i < exhibitsList.size(); i++) {
-				if (exhibitsList.get(i).getName().contains(text.trim())) {
-					resultData.add(exhibitsList.get(i));
-					if (count < Constant.PAGE_COUNT) {
-						shownResults.add(exhibitsList.get(i)); // 添加一页的显示数据
-						count++;
+		// 清除上次匹配的数据
+		autoCompleteData.clear();
+		resultData.clear();
+		GetBeanHelper.getInstance(this).getExhibitList_name(mMuseumId, text.trim(),
+				new GetBeanCallBack<List<ExhibitBean>>() {
+					@Override
+					public void onGetBeanResponse(List<ExhibitBean> response) {
+						if (response == null) return;
+						int count = 0;
+						for (ExhibitBean exhibit : response) {
+						   resultData.add(exhibit);
+						   if (count < mHintSize) {
+						       autoCompleteData.add(exhibit.getName());
+						   }
+						   count++;
+						}
 					}
-				}
-			}
-		}
-		if (resultAdapter == null) {
-			resultAdapter = new ExhibitAdapter(this, shownResults,
-					R.layout.item_exhibit);
-		}
-		resultAdapter.notifyDataSetChanged();
-	}
-
-	private void initViews() {
-		// find views
-		lvResults = (ListView) findViewById(R.id.search_lv_results);
-		searchView = (SearchView) findViewById(R.id.search_view);
-
-		// 设置搜索监听回调
-		searchView.setSearchViewListener(this);
-
-		// 设置热度adapter
-		searchView.setTipsHintAdapter(hintAdapter);
-
-		// 设置自动补全adapter
-		searchView.setAutoCompleteAdapter(autoCompleteAdapter);
-
-		lvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view,
-					int position, long l) {
-				// 跳转到随身导游界面
-				((AppContext) getApplication()).currentExhibitId = shownResults
-						.get(position).getId();
-				// 目前，认为这样的选择展品，自动变为手动选择
-				((AppContext) getApplication()).setGuideMode(Constant.GUIDE_MODE_MANUALLY);
-				// 表示是通过搜索选择的展品
-				((AppContext) getApplication()).isSelectedInSearch = true;
-				finish();
-
-			}
+			
 		});
+			
+		// 通知提示框数据改变
+    	autoCompleteAdapter.notifyDataSetChanged();
+    	// 通知搜索结果数据改变，在点击软键盘的serarch按键时触发，见onSearch()
+		// resultAdapter.notifyDataSetChanged();
 	}
 
 	/**
-	 * 当 edit text 文本改变时 触发的回调
+	 * 当 edit text 文本改变时 触发的回调,自动匹配展品名称
 	 * 
 	 * @param text
 	 */
@@ -288,13 +211,13 @@ public class SearchActivity extends BaseActivity implements
 	}
 
 	/**
-	 * 点击搜索键时edit text触发的回调
+	 * 点击软键盘的搜索键时edit text触发的回调
 	 * 
 	 * @param text
 	 */
 	@Override
 	public void onSearch(String text) {
-		getResultData(text);
+		// 在onAutoRefreshComplete(text)中，已经填充了lvResults,这里仅使用即可。
 		lvResults.setVisibility(View.VISIBLE);
 		// 第一次获取结果 还未配置适配器
 		if (lvResults.getAdapter() == null) {
@@ -304,7 +227,7 @@ public class SearchActivity extends BaseActivity implements
 			// 更新搜索数据
 			resultAdapter.notifyDataSetChanged();
 		}
-		Toast.makeText(this, "完成搜索", Toast.LENGTH_SHORT).show();
+		// Toast.makeText(this, "完成搜索", Toast.LENGTH_SHORT).show();
 		// 隐藏软键盘
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);

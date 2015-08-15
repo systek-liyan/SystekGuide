@@ -7,7 +7,6 @@ import android.content.Context;
 import com.app.guide.bean.ExhibitBean;
 import com.app.guide.bean.MuseumAreaBean;
 import com.app.guide.bean.MuseumBean;
-import com.app.guide.download.DownloadBean;
 import com.app.guide.model.ExhibitModel;
 import com.app.guide.model.LabelModel;
 import com.app.guide.model.MapExhibitModel;
@@ -40,6 +39,17 @@ public class GetBeanFromNetwork extends GetBeanStrategy {
 			GetBeanCallBack<List<ExhibitBean>> callBack) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	/**
+	 * 获得名称中含有name的展品列表
+	 * @param name
+	 * @param callBack null 表示无此条件的展品返回
+	 */
+	@Override
+	public void getExhibitList_name(String museumId,String name,
+			GetBeanCallBack<List<ExhibitBean>> callBack) {
+		// TODO Auto-generated method stub
 	}
 
 	@Override
