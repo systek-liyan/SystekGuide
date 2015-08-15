@@ -15,8 +15,7 @@ public class Constant {
 	/**
 	 * 每页显示数据项数，用于ListView
 	 */
-	//public static final int PAGE_COUNT = 20;
-	public static final int PAGE_COUNT = 5;
+	public static final int PAGE_COUNT = 20;
 	public static final String ROOT_SDCARD = Environment
 			.getExternalStorageDirectory().getAbsolutePath();
 

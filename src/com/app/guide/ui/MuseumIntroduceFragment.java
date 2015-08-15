@@ -383,6 +383,10 @@ public class MuseumIntroduceFragment extends Fragment {
 						lvExhibit.onLoadComplete();
 					}
 				});
+	
+		// 必须通知数据改变，否则，当正在加载时，点击展品，切换到新的页面，导致在后台线程改变这个页面的ListView数据，从而使app停止。
+		// 应该在此通知，即在ui线程改变adapter中的数据
+		exhibitAdapter.notifyDataSetChanged();
 	}
 
 	private OnPageChangeListener createPagerChangedListener() {
