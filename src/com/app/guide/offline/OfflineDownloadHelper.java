@@ -68,6 +68,7 @@ public class OfflineDownloadHelper {
 		this.museumId = museumId;
 		downloadBean = new DownloadBean();
 		downloadBean.setMuseumId(museumId);
+		// TODO 不能用硬代码
 		downloadBean.setName("首都博物馆");
 		infoList = new ArrayList<DownloadInfo>();
 		mSet = new HashSet<String>();
@@ -292,7 +293,6 @@ public class OfflineDownloadHelper {
 
 					@Override
 					public void onResponse(List<OfflineLabelBean> response) {
-						// TODO Auto-generated method stub
 						OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(
 								context, museumId + ".db");
 						Dao<OfflineLabelBean, String> labelDao;
@@ -364,7 +364,7 @@ public class OfflineDownloadHelper {
 	 */
 	public void download() throws SQLException, NumberFormatException,
 			IOException {
-
+		// TODO 删除目录中的所有文件，要做判断，除非重新下载
 		FileUtils.deleteDirectory(Constant.FLODER + museumId);
 		Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME
 				+ museumId);
