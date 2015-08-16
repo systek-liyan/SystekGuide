@@ -48,7 +48,6 @@ public class OfflineDownloadHelper {
 
 	private static final String TAG = OfflineDownloadHelper.class
 			.getSimpleName();
-	// TODO
 
 	private Context mContext;
 
@@ -229,13 +228,14 @@ public class OfflineDownloadHelper {
 						bean.setOpen(true);
 						bean.setVersion(museumBean.getVersion());
 						bean.setMuseumId(museumId);
-						DownloadManagerHelper helper1 = new DownloadManagerHelper(
-								mContext);
+						
+						// 外部数据库Context
+						Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME);
+						DownloadManagerHelper dbHelper = new DownloadManagerHelper(dContext,"Download.db");
 						try {
-							helper1.getDownloadedDao().createOrUpdate(bean);
+							dbHelper.getDownloadedDao().createOrUpdate(bean);
 						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							Log.d(TAG,"downloadMuseum(),Access form network error!"+e.toString());
 						}
 					}
 				}, mErrorListener);
@@ -364,7 +364,7 @@ public class OfflineDownloadHelper {
 	 */
 	public void download() throws SQLException, NumberFormatException,
 			IOException {
-		// TODO 删除目录中的所有文件，要做判断，除非重新下载
+		// TODO 删除目录(Guide/museumId)中的所有文件，要做判断，除非重新下载
 		FileUtils.deleteDirectory(Constant.FLODER + museumId);
 		Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME
 				+ museumId);

@@ -13,7 +13,7 @@ import android.util.Log;
 import com.app.guide.Constant;
 
 /**
- * 用于支持对存储在SD卡上的数据库的访问
+ * 外部数据库Context,用于支持对存储在SD卡上的数据库的访问
  * 举例说明使用方法:
    （1）离线数据库管理类OfflineBeanSqlHelper
    public class OfflineBeanSqlHelper extends OrmLiteSqliteOpenHelper {
@@ -39,7 +39,7 @@ public class DatabaseContext extends ContextWrapper {
 	 * @param base
 	 *            上下文环境
 	 * @param path
-	 *            存储数据外部文件夹名
+	 *            存储数据外部文件夹名（在SD卡目录中）
 	 * 
 	 */
 	public DatabaseContext(Context base, String path) {

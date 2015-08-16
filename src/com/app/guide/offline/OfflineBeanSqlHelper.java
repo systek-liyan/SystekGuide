@@ -54,7 +54,7 @@ public class OfflineBeanSqlHelper extends OrmLiteSqliteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase arg0, ConnectionSource arg1, int arg2,
 			int arg3) {
-		// 目前考虑，升级即是删除sdk目录下的数据库，重新生成之。
+		// TODO 目前考虑，升级即是删除sdk目录下的数据库，重新生成之。
 	}
 
 	/** 获取OfflineExhibitBean对象 */

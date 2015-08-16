@@ -8,6 +8,10 @@ import android.util.Log;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+/**
+ * 指定城市的博物馆列表，表名:downloadModel
+ * TODO 待整理，好像还不是表
+ */
 @DatabaseTable(tableName = "downloadModel")
 public class DownloadModel {
 

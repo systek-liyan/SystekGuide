@@ -1,10 +1,10 @@
 package com.app.guide.sql;
 
-import java.io.File;
 import java.sql.SQLException;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.download.DownloadBean;
@@ -17,12 +17,15 @@ import com.j256.ormlite.table.TableUtils;
 
 /**
  * 管理已下载的离线数据包
- * 
- * @author joe_c
- *
+ * 数据表：MuseumBean,DownloadInfo,DownloadBean,DownloadModel
  */
 public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 
+	public static final String TAG = DownloadManagerHelper.class.getSimpleName();
+
+	public static int DATABASE_VERSION = 1;
+	private String db_name;
+	
 	/**
 	 * MuseumBean表的数据访问对象
 	 */
@@ -43,9 +46,16 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	private Dao<DownloadModel, String> modelDao;
 
-	public DownloadManagerHelper(Context context) {
-		super(context, "Download", null, 1);
-		// TODO Auto-generated constructor stub
+
+	/**
+	 * 管理已下载的离线数据包，数据表：MuseumBean,DownloadInfo,DownloadBean,DownloadModel
+	 * @param context 如果使用DatabaseContext对象，则数据库建立在外部SD卡上;
+	 *                否则，DB_PATH = "/data" + Environment.getDataDirectory().getAbsolutePath()+ "/" + context.getPackageName()+"/databases"
+	 * @param db_name 数据库名称(建议带后缀.db)
+	 */
+	public DownloadManagerHelper(Context context,String db_name) {
+		super(context, db_name, null, DATABASE_VERSION);
+		this.db_name = db_name;
 	}
 
 	/**
@@ -53,16 +63,14 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	@Override
 	public void onCreate(SQLiteDatabase arg0, ConnectionSource arg1) {
-		// TODO Auto-generated method stub
 		try {
-			//创建三个表
+			//创建四个表
 			TableUtils.createTableIfNotExists(arg1, MuseumBean.class);
 			TableUtils.createTableIfNotExists(arg1, DownloadInfo.class);
 			TableUtils.createTableIfNotExists(arg1, DownloadBean.class);
 			TableUtils.createTableIfNotExists(arg1, DownloadModel.class);
 		} catch (java.sql.SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.d(TAG,"数据库:"+db_name+",创建失败！" + e.toString());
 		}
 	}
 
@@ -72,8 +80,7 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase arg0, ConnectionSource arg1, int arg2,
 			int arg3) {
-		// TODO Auto-generated method stub
-
+		//TODO 目前考虑，升级即是删除sdk目录下的数据库，重新生成之。
 	}
 
 	/**
@@ -119,12 +126,9 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 		return modelDao;
 	}
 	
-	private static final String DB_PATH = "";
-	private static final String DB_NAME = "";
-
-	public boolean isDownloadListExist(){
-		File file = new File( DB_PATH + "/" + DB_NAME);
-		return false;
-	}
-
+	/** 数据库是否存在 **/
+//	public boolean isDownloadListExist(){
+//		File file = new File( DB_PATH + "/" + db_name);
+//		return false;
+//	}
 }

@@ -17,6 +17,7 @@ import com.app.guide.bean.MuseumBean;
 import com.app.guide.offline.OfflineDownloadHelper;
 import com.app.guide.offline.OfflineDownloadHelper.OnFinishedListener;
 import com.app.guide.service.AppService;
+import com.app.guide.sql.DatabaseContext;
 import com.app.guide.sql.DownloadManagerHelper;
 import com.app.guide.utils.FileUtils;
 import com.j256.ormlite.dao.Dao;
@@ -171,15 +172,19 @@ public class DownloadClient {
 			}
 
 		};
-		//初始化，取得两个表的数据访问对象
-		DownloadManagerHelper helper = new DownloadManagerHelper(mContext);
+		
+		// 外部数据库Context
+		Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME);
+		DownloadManagerHelper dbHelper = new DownloadManagerHelper(dContext,"Download.db");
+					
 		try {
-			infoDao = helper.getInfoDao();
-			beanDao = helper.getBeanDao();
+			infoDao = dbHelper.getInfoDao();
+			beanDao = dbHelper.getBeanDao();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
+	
 	private Handler mainHandler = new Handler(Looper.getMainLooper());
 
 
@@ -417,8 +422,11 @@ public class DownloadClient {
 				while (queue.size() != 0) {
 					infoDao.delete(queue.poll());
 				}
-				DownloadManagerHelper helper = new DownloadManagerHelper(
-						mContext);
+			
+				// 外部数据库Context
+				Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME);
+				DownloadManagerHelper helper = new DownloadManagerHelper(dContext,"Download.db");
+				
 				DeleteBuilder<MuseumBean, String> deleteBuilder = helper
 						.getDownloadedDao().deleteBuilder();
 				deleteBuilder.where().eq("id", museumId);

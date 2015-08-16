@@ -11,6 +11,7 @@ import com.app.guide.download.DownloadClient;
 import com.app.guide.download.DownloadClient.STATE;
 import com.app.guide.exception.DeleteDownloadingException;
 import com.app.guide.service.AppService;
+import com.app.guide.sql.DatabaseContext;
 import com.app.guide.sql.DownloadManagerHelper;
 import com.app.guide.utils.FileUtils;
 import com.j256.ormlite.stmt.DeleteBuilder;
@@ -51,7 +52,11 @@ public class OfflineDeleteHelper {
 				throw new DeleteDownloadingException();
 			}
 		}
-		DownloadManagerHelper helper = new DownloadManagerHelper(mContext);
+		
+		// 外部数据库Context
+		Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME);
+		DownloadManagerHelper helper = new DownloadManagerHelper(dContext,"Download.db");
+		
 		int count = helper.getBeanDao().queryBuilder().where()
 				.eq("museumId", museumId).and().eq("isCompleted", true).query()
 				.size();

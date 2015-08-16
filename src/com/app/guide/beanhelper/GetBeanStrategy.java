@@ -68,7 +68,7 @@ public abstract class GetBeanStrategy {
 	 * @return
 	 */
 	public void getCityList(final GetBeanCallBack<List<CityBean>> callBack) {
-		
+		// 外部数据库Context
 		Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME);
 		// 下面还要从FastJsonArrayRequest对象中访问，因此要有final修饰词
 		final CityDBManagerHelper dbHelper = new CityDBManagerHelper(dContext,"CityName.db");
@@ -79,12 +79,12 @@ public abstract class GetBeanStrategy {
 			cityDao = dbHelper.getCityDao();
 			cityList = cityDao.queryForAll();
 		} catch (SQLException e) {
-			Log.d(TAG,"Access the CityName.db error,may be it's not exist!");
 			cityList = null;
+			Log.d(TAG,"Access the CityName.db error,may be it's not exist!");
 		}
 		if (cityList != null && cityList.size() > 0) {
 		    callBack.onGetBeanResponse(cityList);
-		    Log.w(TAG, "CityName.db is exist,read it ok!");
+		    Log.d(TAG, "CityName.db is exist,read it ok!");
 		    return;
 		}
 		/////本地获取失败，从网络获取
@@ -252,111 +252,102 @@ public abstract class GetBeanStrategy {
 
 	/**
 	 * 获取下载列表 <br>
-	 * 现阶段，一个DownloadBean表示一个博物馆
-	 * 
+	 * 判断本地是否存在数据库，如果存在则从数据库中获取，不存在则通过实时API获取 或判断是否需要更新
 	 * @param callBack
 	 * 
-	 * @return
 	 */
-	/**
-	 * 获取下载列表 <br>
-	 * 现阶段，一个DownloadBean表示一个博物馆
-	 * 
-	 * @param callBack
-	 * 
-	 * @return
-	 */
-	public void getDownloadList(
-			final GetBeanCallBack<List<DownloadModel>> callBack) {
-		// 在判断本地是否存在数据库，如果存在则从数据库中获取，不存在则通过实时API获取 或判断是否需要更新
-		DownloadManagerHelper dbHelper = new DownloadManagerHelper(mContext);
-		if (dbHelper.isDownloadListExist()) {
-			Log.w(TAG, "db is exist!");
-			// 获取列表
-			Dao<DownloadModel, String> modelDao = null;
-			List<DownloadModel> downloadList = null;
-			try {
-				modelDao = dbHelper.getModelDao();
-				downloadList = modelDao.queryForAll();
-			} catch (SQLException e) {
-				downloadList = new ArrayList<DownloadModel>();
-				e.printStackTrace();
-			}
-			callBack.onGetBeanResponse(downloadList);
-		} else {
-			String url = Constant.HOST_HEAD + "/a/api/assets/treeData";
-			JsonArrayRequest request = new JsonArrayRequest(url,
-					new Response.Listener<JSONArray>() {
-						@Override
-						public void onResponse(final JSONArray response) {
-							DownloadManagerHelper dbHelper = new DownloadManagerHelper(
-									mContext);
-							Dao<DownloadModel, String> modelDao = null;
-							List<DownloadModel> downloadList = new ArrayList<DownloadModel>(
-									response.length());
-							List<DownloadBean> downloadBeans = null;
-							JSONObject object = null;
-							DownloadModel downloadModel = null;
-							DownloadBean downloadBean = null;
-							try {
-								modelDao = dbHelper.getModelDao();
-								for (int i = 0; i < response.length(); i++) {
-									object = response.getJSONObject(i);
-									Log.w("TAG", "外层,"+object.toString());
-									downloadModel = new DownloadModel();
-									downloadModel.setCity(object
-											.getString("city"));
-									Log.w("TAG", "CITY"+object
-											.getString("city"));
-									JSONArray museums = object
-											.getJSONArray("museumList");
-									Log.w("TAG", "中层,"+museums.toString());
-									downloadBeans = new ArrayList<DownloadBean>(
-											museums.length());
-									for (int j = 0; j < museums.length(); j++) {
-										object = museums.getJSONObject(j);
-										Log.w("TAG", "里层,"+object.toString());
-										downloadBean = new DownloadBean();
-										downloadBean.setMuseumId(object
-												.getString("museumId"));
-										downloadBean.setName(object
-												.getString("name"));
-										downloadBean.setTotal(object
-												.getLong("size"));
-										downloadBeans.add(downloadBean);
-									}
-									downloadModel.setMuseumsUrl(downloadBeans);
-//									modelDao.createOrUpdate(downloadModel);
-									downloadList.add(downloadModel);
-									
-									callBack.onGetBeanResponse(downloadList);
-								}
-							} catch (JSONException e) {
-								// TODO: handle exception
-							} catch (SQLException e1) {
+	public void getDownloadList(final GetBeanCallBack<List<DownloadModel>> callBack) {
+		// 外部数据库Context
+		Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME);
+		final DownloadManagerHelper dbHelper = new DownloadManagerHelper(dContext,"Download.db");
 
-							}
-						}
-					}, mErrorListener);
-			mQueue.add(request);
+	    // 获取列表
+		Dao<DownloadModel, String> modelDao = null;
+		List<DownloadModel> downloadList = null;
+		try {
+			modelDao = dbHelper.getModelDao();
+			downloadList = modelDao.queryForAll();
+		} catch (SQLException e) {
+			downloadList = null;
+			Log.d(TAG,"Access the Download.db error,may be it's not exist!");
 		}
+		if (downloadList != null && downloadList.size() > 0) {
+			callBack.onGetBeanResponse(downloadList);
+			Log.d(TAG, "Download.db is exist,read it ok!");
+			return;
+		}
+		
+	    /////本地获取失败，从网络获取
+		downloadList = new ArrayList<DownloadModel>();
+		String url = Constant.HOST_HEAD + "/a/api/assets/treeData";
+		JsonArrayRequest request = new JsonArrayRequest(url,
+				new Response.Listener<JSONArray>() {
+					@Override
+					public void onResponse(final JSONArray response) {
+						List<DownloadModel> downloadList = new ArrayList<DownloadModel>(
+								response.length());
+						List<DownloadBean> downloadBeans = null;
+						JSONObject object = null;
+						DownloadModel downloadModel = null;
+						DownloadBean downloadBean = null;
+						try {
+//							modelDao = dbHelper.getModelDao();
+							for (int i = 0; i < response.length(); i++) {
+								object = response.getJSONObject(i);
+								Log.w(TAG, "外层,"+object.toString());
+								downloadModel = new DownloadModel();
+								downloadModel.setCity(object
+										.getString("city"));
+								Log.w(TAG, "CITY"+object
+										.getString("city"));
+								JSONArray museums = object
+										.getJSONArray("museumList");
+								Log.w(TAG, "中层,"+museums.toString());
+								downloadBeans = new ArrayList<DownloadBean>(
+										museums.length());
+								for (int j = 0; j < museums.length(); j++) {
+									object = museums.getJSONObject(j);
+									Log.w(TAG, "里层,"+object.toString());
+									downloadBean = new DownloadBean();
+									downloadBean.setMuseumId(object
+											.getString("museumId"));
+									downloadBean.setName(object
+											.getString("name"));
+									downloadBean.setTotal(object
+											.getLong("size"));
+									downloadBeans.add(downloadBean);
+								}
+								downloadModel.setMuseumsUrl(downloadBeans);
+//////////////////////////////还没有存为数据库表
+//									modelDao.createOrUpdate(downloadModel);
+								downloadList.add(downloadModel);
+								
+								callBack.onGetBeanResponse(downloadList);
+							}
+						} catch (JSONException e) {
+							Log.d(TAG, "getDownloadList(),Access form network error!" + e.toString());
+						}
+					}
+				}, mErrorListener);
+		mQueue.add(request);
+		Log.w(TAG, "Download.db is not exist，access from network!");
 	}
 
 	/**
-	 * 获取所有正在下载中的bean
-	 * 
+	 * 获取所有正在下载中的bean 
 	 * @param callBack
 	 */
 	public void getDownloadingBeans(GetBeanCallBack<List<DownloadBean>> callBack) {
-		DownloadManagerHelper helper = new DownloadManagerHelper(mContext);
+		// 外部数据库Context
+		Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME);
+		DownloadManagerHelper dbHelper = new DownloadManagerHelper(dContext,"Download.db");
 		List<DownloadBean> list = null;
 		try {
-			list = helper.getBeanDao().queryBuilder().where()
+			list = dbHelper.getBeanDao().queryBuilder().where()
 					.eq("isCompleted", false).query();
 			callBack.onGetBeanResponse(list);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.d(TAG, "getDownloadingBeans(),Access form network error!" + e.toString());
 		}
 	}
 
@@ -367,15 +358,16 @@ public abstract class GetBeanStrategy {
 	 */
 	public void getDownloadCompletedBeans(
 			GetBeanCallBack<List<DownloadBean>> callBack) {
-		DownloadManagerHelper helper = new DownloadManagerHelper(mContext);
+		// 外部数据库Context
+		Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME);
+		DownloadManagerHelper dbHelper = new DownloadManagerHelper(dContext,"Download.db");
 		List<DownloadBean> list = null;
 		try {
-			list = helper.getBeanDao().queryBuilder().where()
+			list = dbHelper.getBeanDao().queryBuilder().where()
 					.eq("isCompleted", true).query();
 			callBack.onGetBeanResponse(list);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.d(TAG, "getDownloadCompletedBeans(),Access form network error!" + e.toString());
 		}
 	}
 }

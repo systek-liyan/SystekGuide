@@ -48,9 +48,12 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			GetBeanCallBack<List<MuseumBean>> callBack) {
 		List<MuseumBean> list = new ArrayList<MuseumBean>();
 		try {
-			DownloadManagerHelper helper = new DownloadManagerHelper(mContext);
-			Dao<MuseumBean, String> downloaDao = helper.getDownloadedDao();
-			List<DownloadBean> downloadBeans = helper.getBeanDao()
+			// 外部数据库Context
+			Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME);
+			DownloadManagerHelper dbHelper = new DownloadManagerHelper(dContext,"Download.db");
+			
+			Dao<MuseumBean, String> downloaDao = dbHelper.getDownloadedDao();
+			List<DownloadBean> downloadBeans = dbHelper.getBeanDao()
 					.queryForAll();
 			for (DownloadBean downloadBean : downloadBeans) {
 				if (downloadBean.isCompleted()) {
