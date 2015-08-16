@@ -31,6 +31,7 @@ import com.app.guide.model.MuseumModel;
 import com.app.guide.offline.OfflineBeaconBean;
 import com.app.guide.offline.OfflineMapBean;
 import com.app.guide.sql.CityDBManagerHelper;
+import com.app.guide.sql.DatabaseContext;
 import com.app.guide.sql.DownloadManagerHelper;
 import com.app.guide.utils.FastJsonArrayRequest;
 import com.j256.ormlite.dao.Dao;
@@ -56,58 +57,59 @@ public abstract class GetBeanStrategy {
 			@Override
 			public void onErrorResponse(VolleyError error) {
 				// TODO Auto-generated method stub
-				Log.w(TAG,"VolleyError:"+error.getMessage());
+				Log.w(TAG,"Volley error:"+error.getMessage());
 			}
 		};
 	}
 
 	/**
 	 * 获取城市列表
-	 * 
+	 * 判断本地是否存在数据库，如果存在则从数据库中获取，不存在则通过实时API获取 或判断是否需要更新
 	 * @return
 	 */
 	public void getCityList(final GetBeanCallBack<List<CityBean>> callBack) {
-		// 在判断本地是否存在数据库，如果存在则从数据库中获取，不存在则通过实时API获取 或判断是否需要更新
-		CityDBManagerHelper dbHelper = new CityDBManagerHelper(mContext);
-		if (dbHelper.isDBExists()) {
-			Log.w(TAG, "db is exist!");
-			// 获取列表
-			Dao<CityBean, String> cityDao = null;
-			List<CityBean> cityList = null;
-			try {
-				cityDao = dbHelper.getCityDao();
-				cityList = cityDao.queryForAll();
-			} catch (SQLException e) {
-				cityList = new ArrayList<CityBean>();
-				e.printStackTrace();
-			}
-			callBack.onGetBeanResponse(cityList);
+		
+		Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME);
+		// 下面还要从FastJsonArrayRequest对象中访问，因此要有final修饰词
+		final CityDBManagerHelper dbHelper = new CityDBManagerHelper(dContext,"CityName.db");
+		// 获取城市列表
+		Dao<CityBean, String> cityDao = null;
+		List<CityBean> cityList = null;
+		try {
+			cityDao = dbHelper.getCityDao();
+			cityList = cityDao.queryForAll();
+		} catch (SQLException e) {
+			Log.d(TAG,"Access the CityName.db error,may be it's not exist!");
+			cityList = null;
 		}
-		else {  
-			String url = Constant.HOST_HEAD + "/a/api/city/treeData";
-			FastJsonArrayRequest<CityBean> request = new FastJsonArrayRequest<CityBean>(
-					url, CityBean.class, new Response.Listener<List<CityBean>>() {
-						@Override
-						public void onResponse(List<CityBean> response) {
-							// 将数据传递给参数，并存在本地数据库中
-							callBack.onGetBeanResponse(response);
-							CityDBManagerHelper dbHelper = new CityDBManagerHelper(
-									mContext);
-							Dao<CityBean, String> cityDao = null;
-							try {
-								cityDao = dbHelper.getCityDao();
-								for (CityBean city : response) {
-									cityDao.createOrUpdate(city);
-									Log.w(TAG, city.toString());
-								}
-							} catch (SQLException e) {
-								e.printStackTrace();
+		if (cityList != null && cityList.size() > 0) {
+		    callBack.onGetBeanResponse(cityList);
+		    Log.w(TAG, "CityName.db is exist,read it ok!");
+		    return;
+		}
+		/////本地获取失败，从网络获取
+		cityList = new ArrayList<CityBean>();
+		String url = Constant.HOST_HEAD + "/a/api/city/treeData";
+		FastJsonArrayRequest<CityBean> request = new FastJsonArrayRequest<CityBean>(
+				url, CityBean.class, new Response.Listener<List<CityBean>>() {
+					@Override
+					public void onResponse(List<CityBean> response) {
+						// 将数据传递给参数，并存在本地数据库中
+						callBack.onGetBeanResponse(response);
+						Dao<CityBean, String> cityDao = null;
+						try {
+							cityDao = dbHelper.getCityDao();
+							for (CityBean city : response) {
+								cityDao.createOrUpdate(city);
+								Log.w(TAG, city.toString());
 							}
+						} catch (SQLException e) {
+							Log.d(TAG,"write CityName.db error!" + e.toString());
 						}
-					}, mErrorListener);
-			mQueue.add(request);
-			Log.w(TAG, "db is not exist，access from network!");
-		}
+					}
+				}, mErrorListener);
+		mQueue.add(request);
+		Log.w(TAG, "CityName.db is not exist，access from network!");
 	}
 
 	/**

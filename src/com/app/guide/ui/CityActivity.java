@@ -1,12 +1,10 @@
 package com.app.guide.ui;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,7 +13,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import com.app.guide.R;
@@ -23,7 +20,6 @@ import com.app.guide.adapter.CityAdapter;
 import com.app.guide.bean.CityBean;
 import com.app.guide.beanhelper.GetBeanCallBack;
 import com.app.guide.beanhelper.GetBeanHelper;
-import com.app.guide.beanhelper.GetBeanCallBack;
 import com.app.guide.widget.DialogManagerHelper;
 import com.app.guide.widget.QuicLocationBar;
 import com.app.guide.widget.QuicLocationBar.OnTouchLetterChangedListener;
@@ -43,7 +39,7 @@ public class CityActivity extends BaseActivity {
 	private TextView overlay;
 	private QuicLocationBar mQuicLocationBar;
 	private HashMap<String, Integer> alphaIndexer;
-	private SQLiteDatabase database;
+	//private SQLiteDatabase database;
 	private List<CityBean> mCityNames;
 	private DialogManagerHelper mDialogHelper;
 	private SweetAlertDialog pDialog;

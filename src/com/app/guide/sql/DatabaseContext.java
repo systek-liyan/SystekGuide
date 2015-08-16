@@ -14,8 +14,22 @@ import com.app.guide.Constant;
 
 /**
  * 用于支持对存储在SD卡上的数据库的访问
+ * 举例说明使用方法:
+   （1）离线数据库管理类OfflineBeanSqlHelper
+   public class OfflineBeanSqlHelper extends OrmLiteSqliteOpenHelper {
+       public OfflineBeanSqlHelper(Context context, String name) {
+		   super(context, name, null, DATABASE_VERSION);
+	   }
+   }
+   （2）DatabaseContext对象
+   mContext是应用程序，activit等
+   Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME + museumId);
+  （3） 生成离线数据库对象，该数据库文件在sd卡的目录(Constant.FLODER_NAME + museumId)中存储
+    OfflineBeanSqlHelper helper = new OfflineBeanSqlHelper(dContext, museumId + ".db");
  **/
 public class DatabaseContext extends ContextWrapper {
+	
+	public static final String TAG = DatabaseContext.class.getSimpleName();
 
 	private String dbDir;
 
@@ -64,8 +78,7 @@ public class DatabaseContext extends ContextWrapper {
 			try {
 				isFileCreateSuccess = dbFile.createNewFile();// 创建文件
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.d(TAG,dbPath + ",数据库文件创建失败！"+e.toString());
 			}
 		} else
 			isFileCreateSuccess = true;
