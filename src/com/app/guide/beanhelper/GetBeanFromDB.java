@@ -241,6 +241,7 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			exhibit.setrExhibitBeanId(bean.getRexhibit());
 			
 			List<ImageModel> imgList = new ArrayList<ImageModel>();
+			// 实际上，无多角度的情况，在OfflineDownloadHelper.java中的downloadExhibit()已经处理，这里可以安全使用
 			// 如果没有多角度图片，用主图作为第一个多角度图片,从0开始播放
 			if (bean.getImgsurl() == null || bean.getImgsurl().equals(""))  {
 				ImageModel option = new ImageModel(exhibit.getIconUrl(),0);
@@ -296,6 +297,7 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			exhibit.setTextUrl(bean.getTexturl());
 			exhibit.setlExhibitBeanId(bean.getLexhibit());
 			exhibit.setrExhibitBeanId(bean.getRexhibit());
+			// 无多角度的情况，在OfflineDownloadHelper.java中的downloadExhibit()已经处理，这里可以安全使用
 			String imgOptions[] = bean.getImgsurl().split(",");
 			List<ImageModel> imgList = new ArrayList<ImageModel>();
 			imgList.clear();

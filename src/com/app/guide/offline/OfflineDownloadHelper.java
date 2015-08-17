@@ -109,23 +109,10 @@ public class OfflineDownloadHelper {
 						try {
 							exhibitDao = helper.getOfflineExhibitDao();
 							for (OfflineExhibitBean bean : response) {
-								// addAudioDownloadInfo(bean.getAudiourl());
-								Log.w(TAG, bean.getId());
-//								if (!bean.getImgsurl().contains(
-//										bean.getIconurl())) {
-//									// addImageDownloadInfo(bean.getIconurl());
-//								}
-								// TODO 处理imgsurl
-//								String imgOptions[] = bean.getImgsurl().split(
-//										",");
-//								for (int i = 0; i < imgOptions.length; i++) {
-//									// Log.w("Volley",imgOptions[i]);
-//									String url = (imgOptions[i].split("\\*"))[0];
-//									// TODO add image info
-//									// addImageDownloadInfo(url);
-//								}
-								// updateDownloadBean(bean.getFilesize());
-								// addLrcDownloadInfo(bean.getTexturl());
+								// 如果没有多角度图片，用主图作为第一个多角度图片,从0开始播放
+								if (bean.getImgsurl() == null || bean.getImgsurl().equals(""))  {
+									bean.setImgsurl(bean.getIconurl()+"*0");
+								}
 								exhibitDao.createIfNotExists(bean);
 							}
 						} catch (SQLException e) {
