@@ -89,7 +89,7 @@ public abstract class GetBeanStrategy {
 		}
 		/////本地获取失败，从网络获取
 		cityList = new ArrayList<CityBean>();
-		String url = Constant.HOST_HEAD + "/a/api/city/treeData";
+		String url = Constant.HOST_HEAD + "/api/cityService/cityList";
 		FastJsonArrayRequest<CityBean> request = new FastJsonArrayRequest<CityBean>(
 				url, CityBean.class, new Response.Listener<List<CityBean>>() {
 					@Override
@@ -279,7 +279,7 @@ public abstract class GetBeanStrategy {
 		
 	    /////本地获取失败，从网络获取
 		downloadList = new ArrayList<DownloadModel>();
-		String url = Constant.HOST_HEAD + "/a/api/assets/treeData";
+		String url = Constant.HOST_HEAD + "/api/assetsService/assetsSizeList";
 		JsonArrayRequest request = new JsonArrayRequest(url,
 				new Response.Listener<JSONArray>() {
 					@Override
@@ -318,6 +318,7 @@ public abstract class GetBeanStrategy {
 									downloadBeans.add(downloadBean);
 								}
 								downloadModel.setMuseumsUrl(downloadBeans);
+// TODO 评估存为数据表的必要性，不应存
 //////////////////////////////还没有存为数据库表
 //									modelDao.createOrUpdate(downloadModel);
 								downloadList.add(downloadModel);

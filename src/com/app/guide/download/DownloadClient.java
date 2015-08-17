@@ -39,7 +39,7 @@ import com.lidroid.xutils.http.callback.RequestCallBack;
  */
 public class DownloadClient {
 	
-	private static final String TAG = DownloadClient.class.getSimpleName();
+	private static String TAG;
 
 	/**
 	 * 表示下载的5种状态
@@ -64,12 +64,12 @@ public class DownloadClient {
 	private String museumId;
 	
 	/**
-	 * DownloadInfo表的数据访问对象，用以访问、操作downloadInfo表中的数据
+	 * DownloadInfo表的数据访问对象，用于访问、操作downloadInfo表中的数据
 	 */
 	private Dao<DownloadInfo, String> infoDao;
 	
 	/**
-	 * DownloadBean表的数据访问对象，用以访问、操作downloadInfo表中的数据
+	 * DownloadBean表的数据访问对象，用于访问、操作DownloadBean表中的数据
 	 */
 	private Dao<DownloadBean, String> beanDao;
 	
@@ -83,19 +83,19 @@ public class DownloadClient {
 	 */
 	private BlockingQueue<DownloadInfo> queue;
 	
-	//TODO
 	/**
-	 * xUtil
+	 * HttpUtils for xUtil 
 	 */
 	private HttpUtils utils;
 	
 	/**
-	 * xUtil
+	 * HttpHandler<File> for xUtil
 	 */
 	private HttpHandler<File> handler;
 	
 	/**
-	 * xUtil
+	 * RequestCallBack<File> for xUtil
+	 * 每下载一个文件的回调，onSuccess(),onFailure(),onLoading()
 	 */
 	private RequestCallBack<File> callBack;
 	
@@ -114,33 +114,33 @@ public class DownloadClient {
 	 */
 	private OnProgressListener mProgressListener;
 	
-	public DownloadClient(Context context, String museumId) {
+	public DownloadClient(Context context, String museumId, String name) {
+		TAG = this.getClass().getSimpleName();
+		
 		mContext = context;
 		this.museumId = museumId;
+		// 下载队列
 		queue = new LinkedBlockingQueue<DownloadInfo>();
 		utils = new HttpUtils();
+		// 每次下载一个文件的回调
 		callBack = new RequestCallBack<File>() {
 
-			//下载成功时，回调该方法
+			// 某个文件，下载成功时，回调该方法
 			@Override
 			public void onSuccess(ResponseInfo<File> responseInfo) {
-				Log.w(TAG, "success once:" );
-//				Log.w("TAG", "SIZE"+FileUtils.getFileSize(queue.peek().getTarget()));
-				//调用下载成功的方法
-				downloadOnceCompleted(FileUtils.getFileSize(queue.peek().getTarget()));
-				
+				Log.w(TAG, "onSuccess once.[" + queue.peek().getUrl() + "]" );
+				// 调用下载成功的方法
+				downloadOnceCompleted(FileUtils.getFileSize(queue.peek().getTarget()));		
 			}
 
-			//下载失败时，回调该方法
+			// 某个文件，下载失败时，回调该方法
 			@Override
 			public void onFailure(HttpException error, String msg) {
-				// TODO Auto-generated method stub
-				Log.w(TAG, "onFailure once:" +queue.peek().getUrl());
+				Log.w(TAG, "onFailure once.[" + queue.peek().getUrl()+ "]" );
 				//如果已经下载成功，则调用下载成功方法，否则将tryTime++重新下载，
 				//如果tryTime达到3次，则调用ProgressListener#onFailed()方法
 				if (msg.equals("downloaded")) {
-					downloadOnceCompleted(FileUtils.getFileSize(queue.peek()
-							.getTarget()));
+					downloadOnceCompleted(FileUtils.getFileSize(queue.peek().getTarget()));
 					return;
 				}
 				tryTime++;
@@ -148,22 +148,22 @@ public class DownloadClient {
 					mProgressListener.onFailed(queue.peek().getUrl(), msg);
 					return;
 				}
-				//下载 下载队列中第一项
+				// 下载队列中的第一项，此时，该失败文件就是第一项。
 				downloadNext(); 
 			}
 
+			// 某个文件，正在下载时，回调该方法
+			// 注意，这里的total和current是针对当前下载的单个文件
 			@Override
 			public void onLoading(long total, final long current, boolean isUploading) {
-				// TODO Auto-generated method stub
 				super.onLoading(total, current, isUploading);
 				Log.w(TAG, "Loading");
+				// 在主线程,更新进度条
 				if (mProgressListener != null) {
-					Log.w("TAG", downloadBean.getCurrent()+","+current);
-					mainHandler.post(new Runnable() {
-						
+					Log.w(TAG, "当前下载: " + ((downloadBean.getCurrent() + current)/downloadBean.getTotal())*100+"%");
+					mainHandler.post(new Runnable() {						
 						@Override
 						public void run() {
-							// TODO Auto-generated method stub
 							mProgressListener.onProgress(downloadBean.getTotal(),
 									(downloadBean.getCurrent() + current));
 						}
@@ -181,48 +181,53 @@ public class DownloadClient {
 			infoDao = dbHelper.getInfoDao();
 			beanDao = dbHelper.getBeanDao();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Log.d(TAG,"访问数据库Download.db出错,"+e.toString());
 		}
 	}
 	
+	/** 主线程的Handler  */
 	private Handler mainHandler = new Handler(Looper.getMainLooper());
 
-
 	/**
-	 * 每次下载成功一个文件后调用此方法。 更新DownloadBean和DownloadInfo表。
+	 * 每次下载成功一个文件后调用此方法。 
+	 * 更新DownloadBean的整个下载队列当前下载的长度;
+	 * 删除DownloadInfo表中的对应文件记录。
 	 * 并重置尝试次数，更新下载队列，将队列中的第一项移除。<br>
-	 * 移除后若队列为空，则表示下载已全部完成，则调用ProgressListener#onSuccess()方法
-	 *  @param length
+	 * 移除后若队列为空，则表示下载队列已全部完成，则调用ProgressListener#onSuccess()方法
+	 *  @param length 文件长度
 	 */
 	private void downloadOnceCompleted(long length) {
+		// 提取队列中的第一项，并从队列中移除
 		DownloadInfo deleteInfo = queue.poll();
 		tryTime = 0;
 		try {
+			// 整个下载队列当前下载的长度
 			downloadBean.setCurrent(downloadBean.getCurrent() + length);
-//			Log.w("TAG", downloadBean.getCurrent()+"");
 			beanDao.createOrUpdate(downloadBean);
+			// 删除DownloadInfo表中的对应文件记录。
 			infoDao.delete(deleteInfo);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.d(TAG,"操作数据库Download.db错误,"+e.toString());
 		}
 		if (queue.size() != 0) {
+			// 下载队列的第一个任务
 			downloadNext();
-		} else {//下载完成
+		} else { // 整个队列下载完成
 			//更新下载状态
 			state = STATE.NONE;
 			downloadBean.setCompleted(true);
 			try {
 				beanDao.createOrUpdate(downloadBean);
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.d(TAG,"操作数据库Download.db错误,"+e.toString());
 			}
 			if (mProgressListener != null) {
 				mProgressListener.onSuccess();
 			}
 			//在AppService中，移除该博物馆下载任务
 			AppService.remove(museumId);
+			
+			Log.w(TAG, "博物馆下载完成," + downloadBean.toString());
 		}
 	}
 
@@ -289,14 +294,12 @@ public class DownloadClient {
 		state = STATE.PREPARE;
 		Log.w(TAG, "prepare");
 		//判断数据库中downloadBean表中 是否已经存在要下载的博物馆的记录
-		downloadBean = beanDao.queryBuilder().where().eq("museumId", museumId)
-				.queryForFirst();
+		downloadBean = beanDao.queryBuilder().where().eq("museumId", museumId).queryForFirst();
 		if (downloadBean == null) { 
 			//如果不存在，则调用offlineDownloadHelper,并准备开始下载，为helper对象设置下载状态监听接口OnFinishedListener
 			//当helper完成所有的下载接口（服务端API）的访问，且成功生成一个下载列表时，会回调OnFinishedListener#onSuccess()方法
 			//否则（不成功的情况下）,会回调OnFinishedListener#onFailed()方法
-			OfflineDownloadHelper helper = new OfflineDownloadHelper(mContext,
-					museumId);
+		    OfflineDownloadHelper helper = new OfflineDownloadHelper(mContext,museumId,downloadBean.getName());
 			helper.setOnFinishedListener(new OnFinishedListener() {
 
 				@Override

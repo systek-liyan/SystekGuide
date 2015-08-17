@@ -13,13 +13,18 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "downloadInfo")
 public class DownloadInfo {
 
+	/** 下载文件的源url */
 	@DatabaseField(id = true)
 	private String url;
+	
+	/** 下载文件的存储位置(SD卡中)  */
 	@DatabaseField(columnName = "target")
-	private String target;// 下载文件的存储位置
+	private String target;
+	
+	/** 下载文件所属的博物馆id */
 	@DatabaseField(columnName = "museumId")
 	private String museumId;
-
+	
 	public DownloadInfo() {
 		super();
 	}

@@ -9,11 +9,14 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
- * 指定城市的博物馆列表，表名:downloadModel
+ * 指定城市的博物馆列表，用于界面显示
+ * 表名:downloadModel
  * TODO 待整理，好像还不是表
  */
 @DatabaseTable(tableName = "downloadModel")
 public class DownloadModel {
+	
+	private static String TAG;
 
 	@DatabaseField(columnName = "city")
 	private String city;
@@ -24,6 +27,7 @@ public class DownloadModel {
 	
 	public DownloadModel(){
 		this.museumList= new ArrayList<DownloadBean>();
+		TAG = this.getClass().getSimpleName();
 	}
 	
 	public String getCity() {
@@ -51,7 +55,7 @@ public class DownloadModel {
 				urls +=",";
 		}
 		this.museumsUrl= urls;
-		Log.d("TAG", urls);
+		Log.d(TAG, urls);
 	}
 
 	public List<DownloadBean> getMuseumList() {

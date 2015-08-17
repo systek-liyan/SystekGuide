@@ -32,14 +32,10 @@ import com.j256.ormlite.dao.Dao;
 
 /**
  * 
- * TODO 给代码加注释， 
- * 展品列表view，  
- * download Activity  待测试
- * 地图界面  从专题导航 转入 时  数据有些问题。
- * 归并bean 管理获取bean的方式 ， 
- * 音乐播放器，
- * 完成后期工作 见文档。
- * 下载数据包辅助类，从服务器获取bean类，数据库中写入数据
+ * 下载博物馆离线数据包辅助类，
+ * 从服务器获取bean类
+ * 博物馆离线数据：lrc,mp3,jpg
+ * 数据库中写入数据
  * 
  * @author joe_c
  * 
@@ -61,14 +57,19 @@ public class OfflineDownloadHelper {
 	private List<DownloadInfo> infoList;
 	private Set<String> mSet;
 
-	public OfflineDownloadHelper(Context context, String museumId) {
+	/**
+	 * 
+	 * @param context
+	 * @param museumId 博物馆id
+	 * @param name 博物馆名称
+	 */
+	public OfflineDownloadHelper(Context context, String museumId,String name) {
 		super();
 		this.mContext = context;
 		this.museumId = museumId;
 		downloadBean = new DownloadBean();
 		downloadBean.setMuseumId(museumId);
-		// TODO 不能用硬代码
-		downloadBean.setName("首都博物馆");
+		downloadBean.setName(name);
 		infoList = new ArrayList<DownloadInfo>();
 		mSet = new HashSet<String>();
 		mQueue = Volley.newRequestQueue(context);
@@ -94,7 +95,7 @@ public class OfflineDownloadHelper {
 	private void downloadExhibit(final Context context, final String museumid)
 			throws SQLException, NumberFormatException, IOException {
 		String url = Constant.HOST_HEAD
-				+ "/a/api/exhibit/treeData?museum.id=" + museumId;
+				+ "/api/exhibitService/exhibitList?museumId=" + museumId;
 		FastJsonArrayRequest<OfflineExhibitBean> request = new FastJsonArrayRequest<OfflineExhibitBean>(
 				url, OfflineExhibitBean.class,
 				new Response.Listener<List<OfflineExhibitBean>>() {
@@ -146,7 +147,7 @@ public class OfflineDownloadHelper {
 	private void downloadMap(final Context context, final String museumId)
 			throws SQLException {
 		String url = Constant.HOST_HEAD
-				+ "/a/api/museumMap/treeData?museum.id=" + museumId;
+				+ "/api/museumMapService/museumMapLis?museumId=" + museumId;
 		FastJsonArrayRequest<OfflineMapBean> request = new FastJsonArrayRequest<OfflineMapBean>(
 				url, OfflineMapBean.class,
 				new Response.Listener<List<OfflineMapBean>>() {
@@ -181,7 +182,7 @@ public class OfflineDownloadHelper {
 	 */
 	private void downloadMuseum(final Context context, final String museumId) {
 		String url = Constant.HOST_HEAD
-				+ "/a/api/museum/treeData?id=" + museumId;
+				+ "/api/museumService/museumList?museumId=" + museumId;
 		FastJsonArrayRequest<OfflineMuseumBean> jsonRequest = new FastJsonArrayRequest<OfflineMuseumBean>(
 				url, OfflineMuseumBean.class,
 				new Response.Listener<List<OfflineMuseumBean>>() {
@@ -250,7 +251,7 @@ public class OfflineDownloadHelper {
 	 */
 	private void downloadBeacon(final Context context, final String museumId) {
 		String url = Constant.HOST_HEAD
-				+ "/a/api/beacon/treeData?museum.id=" + museumId;
+				+ "/api/beaconService/beaconList?museumId=" + museumId;
 		FastJsonArrayRequest<OfflineBeaconBean> request = new FastJsonArrayRequest<OfflineBeaconBean>(
 				url, OfflineBeaconBean.class,
 				new Response.Listener<List<OfflineBeaconBean>>() {
@@ -286,7 +287,7 @@ public class OfflineDownloadHelper {
 			throws SQLException {
 
 		String url = Constant.HOST_HEAD
-				+ "/a/api/labels/treeData?museum.id=" + museumId;
+				+ "/api/labelsService/labelsList?museumId=" + museumId;
 		FastJsonArrayRequest<OfflineLabelBean> request = new FastJsonArrayRequest<OfflineLabelBean>(
 				url, OfflineLabelBean.class,
 				new Response.Listener<List<OfflineLabelBean>>() {
@@ -317,7 +318,7 @@ public class OfflineDownloadHelper {
 	 */
 	private void downloadFiles() {
 
-		String url = Constant.HOST_HEAD + "/a/api/assets/download?id="
+		String url = Constant.HOST_HEAD + "/api/assetsService/assetsList?museumId="
 				+ museumId;	
 		JsonObjectRequest request = new JsonObjectRequest(url, null,
 				new Response.Listener<JSONObject>() {
