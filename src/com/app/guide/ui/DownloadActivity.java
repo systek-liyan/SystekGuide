@@ -28,6 +28,7 @@ public class DownloadActivity extends BaseActivity {
 
 	private ImageView ivBack;
 
+	// 在onCreate()和onSaveInstanceState()之间传递参数值，以记录Activity上一次关闭前的状态
 	private static final String Bundle_key = "state";
 
 	@Override
@@ -35,6 +36,7 @@ public class DownloadActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_download);
 		initViews();
+		// 恢复到上一次关闭状态
 		if (savedInstanceState != null) {
 			tbTitle.setCurrentState(savedInstanceState.getInt(Bundle_key));
 		}
@@ -51,7 +53,7 @@ public class DownloadActivity extends BaseActivity {
 		ivBack.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				finish();
+				finish(); // 终止该Activity
 			}
 		});
 		tbTitle.setStateChangedListener(new OnStateChangedListener() {
@@ -108,6 +110,7 @@ public class DownloadActivity extends BaseActivity {
 		}
 	}
 
+	/** 通过Bundle记录状态 */
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
