@@ -80,6 +80,7 @@ public class DownloadActivity extends BaseActivity {
 				tbTitle.toggle();
 			}
 		});
+		
 		if (tbTitle.getCurrentState() == MyToggleButton.STATE_ON)
 			init(downloadManageFragment);
 		else
@@ -98,6 +99,7 @@ public class DownloadActivity extends BaseActivity {
 
 	private void beginTransaction(Fragment from, Fragment to) {
 		FragmentTransaction ft = mFragmentManager.beginTransaction();
+		// setCustomAnimations产生Fragment切换时的动画效果
 		if(to == downloadManageFragment){
 			ft.setCustomAnimations(R.anim.slide_right_in, R.anim.slide_right_out);
 		}else{
