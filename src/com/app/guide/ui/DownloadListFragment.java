@@ -291,6 +291,7 @@ public class DownloadListFragment extends Fragment {
 			GroupViewHolder holder = null;
 			/** 外层--城市*/
 			if (convertView == null) {
+				// 为什么用参数传过来的Context出错，使用getActivity()就正确
 				//convertView = LayoutInflater.from(mContext).inflate(R.layout.item_download_group, null);
 			    convertView = LayoutInflater.from(getActivity()).inflate(R.layout.item_download_group, null);
 				holder = new GroupViewHolder();
