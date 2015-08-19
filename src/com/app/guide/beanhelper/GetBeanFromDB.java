@@ -43,6 +43,7 @@ public class GetBeanFromDB extends GetBeanStrategy {
 		super(context);
 	}
 
+	// TODO 下载任务完成后，再调用此函数，从离线博物馆表中填充表MuseumBean，条件Downloadben isCompleted=true
 	@Override
 	public void getMuseumList(String city,
 			GetBeanCallBack<List<MuseumBean>> callBack) {
@@ -53,13 +54,10 @@ public class GetBeanFromDB extends GetBeanStrategy {
 			DownloadManagerHelper dbHelper = new DownloadManagerHelper(dContext,"Download.db");
 			
 			Dao<MuseumBean, String> downloaDao = dbHelper.getDownloadedDao();
-			List<DownloadBean> downloadBeans = dbHelper.getBeanDao()
-					.queryForAll();
+			List<DownloadBean> downloadBeans = dbHelper.getDownloadBeanDao().queryForAll();
 			for (DownloadBean downloadBean : downloadBeans) {
 				if (downloadBean.isCompleted()) {
-					MuseumBean bean = downloaDao.queryBuilder().where()
-							.eq("museumId", downloadBean.getMuseumId())
-							.queryForFirst();
+					MuseumBean bean = downloaDao.queryBuilder().where().eq("museumId", downloadBean.getMuseumId()).queryForFirst();
 					list.add(bean);
 				}
 			}
@@ -68,6 +66,7 @@ public class GetBeanFromDB extends GetBeanStrategy {
 		}
 	}
 
+ 
 	@Override
 	public void getMuseumModel(String museumId,
 			GetBeanCallBack<MuseumModel> callBack) {

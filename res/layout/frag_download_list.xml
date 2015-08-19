@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+    <!-- 可扩展视图 -->
     <ExpandableListView 
         android:id="@+id/lv_download_list"
         android:layout_height="wrap_content"

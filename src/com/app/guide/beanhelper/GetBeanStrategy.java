@@ -23,7 +23,6 @@ import com.app.guide.bean.ExhibitBean;
 import com.app.guide.bean.MuseumAreaBean;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.download.DownloadBean;
-import com.app.guide.download.DownloadModel;
 import com.app.guide.model.ExhibitModel;
 import com.app.guide.model.LabelModel;
 import com.app.guide.model.MapExhibitModel;
@@ -64,7 +63,7 @@ public abstract class GetBeanStrategy {
 
 	/**
 	 * 获取城市列表
-	 * 判断本地是否存在数据库，如果存在则从数据库中获取，不存在则通过实时API获取 或判断是否需要更新
+	 * 判断本地是否存在数据库，如果存在则从数据库中获取，不存在则通过实时API获取,并存入CityName数据库
 	 * @return
 	 */
 	public void getCityList(final GetBeanCallBack<List<CityBean>> callBack) {
@@ -87,7 +86,7 @@ public abstract class GetBeanStrategy {
 		    Log.d(TAG, "CityName.db is exist,read it ok!");
 		    return;
 		}
-		/////本地获取失败，从网络获取
+		/////本地获取失败，从网络获取,并存入CityName数据库
 		cityList = new ArrayList<CityBean>();
 		String url = Constant.HOST_HEAD + "/api/cityService/cityList";
 		FastJsonArrayRequest<CityBean> request = new FastJsonArrayRequest<CityBean>(
@@ -251,91 +250,83 @@ public abstract class GetBeanStrategy {
 			GetBeanCallBack<List<OfflineBeaconBean>> callBack);
 
 	/**
-	 * 获取下载列表 <br>
-	 * 判断本地是否存在数据库，如果存在则从数据库中获取，不存在则通过实时API获取 或判断是否需要更新
-	 * @param callBack
+	 * 获取下载离线数据包的博物馆列表
+	 * 本地获取数据库Download.db中的BownloadBean
+	 * 本地失败，网络获取,json：[{"city":"北京市","museumList":[{"museumId":"deadccf89ef8412a9c8a2628cee28e18","name":"保利博物馆","size":"10184184"},...
+	 * 网络获取后，录入本地数据库
+	 * 
+	 * @param callBack null本地数据库、网络获取失败
 	 * 
 	 */
-	public void getDownloadList(final GetBeanCallBack<List<DownloadModel>> callBack) {
+	public void getDownloadBeanList(final GetBeanCallBack<List<DownloadBean>> callBack) {
 		// 外部数据库Context
 		Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME);
 		final DownloadManagerHelper dbHelper = new DownloadManagerHelper(dContext,"Download.db");
 
-	    // 获取列表
-		Dao<DownloadModel, String> modelDao = null;
-		List<DownloadModel> downloadList = null;
+		// 获取待下载列表
+		Dao<DownloadBean, String> downloadDao = null;
+		List<DownloadBean> downloadList = null;
 		try {
-			modelDao = dbHelper.getModelDao();
-			downloadList = modelDao.queryForAll();
+			downloadDao = dbHelper.getDownloadBeanDao();
+			downloadList = downloadDao.queryForAll();
 		} catch (SQLException e) {
 			downloadList = null;
-			Log.d(TAG,"Access the Download.db error,may be it's not exist!");
+			Log.d(TAG,"Access the Download.db error in getDownloadBeanList(),may be it's not exist!");
 		}
 		if (downloadList != null && downloadList.size() > 0) {
 			callBack.onGetBeanResponse(downloadList);
-			Log.d(TAG, "Download.db is exist,read it ok!");
+			Log.d(TAG, "Download.db is exist in in getDownloadBeanList(),read it ok!");
 			return;
 		}
 		
-	    /////本地获取失败，从网络获取
-		downloadList = new ArrayList<DownloadModel>();
+	    /////本地获取失败，从网络获取,并录入数据库Download数据库的DownloadBean表。
 		String url = Constant.HOST_HEAD + "/api/assetsService/assetsSizeList";
 		JsonArrayRequest request = new JsonArrayRequest(url,
 				new Response.Listener<JSONArray>() {
 					@Override
 					public void onResponse(final JSONArray response) {
-						List<DownloadModel> downloadList = new ArrayList<DownloadModel>(
-								response.length());
-						List<DownloadBean> downloadBeans = null;
+						List<DownloadBean> downloadList = new ArrayList<DownloadBean>();
 						JSONObject object = null;
-						DownloadModel downloadModel = null;
+						//DownloadModel downloadModel = null;
 						DownloadBean downloadBean = null;
 						try {
-//							modelDao = dbHelper.getModelDao();
+							Dao<DownloadBean, String> downloadDao = dbHelper.getDownloadBeanDao();
 							for (int i = 0; i < response.length(); i++) {
 								object = response.getJSONObject(i);
 								Log.w(TAG, "外层,"+object.toString());
-								downloadModel = new DownloadModel();
-								downloadModel.setCity(object
-										.getString("city"));
-								Log.w(TAG, "CITY"+object
-										.getString("city"));
-								JSONArray museums = object
-										.getJSONArray("museumList");
+								String city = object.getString("city");
+								JSONArray museums = object.getJSONArray("museumList");
 								Log.w(TAG, "中层,"+museums.toString());
-								downloadBeans = new ArrayList<DownloadBean>(
-										museums.length());
 								for (int j = 0; j < museums.length(); j++) {
+									downloadBean = new DownloadBean();
+									downloadBean.setCity(city);
 									object = museums.getJSONObject(j);
 									Log.w(TAG, "里层,"+object.toString());
-									downloadBean = new DownloadBean();
-									downloadBean.setMuseumId(object
-											.getString("museumId"));
-									downloadBean.setName(object
-											.getString("name"));
-									downloadBean.setTotal(object
-											.getLong("size"));
-									downloadBeans.add(downloadBean);
+									downloadBean.setMuseumId(object.getString("museumId"));
+									downloadBean.setName(object.getString("name"));
+									downloadBean.setTotal(object.getLong("size"));
+									
+									// 添加给回调
+									downloadList.add(downloadBean);
+									// 录入数据库Download数据库的DownloadBean表。
+									downloadDao.createIfNotExists(downloadBean);
 								}
-								downloadModel.setMuseumsUrl(downloadBeans);
-// TODO 评估存为数据表的必要性，不应存
-//////////////////////////////还没有存为数据库表
-//									modelDao.createOrUpdate(downloadModel);
-								downloadList.add(downloadModel);
-								
-								callBack.onGetBeanResponse(downloadList);
 							}
+							// 传递给回调
+							callBack.onGetBeanResponse(downloadList);
 						} catch (JSONException e) {
-							Log.d(TAG, "getDownloadList(),Access form network error!" + e.toString());
+							Log.d(TAG, "getDownloadBeanList(),Access form network error!" + e.toString());
+						} catch (SQLException e) {
+							Log.d(TAG, "getDownloadBeanList(),Sql exception!" + e.toString());
 						}
 					}
 				}, mErrorListener);
 		mQueue.add(request);
-		Log.w(TAG, "Download.db is not exist，access from network!");
+		Log.w(TAG, "Download.db is not exist，access from network in getDownloadBeanList()!");
 	}
 
 	/**
-	 * 获取所有正在下载中的bean 
+	 * 在本地数据库中获取正在下载离线数据包的博物馆信息(DownloadBean isDownloading=true) 
 	 * @param callBack
 	 */
 	public void getDownloadingBeans(GetBeanCallBack<List<DownloadBean>> callBack) {
@@ -344,16 +335,17 @@ public abstract class GetBeanStrategy {
 		DownloadManagerHelper dbHelper = new DownloadManagerHelper(dContext,"Download.db");
 		List<DownloadBean> list = null;
 		try {
-			list = dbHelper.getBeanDao().queryBuilder().where()
-					.eq("isCompleted", false).query();
+			list = dbHelper.getDownloadBeanDao().queryBuilder().where()
+					.eq("isDownloading", true).query();
 			callBack.onGetBeanResponse(list);
 		} catch (SQLException e) {
+			callBack.onGetBeanResponse(null);
 			Log.d(TAG, "getDownloadingBeans(),Access form network error!" + e.toString());
 		}
 	}
 
 	/**
-	 * 获取所有已下载完成的bean
+	 * 在本地数据库中获取所有已下载完成的bean
 	 * 
 	 * @param callBack
 	 */
@@ -364,7 +356,7 @@ public abstract class GetBeanStrategy {
 		DownloadManagerHelper dbHelper = new DownloadManagerHelper(dContext,"Download.db");
 		List<DownloadBean> list = null;
 		try {
-			list = dbHelper.getBeanDao().queryBuilder().where()
+			list = dbHelper.getDownloadBeanDao().queryBuilder().where()
 					.eq("isCompleted", true).query();
 			callBack.onGetBeanResponse(list);
 		} catch (SQLException e) {

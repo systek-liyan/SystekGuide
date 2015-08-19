@@ -148,8 +148,6 @@ public class MuseumIntroduceFragment extends Fragment {
 
 					@Override
 					public void onGetBeanResponse(MuseumModel response) {
-						// TODO Auto-generated method stub
-
 						mMuseumModel = response;
 						((AppContext) getActivity().getApplication()).floorCount = response
 								.getFloorCount();

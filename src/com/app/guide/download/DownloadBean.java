@@ -20,6 +20,14 @@ public class DownloadBean {
 	@DatabaseField(id = true)
 	private String museumId;
 	
+	/** 博物馆名称 */
+	@DatabaseField(columnName = "name")
+	private String name;
+	
+	/** 博物馆所在城市 */
+	@DatabaseField(columnName = "city")
+	private String city;
+	
 	/** 当前下载进度 */
 	@DatabaseField(columnName = "current", defaultValue = "0")
 	private long current;
@@ -28,13 +36,13 @@ public class DownloadBean {
 	@DatabaseField(columnName = "total", defaultValue = "0")
 	private long total;
 	
-	/** 博物馆名称 */
-	@DatabaseField(columnName = "name")
-	private String name;
-	
 	/** 表示该下载任务是否已完成 */
 	@DatabaseField(columnName = "isCompleted", defaultValue = "false")
 	private boolean isCompleted;
+	
+	/** 表示该下载任务正在下载 */
+	@DatabaseField(columnName = "isDownloading", defaultValue = "false")
+	private boolean isDownloading;
 	
 	/** 表示该下载(更新)任务向服务器请求的时间 */
 	@DatabaseField(columnName = "updateDate")
@@ -45,6 +53,21 @@ public class DownloadBean {
 	 */
 	public boolean isCompleted() {
 		return isCompleted;
+	}
+
+	/**
+	 * 设置下载任务是否正在下载
+	 * @param isCompleted true:表示已完成； false：表示未完成
+	 */
+	public void setDownloading(boolean isDownloading) {
+		this.isDownloading = isDownloading;
+	}
+	
+	/**
+	 * @return 该下载任务是否正在下载
+	 */
+	public boolean isDownloading() {
+		return isDownloading;
 	}
 
 	/**
@@ -127,6 +150,19 @@ public class DownloadBean {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	/** 获取博物馆所在城市 */
+	public String getCity() {
+		return city;
+	}
+
+	/**
+	 * 设置博物馆所在城市
+	 * @param city
+	 */
+	public void setCity(String city) {
+		this.city = city;
+	}
 
 	@Override
 	public String toString() {
@@ -134,6 +170,4 @@ public class DownloadBean {
 		return "museumId:"+museumId+","+name+",isCompleted="+ Completed;
 	}
 	
-	
-
 }

@@ -5,7 +5,7 @@
     android:background="@color/color_white"
     android:paddingTop="10dp"
     android:paddingBottom="10dp">
-    
+    <!-- 城市 -->
     <TextView 
         android:id="@+id/tv_download_group_name"
         android:layout_width="wrap_content"
@@ -13,6 +13,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"/>
     
+    <!-- 展开，显示子层博物馆 -->
     <ImageView 
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"

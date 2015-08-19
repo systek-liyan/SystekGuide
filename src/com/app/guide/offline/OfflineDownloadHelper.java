@@ -63,13 +63,12 @@ public class OfflineDownloadHelper {
 	 * @param museumId 博物馆id
 	 * @param name 博物馆名称
 	 */
-	public OfflineDownloadHelper(Context context, String museumId,String name) {
+	public OfflineDownloadHelper(Context context, String museumId) {
 		super();
 		this.mContext = context;
 		this.museumId = museumId;
 		downloadBean = new DownloadBean();
 		downloadBean.setMuseumId(museumId);
-		downloadBean.setName(name);
 		infoList = new ArrayList<DownloadInfo>();
 		mSet = new HashSet<String>();
 		mQueue = Volley.newRequestQueue(context);

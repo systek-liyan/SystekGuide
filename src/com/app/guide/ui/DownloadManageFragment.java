@@ -6,6 +6,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,14 +21,18 @@ import com.app.guide.adapter.DownloadAdapter.OnItemDeleteListener;
 import com.app.guide.beanhelper.GetBeanCallBack;
 import com.app.guide.beanhelper.GetBeanHelper;
 import com.app.guide.download.DownloadBean;
-import com.app.guide.ui.DownloadListFragment.OnDownloadBeginListener;
+import com.app.guide.ui.DownloadListFragment.ExListViewAdapter.ChildViewHolder;
+import com.app.guide.ui.DownloadListFragment.OnDownloadListener;
 
+/**
+ * 下载管理，目前显示正在下载和已经下载完成的博物馆
+ * @author Administrator
+ *
+ */
 public class DownloadManageFragment extends Fragment implements
-		OnItemDeleteListener, OnDownloadBeginListener ,OnDownloadCompleteListener{
+		OnItemDeleteListener, OnDownloadListener ,OnDownloadCompleteListener{
 
-	private static final String TAG = DownloadManageFragment.class
-			.getSimpleName();
-
+	private static String TAG;
 	private DownloadAdapter mDownloadingAdapter;
 
 	private DownloadAdapter mDownloadedAdapter;
@@ -63,21 +68,22 @@ public class DownloadManageFragment extends Fragment implements
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		DownloadListFragment.setDownloadListener(this);
+		TAG = this.getClass().getSimpleName();
+		
+		//DownloadListFragment.setDownloadListener(this);
 		initData();
 	}
 
 	private void initData() {
 		// TODO Auto-generated method stub
-		GetBeanHelper.getInstance(getActivity()).getDownloadingBeans(
+		GetBeanHelper.getInstance(getActivity()).getDownloadBeanList(
 				new GetBeanCallBack<List<DownloadBean>>() {
 
 					@Override
 					public void onGetBeanResponse(List<DownloadBean> response) {
 						downloadingList = response;
-
+						// TODO == null
 					}
 				});
 
@@ -133,17 +139,7 @@ public class DownloadManageFragment extends Fragment implements
 	}
 
 	@Override
-	public void onDownload(DownloadBean downloadBean) {
-		Toast.makeText(getActivity(), "开始下载", Toast.LENGTH_SHORT).show();
-		downloadingList.add(downloadBean);
-		mDownloadingAdapter.notifyDataSetChanged();
-//		mDownloadingAdapter.startDownload(downloadBean.getMuseumId());
-		updateTvVisibility();
-
-	}
-
-	@Override
-	public void onUpgrate() {
+	public void onUpdate() {
 		// TODO Auto-generated method stub
 
 	}
@@ -159,6 +155,16 @@ public class DownloadManageFragment extends Fragment implements
 		// TODO Auto-generated method stub
 		downloadCompletedList.add(bean);
 		mDownloadedAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void onDownload(DownloadBean downloadBean, ChildViewHolder holder) {
+		// TODO Auto-generated method stub
+		Toast.makeText(getActivity(), "开始下载", Toast.LENGTH_SHORT).show();
+		downloadingList.add(downloadBean);
+		mDownloadingAdapter.notifyDataSetChanged();
+//		mDownloadingAdapter.startDownload(downloadBean.getMuseumId());
+		updateTvVisibility();
 	}
 
 }

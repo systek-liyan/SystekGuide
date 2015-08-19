@@ -10,7 +10,6 @@ import com.app.guide.bean.ExhibitBean;
 import com.app.guide.bean.MuseumAreaBean;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.download.DownloadBean;
-import com.app.guide.download.DownloadModel;
 import com.app.guide.model.ExhibitModel;
 import com.app.guide.model.LabelModel;
 import com.app.guide.model.MapExhibitModel;
@@ -131,7 +130,6 @@ public class GetBeanHelper {
 
 	public void getMapList(String museumId,
 			GetBeanCallBack<List<OfflineMapBean>> callBack) {
-		// TODO Auto-generated method stub
 		mGetBeanStrategy.getMapList(museumId, callBack);
 	}
 
@@ -155,8 +153,16 @@ public class GetBeanHelper {
 		mGetBeanStrategy.getBeaconList(museumId, floor, callBack);
 	}
 
-	public void getDownloadList(GetBeanCallBack<List<DownloadModel>> callBack) {
-		mGetBeanStrategy.getDownloadList(callBack);
+	/**
+	 * 获取下载离线数据包的博物馆列表
+	 * 本地获取数据库Download.db中的BownloadBean
+	 * 本地失败，网络获取,json：[{"city":"北京市","museumList":[{"museumId":"deadccf89ef8412a9c8a2628cee28e18","name":"保利博物馆","size":"10184184"},...
+	 * 网络获取后，录入本地数据库
+	 * 
+	 * @param callBack null本地数据库、网络获取失败
+	 **/
+	public void getDownloadBeanList(GetBeanCallBack<List<DownloadBean>> callBack) {
+		mGetBeanStrategy.getDownloadBeanList(callBack);
 	}
 
 	/**
@@ -167,7 +173,7 @@ public class GetBeanHelper {
 	}
 
 	/**
-	 * 获取所有已下载完成的bean
+	 * 在本地数据库中获取所有已下载完成的bean
 	 */
 	public void getDownloadCompletedBeans(
 			GetBeanCallBack<List<DownloadBean>> callBack) {

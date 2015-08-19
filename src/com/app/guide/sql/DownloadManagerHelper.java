@@ -85,6 +85,7 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * 获取MuseumBean表的数据访问对象，用来操作MuseumBean表
+	 * 记录已经下载完成的博物馆信息
 	 * @return
 	 * @throws SQLException
 	 */
@@ -112,7 +113,7 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Dao<DownloadBean, String> getBeanDao() throws SQLException {
+	public Dao<DownloadBean, String> getDownloadBeanDao() throws SQLException {
 		if (beanDao == null) {
 			beanDao = getDao(DownloadBean.class);
 		}

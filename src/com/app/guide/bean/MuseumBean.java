@@ -3,6 +3,7 @@ package com.app.guide.bean;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+/**  记录已经下载完成的博物馆信息，即可以正常使用的博物馆信息 */
 @DatabaseTable(tableName = "downloadedMuseum")
 public class MuseumBean {
 

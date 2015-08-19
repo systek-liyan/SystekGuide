@@ -57,12 +57,12 @@ public class OfflineDeleteHelper {
 		Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME);
 		DownloadManagerHelper helper = new DownloadManagerHelper(dContext,"Download.db");
 		
-		int count = helper.getBeanDao().queryBuilder().where()
+		int count = helper.getDownloadBeanDao().queryBuilder().where()
 				.eq("museumId", museumId).and().eq("isCompleted", true).query()
 				.size();
 		if (count > 0) {
 			DeleteBuilder<DownloadBean, String> deleteBuilder = helper
-					.getBeanDao().deleteBuilder();
+					.getDownloadBeanDao().deleteBuilder();
 			deleteBuilder.where().eq("museumId", museumId);
 			deleteBuilder.delete();
 			DeleteBuilder<MuseumBean, String> deleteBuilder2 = helper

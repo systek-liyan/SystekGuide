@@ -4,6 +4,7 @@
     android:layout_height="@dimen/download_list_item_height"
     android:padding="10dp">
 
+   <!-- 博物馆 -->
    <TextView 
        android:id="@+id/tv_download_child_name"
        android:layout_width="wrap_content"
@@ -11,7 +12,7 @@
        android:textSize="@dimen/download_text_size"
        android:layout_centerVertical="true"
        android:layout_marginLeft="5dp"/>
-   
+   <!-- 状态  -->
    <TextView 
        android:id="@+id/tv_download_child_state"
        android:layout_width="wrap_content"
@@ -20,7 +21,7 @@
        android:layout_centerVertical="true"
        android:textSize="11sp"
        android:layout_marginLeft="5dp"/>
-   
+   <!-- 开始(下载) -->
    <ImageView 
        android:id="@+id/iv_download_child_icon"
        android:layout_width="@dimen/download_icon_size"
@@ -29,7 +30,7 @@
        android:layout_marginRight="5dp"
        android:layout_centerVertical="true"
        android:src="@drawable/play_btn_play"/>
-
+   <!-- 资源文件大小 -->
    <TextView android:id="@+id/tv_download_child_size"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"

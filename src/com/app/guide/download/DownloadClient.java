@@ -114,7 +114,7 @@ public class DownloadClient {
 	 */
 	private OnProgressListener mProgressListener;
 	
-	public DownloadClient(Context context, String museumId, String name) {
+	public DownloadClient(Context context, String museumId) {
 		TAG = this.getClass().getSimpleName();
 		
 		mContext = context;
@@ -179,7 +179,7 @@ public class DownloadClient {
 					
 		try {
 			infoDao = dbHelper.getInfoDao();
-			beanDao = dbHelper.getBeanDao();
+			beanDao = dbHelper.getDownloadBeanDao();
 		} catch (SQLException e) {
 			Log.d(TAG,"访问数据库Download.db出错,"+e.toString());
 		}
@@ -215,7 +215,10 @@ public class DownloadClient {
 		} else { // 整个队列下载完成
 			//更新下载状态
 			state = STATE.NONE;
+			// 在数据
 			downloadBean.setCompleted(true);
+			
+            // 更新downloadBean数据库记录，标记已经完成
 			try {
 				beanDao.createOrUpdate(downloadBean);
 			} catch (SQLException e) {
@@ -293,13 +296,13 @@ public class DownloadClient {
 			IOException {
 		state = STATE.PREPARE;
 		Log.w(TAG, "prepare");
-		//判断数据库中downloadBean表中 是否已经存在要下载的博物馆的记录
+		//判断数据库中downloadBean表中是否有带下载的博物馆的记录
 		downloadBean = beanDao.queryBuilder().where().eq("museumId", museumId).queryForFirst();
-		if (downloadBean == null) { 
+		if (downloadBean.isDownloading() == false && downloadBean.isCompleted() == false) { 
 			//如果不存在，则调用offlineDownloadHelper,并准备开始下载，为helper对象设置下载状态监听接口OnFinishedListener
 			//当helper完成所有的下载接口（服务端API）的访问，且成功生成一个下载列表时，会回调OnFinishedListener#onSuccess()方法
 			//否则（不成功的情况下）,会回调OnFinishedListener#onFailed()方法
-		    OfflineDownloadHelper helper = new OfflineDownloadHelper(mContext,museumId,downloadBean.getName());
+		    OfflineDownloadHelper helper = new OfflineDownloadHelper(mContext,museumId);
 			helper.setOnFinishedListener(new OnFinishedListener() {
 
 				@Override
@@ -312,10 +315,9 @@ public class DownloadClient {
 
 				@Override
 				public void onSuccess(List<DownloadInfo> list, DownloadBean bean) {
-					// TODO Auto-generated method stub
 					downloadBean = bean;
 					try {
-						//创建downloadBean
+						//创建或更新downloadBean
 						beanDao.createOrUpdate(downloadBean);
 						//并将offlineDownloadHelper中生成的downloadInfo列表添加到下载队列中
 						addTask(list);
@@ -335,14 +337,18 @@ public class DownloadClient {
 			//调用OfflineDownloadHelper#download()方法，使其开始工作
 			helper.download();
 			return false;
-		} else {
-			//如果数据库中已经存在 要下载的博物馆的记录了，从数据库中获取该博物馆的所有downloadInfo记录
-			//一个DownloadInfo记录表示一个未下载完成的下载项，并将其添加到下载队列中。
-			List<DownloadInfo> list = infoDao.queryBuilder().where()
-					.eq("museumId", downloadBean.getMuseumId()).query();
-			addTask(list);
-			return true;
-		}
+		} 
+		return true;  // TODO 与下列一并处理
+// TODO 待整理，将之前未下载的要下载，考虑在界面部分提示用户选择
+//		else
+//		{
+//			//如果数据库中已经存在 要下载的博物馆的记录了，从数据库中获取该博物馆的所有downloadInfo记录
+//			//一个DownloadInfo记录表示一个未下载完成的下载项，并将其添加到下载队列中。
+//			List<DownloadInfo> list = infoDao.queryBuilder().where()
+//					.eq("museumId", downloadBean.getMuseumId()).query();
+//			addTask(list);
+//			return true;
+//		}
 	}
 
 	/**

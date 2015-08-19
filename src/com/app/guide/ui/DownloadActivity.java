@@ -14,13 +14,17 @@ import com.app.guide.ui.DownloadListFragment.OnToggleListener;
 import com.app.guide.widget.MyToggleButton;
 import com.app.guide.widget.MyToggleButton.OnStateChangedListener;
 
+/**
+ * 下载管理Activity，由两个Fragment组成
+ * DownloadManageFragment: 下载管理，目前显示正在下载和已经下载完成的博物馆
+ * DownloadListFragment: 城市列表，显示各个城市中可以下载的博物馆，供选择下载
+ * @author Administrator
+ */
 public class DownloadActivity extends BaseActivity {
 
 	private DownloadManageFragment downloadManageFragment;
 
 	private DownloadListFragment downloadListFragment;
-
-	private Fragment mCurrentFragment;
 
 	private FragmentManager mFragmentManager;
 
