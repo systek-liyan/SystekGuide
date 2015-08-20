@@ -107,6 +107,7 @@ public class DownloadListFragment extends Fragment {
 				@Override
 				public void onSuccess() {
 					holder.tvState.setText("已下载");
+					//不可再按
 					holder.ivStart.setEnabled(false);
 				}
 
@@ -119,6 +120,10 @@ public class DownloadListFragment extends Fragment {
 				public void onProgress(long total, long current) {
 					double d = current * 100.0 / total;
 					holder.tvState.setText(String.format("%.1f", d) + "%");
+					// 处理该信息来的比onSuccess()晚是，显示文字100.0%甚至是100.1%的情况
+					if (current == total) {
+						holder.tvState.setText("已下载");
+					}
 				}
 
 				@Override
