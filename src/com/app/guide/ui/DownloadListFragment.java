@@ -1,12 +1,9 @@
 package com.app.guide.ui;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -37,48 +34,112 @@ import com.app.guide.ui.DownloadListFragment.ExListViewAdapter.ChildViewHolder;
 public class DownloadListFragment extends Fragment {
 	
 	private static String TAG;
-
-	/** 可扩展ListView */
-	private ExpandableListView mListView;
 	
-	/**
-	 * 已经下载的
-	 */
-	private List<String> hasDownloaded = new ArrayList<String>();
+	/** 两个Fragment之间切换显示回调接口 */
+	public interface OnToggleListener {
+		void onToggle();
+	}
+	
+	/** 两个Fragment之间切换显示回调接口 */
+	private OnToggleListener mToggleListener;
+
+	public void setToggleListener(OnToggleListener listener) {
+		mToggleListener = listener;
+	}
 	
 	/**
 	 * 城市、博物馆列表
 	 */
 	private List<DownloadBean> downloadList;
 
-	/** 资源下载状态 
-	 * 存放规则: groupPosition(外层城市)+""+childPosition(内层博物馆) -> state
-	 **/
-	//private HashMap<String, Integer> stateMap = new HashMap<String, Integer>();
+	
+	/** 下载回调接口 */
+	public interface OnDownloadListener {
+        /** 执行下载 */
+		void onDownload(DownloadBean downloadBean,ChildViewHolder holder);
 
-	//private static OnDownloadBeginListener downloadListener;
-
-	private OnToggleListener mToggleListener;
-
-	public void setToggleListener(OnToggleListener listener) {
-		mToggleListener = listener;
+		// TODO 更新
+		void onUpdate();
 	}
 
-//	public static void setDownloadListener(OnDownloadBeginListener listener) {
-//		downloadListener = listener;
-//	}
+	/** 可扩展ListView */
+	private ExpandableListView mListView;
+	
+	/** 可扩展视图Adapter*/
+	private ExListViewAdapter mAdapter;
+	
+	class ExListViewData {
+		/** 外层(组,城市)*/
+		String city; 
+		/** 内层(子层,博物馆列表)*/
+		List<DownloadBean> museumList; 
+	}
+	List<ExListViewData> exListViewData = new ArrayList<ExListViewData>();  
 
-	// private BaseExpandableListAdapter mAdapter;
+	/** 开始(下载)回调 */
+	private OnDownloadListener onDownload = new OnDownloadListener() {
+		@Override
+		public void onDownload(DownloadBean downloadBean,
+				final ChildViewHolder holder) {
+			String museumId = downloadBean.getMuseumId();
+			DownloadClient client = AppService.getDownloadClient(getActivity(),
+					museumId);
+			
+			Log.d(TAG,"onDownload:museumId=" + museumId);
+			holder.tvState.setText("准备中");
+			try {
+				client.start(); // 开始下载
+			} catch (Exception e) {
+				Log.d(TAG,"onDownload出错，这里出错，奇怪!!!"+e.toString());
+			}
+			client.setOnProgressListener(new OnProgressListener() {
 
+				@Override
+				public void onSuccess() {
+					holder.tvState.setText("已下载");
+					holder.ivStart.setEnabled(false);
+				}
+
+				@Override
+				public void onStart() {
+					holder.tvState.setText("正在下载...");
+				}
+
+				@Override
+				public void onProgress(long total, long current) {
+					double d = current * 100.0 / total;
+					holder.tvState.setText(String.format("%.0f", d) + "%");
+				}
+
+				@Override
+				public void onFailed(String url, String msg) {
+					holder.tvState.setText("下载失败！");
+				}
+			});
+
+		}
+
+		@Override
+		public void onUpdate() {
+			// TODO Auto-generated method stub
+
+		}
+
+	};
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		TAG = this.getClass().getSimpleName();
+		Log.d(TAG,"onCreate()");
+		// 初始化数据和Adapter
 		initData();
+		mAdapter = new ExListViewAdapter(exListViewData);
+		mAdapter.setOnDownload(onDownload);
 	}
 
 	/**
-	 * 初始化数据
+	 * 初始化数据和Adapter
 	 */
 	private void initData() {
 		// TODO 下载完成的不在该页面显示
@@ -103,6 +164,8 @@ public class DownloadListFragment extends Fragment {
 							return;
 						}
 						downloadList = response;
+						
+						// 填充Adapter数据：exListViewData
 						String city="",lastcity="";
 						ExListViewData vd = new ExListViewData();
 						for (DownloadBean bean : downloadList) {
@@ -129,115 +192,52 @@ public class DownloadListFragment extends Fragment {
 						if (!lastcity.equals("")) {
 							exListViewData.add(vd);
 						}
-						// 验证
-						for(ExListViewData vd1 : exListViewData) {
-							Log.w(TAG,"验证 "+vd1.city);
-							for (DownloadBean bean : vd1.museumList) Log.w(TAG,bean.getName());
+						if (mAdapter != null) {
+						   mAdapter.notifyDataSetChanged();
 						}
-							
-						if (mAdapter != null)
-							mAdapter.notifyDataSetChanged();
-						
-						// TODO == null
 					}
 				});
 	}
 
+	@SuppressLint("InflateParams")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		Log.d(TAG,"onCreateView()");
 		View view = inflater.inflate(R.layout.frag_download_list, null);
 		mListView = (ExpandableListView) view.findViewById(R.id.lv_download_list);
+		
+		//mAdapter = new ExListViewAdapter(exListViewData);
 		mListView.setAdapter(mAdapter);
 		return view;
-	}
-	
-	class ExListViewData {
-		/** 外层(组,城市)*/
-		String city; 
-		/** 内层(子层,博物馆列表)*/
-		List<DownloadBean> museumList; 
-	}
-	List<ExListViewData> exListViewData = new ArrayList<ExListViewData>();  
-	
-	public interface OnDownloadListener {
-
-		void onDownload(DownloadBean downloadBean,ChildViewHolder holder);
-
-		void onUpdate();
-	}
-
-	public interface OnToggleListener {
-		void onToggle();
-	}
-
-	////////////////////////////////////////////////////////
-	/** 可扩展ListViewAdapter */
-	private ExListViewAdapter mAdapter = new ExListViewAdapter(getActivity(),
-			exListViewData, new OnDownloadListener() {
-				@Override
-				public void onDownload(DownloadBean downloadBean,final ChildViewHolder holder) {
-					String museumId = downloadBean.getMuseumId();
-					DownloadClient client = AppService.getDownloadClient(
-							getActivity(), museumId);
-					holder.tvState.setText("准备中");
-					// stateMap.put(groupPosition + "" +
-					// childPosition,STATE_DOWNLOADING);
-					try {
-						client.start(); // 开始下载
-					} catch (Exception e) {
-					}
-					client.setOnProgressListener(new OnProgressListener() {
-						
-						@Override
-						public void onSuccess() {
-							 holder.tvState.setText("已下载");
-							 mAdapter.notifyDataSetChanged();
-							 
-							 holder.ivStart.setEnabled(false);
-						}
-
-						@Override
-						public void onStart() {
-							 holder.tvState.setText("正在下载...");
-							 mAdapter.notifyDataSetChanged();
-						}
-
-						@Override
-						public void onProgress(long total, long current) {
-							 double d = current*100.0/total;
-							 holder.tvState.setText(String.format("%.2f", d)+"%");
-							 mAdapter.notifyDataSetChanged();
-						}
-
-						@Override
-						public void onFailed(String url, String msg) {
-							 holder.tvState.setText("下载失败！");
-							 mAdapter.notifyDataSetChanged();
-						}
-					});
-
-				}
-
-				@Override
-				public void onUpdate() {
-					// TODO Auto-generated method stub
-
-				}
-
-			});
+	}	
 	
 	/** 可扩展ListViewAdapter类 */
 	public class ExListViewAdapter extends BaseExpandableListAdapter {
-		//private Context mContext;
+		/** Adapter 使用的数据 */
         private List<ExListViewData> exListViewData;
+        /** 执行下载回调  */
         private OnDownloadListener mOnDownload;
-        //private LayoutInflater inflater;
         
-		public ExListViewAdapter(Context context, List<ExListViewData> exListViewData,OnDownloadListener downloadListener) {
-			//inflater = ((Activity)context).getLayoutInflater();
-			//mContext = context;
+        /**
+         * @param exListViewData  可扩展ListViewAdapter使用的数据
+         * @param downloadListener 下载监听
+         **/
+		public ExListViewAdapter(List<ExListViewData> exListViewData,OnDownloadListener downloadListener) {
 			this.exListViewData = exListViewData;
+			mOnDownload = downloadListener;
+		}
+		
+		/**
+         * @param exListViewData  可扩展ListViewAdapter使用的数据
+         * 下载监听使用setOnDownload(OnDownloadListener downloadListener)设置
+         **/
+		public ExListViewAdapter(List<ExListViewData> exListViewData) {
+			this.exListViewData = exListViewData;
+		}
+		
+		/** 设置执行下载回调  */
+		public void setOnDownload(OnDownloadListener downloadListener) {
 			mOnDownload = downloadListener;
 		}
 
@@ -314,6 +314,7 @@ public class DownloadListFragment extends Fragment {
 		}
 
 		/** 内层(子层,博物馆列表) View显示内容 */
+		@SuppressLint("InflateParams")
 		@Override
 		public View getChildView(final int groupPosition, final int childPosition,
 				boolean isLastChild, View convertView, ViewGroup parent) {
@@ -344,35 +345,19 @@ public class DownloadListFragment extends Fragment {
 			double size = getChild(groupPosition, childPosition).getTotal()/1024F/1024F;
 			holder.tvSize.setText(String.format("%.2fM",size));
 			
-			// TODO 状态更新，stateMap意义
-			// 确定状态 将状态保存在stateMap中，
-            // 存放规则: groupPosition(外层城市)+""+childPosition(内层博物馆) -> state
-			// 已经下载完的，应该不在此界面出现
-			if (hasDownloaded.contains(getChild(groupPosition, childPosition).getMuseumId())) {
-				//stateMap.put(groupPosition + "" + childPosition,STATE_DOWNLOADED);
-				holder.ivStart.setImageResource(R.drawable.play_btn_pause);
-				// TODO update Donwloading 状态 更换图片
-				// if(...)
-			} else {
-				//stateMap.put(groupPosition + "" + childPosition, STATE_DOWNLOADING);
-				holder.ivStart.setImageResource(R.drawable.play_btn_play);
-			}
-			
-			
-			/** 开始(下载)*/
+			/** 选择开始(下载)*/
 			holder.ivStart.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					/** 获取当前选中子层博物馆id */
 					//final String museumId = getChild(groupPosition, childPosition).getMuseumId();
-					/** 获取当前选中的子层博物馆DownloadBean对象*/
+					/** 获取当前选中的子层博物馆对应的DownloadBean对象*/
 					DownloadBean downloadBean = getChild(groupPosition, childPosition);
-					/** 下载吧 */
-					// TODO 根据状态，下载、暂停、恢复
-					mOnDownload.onDownload(downloadBean,holder);
-					
-					//int state = stateMap.get(groupPosition + "" + childPosition);
-					//Log.w(TAG, state + "," + groupPosition + "" + childPosition);
+					Log.d(TAG,"选择下载对象："+downloadBean.toString());
+					/** 执行回调，下载吧 */
+					if (mOnDownload != null) {
+						mOnDownload.onDownload(downloadBean,holder);	
+					}
 					((ImageView) v).setImageResource(R.drawable.play_btn_pause);
 				}
 			});
@@ -380,6 +365,7 @@ public class DownloadListFragment extends Fragment {
 			return convertView;
 		}
 
+		/** 子层是可选的 */
 		@Override
 		public boolean isChildSelectable(int groupPosition, int childPosition) {
 			return true;

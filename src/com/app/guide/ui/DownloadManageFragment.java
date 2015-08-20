@@ -71,8 +71,8 @@ public class DownloadManageFragment extends Fragment implements
 		super.onCreate(savedInstanceState);
 		TAG = this.getClass().getSimpleName();
 		
-		//DownloadListFragment.setDownloadListener(this);
-		initData();
+		// DownloadListFragment.setDownloadListener(this);
+//		initData();
 	}
 
 	private void initData() {
@@ -108,15 +108,15 @@ public class DownloadManageFragment extends Fragment implements
 			Bundle savedInstanceState) {
 		// 初始化View
 		View view = inflater.inflate(R.layout.frag_download_manage, null);
-		lvDownloading = (ListView) view.findViewById(R.id.lv_download_ing);
-		lvDownloadComplete = (ListView) view
-				.findViewById(R.id.lv_download_complete);
-		tvDownloading = (TextView) view.findViewById(R.id.tv_download_ing);
-		tvDownloaded = (TextView) view.findViewById(R.id.tv_download_complete);
-		tvNoItems = (TextView) view.findViewById(R.id.tv_download_no_items);
-		lvDownloading.setAdapter(mDownloadingAdapter);
-		lvDownloadComplete.setAdapter(mDownloadedAdapter);
-		updateTvVisibility();
+//		lvDownloading = (ListView) view.findViewById(R.id.lv_download_ing);
+//		lvDownloadComplete = (ListView) view
+//				.findViewById(R.id.lv_download_complete);
+//		tvDownloading = (TextView) view.findViewById(R.id.tv_download_ing);
+//		tvDownloaded = (TextView) view.findViewById(R.id.tv_download_complete);
+//		tvNoItems = (TextView) view.findViewById(R.id.tv_download_no_items);
+//		lvDownloading.setAdapter(mDownloadingAdapter);
+//		lvDownloadComplete.setAdapter(mDownloadedAdapter);
+//		updateTvVisibility();
 		return view;
 	}
 
@@ -147,24 +147,24 @@ public class DownloadManageFragment extends Fragment implements
 	@Override
 	public void onItemDeleted(DownloadBean bean) {
 		// TODO Auto-generated method stub
-		updateTvVisibility();
+//		updateTvVisibility();
 	}
 
 	@Override
 	public void onDownloadComplete(DownloadBean bean) {
 		// TODO Auto-generated method stub
-		downloadCompletedList.add(bean);
-		mDownloadedAdapter.notifyDataSetChanged();
+//		downloadCompletedList.add(bean);
+//		mDownloadedAdapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public void onDownload(DownloadBean downloadBean, ChildViewHolder holder) {
-		// TODO Auto-generated method stub
-		Toast.makeText(getActivity(), "开始下载", Toast.LENGTH_SHORT).show();
-		downloadingList.add(downloadBean);
-		mDownloadingAdapter.notifyDataSetChanged();
-//		mDownloadingAdapter.startDownload(downloadBean.getMuseumId());
-		updateTvVisibility();
+//		// TODO Auto-generated method stub
+//		Toast.makeText(getActivity(), "开始下载", Toast.LENGTH_SHORT).show();
+//		downloadingList.add(downloadBean);
+//		mDownloadingAdapter.notifyDataSetChanged();
+////		mDownloadingAdapter.startDownload(downloadBean.getMuseumId());
+//		updateTvVisibility();
 	}
 
 }
