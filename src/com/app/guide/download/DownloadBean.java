@@ -167,7 +167,8 @@ public class DownloadBean {
 	@Override
 	public String toString() {
 		String Completed = this.isCompleted?"true":"false";
-		return "museumId:"+museumId+","+name+",isCompleted="+ Completed;
+		return "Id,name,city,Completed,current,total="+museumId+","+name+","+city+",isCompleted="+ Completed +
+				","+current+","+total;
 	}
 	
 }

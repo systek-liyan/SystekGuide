@@ -22,14 +22,15 @@ import com.app.guide.widget.MyToggleButton.OnStateChangedListener;
  */
 public class DownloadActivity extends BaseActivity {
 
+	/** 下载管理Fragment */
 	private DownloadManageFragment downloadManageFragment;
-
+    /** 城市列表Fragment，显示可以下载的博物馆 */
 	private DownloadListFragment downloadListFragment;
-
+    /** 管理两个Fragment */
 	private FragmentManager mFragmentManager;
-
+    /** 头部标题ToggleButton按钮*/
 	private MyToggleButton tbTitle;
-
+    /** 返回按键 */
 	private ImageView ivBack;
 
 	// 在onCreate()和onSaveInstanceState()之间传递参数值，以记录Activity上一次关闭前的状态
@@ -76,8 +77,7 @@ public class DownloadActivity extends BaseActivity {
 		mFragmentManager = getSupportFragmentManager();
 		downloadManageFragment = new DownloadManageFragment();
 		downloadListFragment = new DownloadListFragment();
-		downloadListFragment.setToggleListener(new OnToggleListener() {
-			
+		downloadListFragment.setToggleListener(new OnToggleListener() {		
 			@Override
 			public void onToggle() {
 				Log.w("TAG", "点击了按钮");
