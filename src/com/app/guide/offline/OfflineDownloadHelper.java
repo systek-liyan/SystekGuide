@@ -72,11 +72,20 @@ public class OfflineDownloadHelper {
 		infoList = new ArrayList<DownloadInfo>();
 		mSet = new HashSet<String>();
 		mQueue = Volley.newRequestQueue(context);
+		
+		/**
+		 * DiskBasedCache.get: /data/data/com.app.guide/cache/volley/-1784528609-475196202: java.io.FileNotFoundException: /data/data/com.app.guide/cache/volley/-1784528609-475196202: open failed: ENOENT (No such file or directory)
+		 * 类似于Cache的错误，volley认为没有找到Cache,此时,error.getMessage()=null
+		 * 这里处理将此类错误不下发到DownloadClient,以防误报。
+		 */
 		mErrorListener = new Response.ErrorListener() {
 			@Override
 			public void onErrorResponse(VolleyError error) {
-				if (onFinishedListener != null) {
-					onFinishedListener.onFailed(error.getMessage());
+				Log.d(TAG,"Volley Error = "+ error.getMessage());
+				if (error.getMessage() != null ) {
+					if (onFinishedListener != null) {
+						onFinishedListener.onFailed(error.getMessage());
+					}
 				}
 			}
 		};
