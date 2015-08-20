@@ -33,7 +33,8 @@ import com.j256.ormlite.dao.Dao;
 /**
  * 
  * 下载博物馆离线数据包辅助类，
- * 从服务器获取bean类
+ * 从服务器获得可下载博物馆的DownloadBean对象，一个博物馆一个
+ * 从服务器获取各个Offline的bean类
  * 博物馆离线数据：lrc,mp3,jpg
  * 数据库中写入数据
  * 
@@ -60,15 +61,14 @@ public class OfflineDownloadHelper {
 	/**
 	 * 
 	 * @param context
-	 * @param museumId 博物馆id
+	 * @param downloadBean 来自服务器的可下载博物馆对象，在DownloadListFragment中通过网络获得
 	 * @param name 博物馆名称
 	 */
-	public OfflineDownloadHelper(Context context, String museumId) {
+	public OfflineDownloadHelper(Context context, DownloadBean downloadBean) {
 		super();
 		this.mContext = context;
-		this.museumId = museumId;
-		downloadBean = new DownloadBean();
-		downloadBean.setMuseumId(museumId);
+		this.downloadBean = downloadBean;
+		this.museumId = downloadBean.getMuseumId();
 		infoList = new ArrayList<DownloadInfo>();
 		mSet = new HashSet<String>();
 		mQueue = Volley.newRequestQueue(context);

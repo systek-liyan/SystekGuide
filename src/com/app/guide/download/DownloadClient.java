@@ -307,14 +307,17 @@ public class DownloadClient {
 		downloadBean = beanDao.queryBuilder().where().eq("museumId", museumId).queryForFirst();
 		Log.w(TAG, "博物馆准备下载," + downloadBean.toString());
 		if (downloadBean.isDownloading() == false && downloadBean.isCompleted() == false) { 
-			//如果不存在，则调用offlineDownloadHelper,并准备开始下载，为helper对象设置下载状态监听接口OnFinishedListener
+			//如果要下载，则调用offlineDownloadHelper,并准备开始下载，为helper对象设置下载状态监听接口OnFinishedListener
 			//当helper完成所有的下载接口（服务端API）的访问，且成功生成一个下载列表时，会回调OnFinishedListener#onSuccess()方法
 			//否则（不成功的情况下）,会回调OnFinishedListener#onFailed()方法
-		    OfflineDownloadHelper helper = new OfflineDownloadHelper(mContext,museumId);
+			
+		    OfflineDownloadHelper helper = new OfflineDownloadHelper(mContext,downloadBean);
+		    
 			helper.setOnFinishedListener(new OnFinishedListener() {
 
 				@Override
 				public void onFailed(String msg) {
+					Log.d(TAG,"下载失败！");
 					// 调用ProgressListener#onFailed()方法
 					if (mProgressListener != null) {
 						mProgressListener.onFailed("no start", msg);
@@ -330,7 +333,7 @@ public class DownloadClient {
 						//并将offlineDownloadHelper中生成的downloadInfo列表添加到下载队列中
 						addTask(list);
 						Log.w(TAG, "下载任务队列生成成功！");
-						//开始下载
+						//开始下载队列的第一个
 						downloadNext();
 						//调用ProgressListener#onStart()方法
 						if(mProgressListener != null){
