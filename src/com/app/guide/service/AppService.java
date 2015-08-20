@@ -27,8 +27,9 @@ import com.app.guide.download.DownloadClient;
  */
 public class AppService extends Service {
 	
-	private static final String TAG = AppService.class.getSimpleName();
+	private static String TAG;
 
+	/** 管理下载客户端，一个博物馆对应一个客户端  */
 	public static Map<String, DownloadClient> map;
 	
 	private static final String ACTION_NETWORK = "android.net.conn.CONNECTIVITY_CHANGE";
@@ -36,6 +37,7 @@ public class AppService extends Service {
 	private ConnectivityChangeReceiver mReceiver;
 
 	public AppService() {
+		TAG = this.getClass().getSimpleName();
 		map = new ConcurrentHashMap<String, DownloadClient>();
 		
 		// 获取网络链接状态，注意,ConnectivityChangeReceiver必须有显式的默认构造函数
@@ -66,6 +68,7 @@ public class AppService extends Service {
 		return null;
 	}
 
+	/** 每个下载博物馆对应一个DownloadClient */
 	public static DownloadClient getDownloadClient(Context context,
 			String museumId) {
 		if (map == null) {
