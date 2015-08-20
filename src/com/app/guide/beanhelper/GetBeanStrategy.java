@@ -293,15 +293,15 @@ public abstract class GetBeanStrategy {
 							Dao<DownloadBean, String> downloadDao = dbHelper.getDownloadBeanDao();
 							for (int i = 0; i < response.length(); i++) {
 								object = response.getJSONObject(i);
-								Log.w(TAG, "外层,"+object.toString());
+								//Log.w(TAG, "外层,"+object.toString());
 								String city = object.getString("city");
 								JSONArray museums = object.getJSONArray("museumList");
-								Log.w(TAG, "中层,"+museums.toString());
+								//Log.w(TAG, "中层,"+museums.toString());
 								for (int j = 0; j < museums.length(); j++) {
 									downloadBean = new DownloadBean();
 									downloadBean.setCity(city);
 									object = museums.getJSONObject(j);
-									Log.w(TAG, "里层,"+object.toString());
+									//Log.w(TAG, "里层,"+object.toString());
 									downloadBean.setMuseumId(object.getString("museumId"));
 									downloadBean.setName(object.getString("name"));
 									downloadBean.setTotal(object.getLong("size"));

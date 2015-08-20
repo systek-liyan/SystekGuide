@@ -26,9 +26,13 @@ import com.app.guide.service.AppService;
 import com.app.guide.ui.DownloadListFragment.ExListViewAdapter.ChildViewHolder;
 
 /**
- * TODO 添加点击 和 已完成 ， 布局
+ * <pre>
  * 城市列表，显示各个城市中可以下载的博物馆，供选择下载
- * @author yetwish
+ * 
+ * 后台服务管理各个下载客户端 @see AppService
+ * 下载数据流向 @see OfflineDownloadHelper
+ * 可扩展ListView界面选择下载博物馆 @see DownloadListFragment
+ * 下载客户端 @see DownloadClient
  * 
  */
 public class DownloadListFragment extends Fragment {
