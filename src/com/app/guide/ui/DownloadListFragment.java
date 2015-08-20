@@ -76,6 +76,13 @@ public class DownloadListFragment extends Fragment {
 	/** 可扩展视图Adapter*/
 	private ExListViewAdapter mAdapter;
 	
+	/** 记录下载状态，用于ChildViewHolder的tvStateRecord 表示正在下载状态 */
+    private String DOWNLOADING = "DOWNLOADING";
+    /** 记录下载状态，用于ChildViewHolder的tvStateRecord 表示空、失败状态*/
+    private String NONE = "NONE";  
+    /** 记录下载状态，用于ChildViewHolder的tvStateRecord 表示暂停状态*/
+    private String PAUSE = "PAUSE";
+	
 	class ExListViewData {
 		/** 外层(组,城市)*/
 		String city; 
@@ -96,16 +103,29 @@ public class DownloadListFragment extends Fragment {
 			String museumId = downloadBean.getMuseumId();
 			DownloadClient client = AppService.getDownloadClient(getActivity(),
 					museumId);
+			String status = (String) holder.tvStateRecord.getText();
 			
-			Log.d(TAG,"onDownload:museumId=" + museumId);
-			holder.tvState.setText("准备中");
+			Log.d(TAG,"onDownload:museumId,status=" + museumId + "," + status);
+			
 			try {
-				client.start(); // 开始下载
+				if (status.equals(DOWNLOADING)) {
+					if (client.getState() == DownloadClient.STATE.NONE) {
+						holder.tvState.setText("准备中");
+						client.start(); // 开始下载	
+					}
+					else if (client.getState() == DownloadClient.STATE.PAUSE) {
+						client.resume(); // 恢复下载	
+					}
+				}
+				else if (status.equals(PAUSE)) {
+					client.pause(); // 暂停下载
+				}
 			} catch (Exception e) {
 				// 后查明，是DownloadClient中的start()中Log.d()打印一个null的downloadBean引起这里的
 				// java.lang.NullPointerException
 				Log.d(TAG,"onDownload出错，这里出错，奇怪!!!"+e.toString());
 			}
+			
 			client.setOnProgressListener(new OnProgressListener() {
 
 				@Override
@@ -114,6 +134,7 @@ public class DownloadListFragment extends Fragment {
 					// Log.d(TAG,"onSuccess," + downloadBean.toString());
 					//不可再按
 					holder.ivStart.setEnabled(false);
+					holder.ivStart.setImageResource(R.drawable.play_btn_prew);
 				}
 
 				@Override
@@ -136,6 +157,10 @@ public class DownloadListFragment extends Fragment {
 				public void onFailed(String url, String msg) {
 					Log.d(TAG,"下载失败：msg=" + msg);
 					holder.tvState.setText("下载失败！");
+					// 失败，显示play图标，表示按下执行下载
+					holder.ivStart.setImageResource(R.drawable.play_btn_play);
+					// 失败，置状态为空，表示按下执行下载
+					holder.tvStateRecord.setText(NONE);
 				}
 			});
 
@@ -354,9 +379,13 @@ public class DownloadListFragment extends Fragment {
 				/** 开始(下载)  **/
 				holder.ivStart = (ImageView) convertView
 						.findViewById(R.id.iv_download_child_icon);
-				/** 状态 **/
+				/** 状态用于显示进度等  **/
 				holder.tvState = (TextView) convertView
 						.findViewById(R.id.tv_download_child_state);
+				/** 记录状态 **/
+				holder.tvStateRecord = (TextView) convertView
+						.findViewById(R.id.tv_download_child_state_record);
+				holder.tvStateRecord.setText(NONE);
 				convertView.setTag(holder);
 			} else {
 				holder = (ChildViewHolder) convertView.getTag();
@@ -376,11 +405,29 @@ public class DownloadListFragment extends Fragment {
 					/** 获取当前选中的子层博物馆对应的DownloadBean对象*/
 					DownloadBean downloadBean = getChild(groupPosition, childPosition);
 					Log.d(TAG,"选择下载对象："+downloadBean.toString());
+					
+					// 如果当前是空,显示pause图案，置状态为正在下载，表示按下执行下载操作
+					if (holder.tvStateRecord.getText().equals(NONE)) {
+						((ImageView) v).setImageResource(R.drawable.play_btn_pause);	
+						holder.tvStateRecord.setText(DOWNLOADING);
+					}
+					// 如果当前是暂停状态，显示play图案，置状态为正在下载，表示按下执行下载操作
+					else if (holder.tvStateRecord.getText().equals(PAUSE)) {
+						((ImageView) v).setImageResource(R.drawable.play_btn_play);	
+						holder.tvStateRecord.setText(DOWNLOADING);
+					}
+					// 如果当前是下载状态，显示pause图案，置状态为暂停，表示按下执行暂停操作
+					else if (holder.tvStateRecord.getText().equals(DOWNLOADING)) {
+						((ImageView) v).setImageResource(R.drawable.play_btn_pause);
+						holder.tvStateRecord.setText(PAUSE);
+						String str = holder.tvState.getText().toString();
+						holder.tvState.setText(str + "--" + "暂停状态");
+					}
+					
 					/** 执行回调，下载吧 */
 					if (mOnDownload != null) {
 						mOnDownload.onDownload(downloadBean,holder);	
 					}
-					((ImageView) v).setImageResource(R.drawable.play_btn_pause);
 				}
 			});
 			
@@ -407,11 +454,13 @@ public class DownloadListFragment extends Fragment {
 			TextView tvName;
 			/** 资源文件大小 */
 			TextView tvSize;
-			/** 状态  */
+			/** 状态  用于显示进度等  */
 			TextView tvState;
+			/** 记录目前的下载状态,定义的String 常量：PAUSE，DOWNLOADING,NONE等  */
+			TextView tvStateRecord;
 			/** 开始  */
 			ImageView ivStart;
-		}
+		} 
 	}
 }
 
