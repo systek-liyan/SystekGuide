@@ -3,6 +3,7 @@ package com.app.guide.download;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -32,11 +33,12 @@ import com.lidroid.xutils.http.callback.RequestCallBack;
  * <pre>
  * 使用xUtils框架进行单个博物馆的下载任务，对博物馆离线数据的所有文件形成一个队列依次进行下载<br>
  * 离线文件（资源）列表由OfflineDownloadHelper提供
- * 一个下载任务将会开启一个DownloadClient(下载客户端),对应一个downloadBean<br>
+ * 一个下载任务将会开启一个DownloadClient(下载客户端),对应一个DownloadBean<br>
  * 所有的下载客户端由AppService统一管理
  * 本博物馆的资源文件形成一个下载队列，记录在Download.db的downloadinfo表中，每下载完成一个文件，从表中删除一项，直至下载完成，本表清空。
  * 首先记录数据库，是因为本次由于某种原因（如暂停，关机，开机），下次下载时读取数据库，下载以前的文件。
- * 考虑到这种情况，每次下载完队列中的一个文件，删除downloadinfo表中的对应项时，也要更新downloadBean中的current，以便下次开机下载使用。
+ * 考虑到这种情况，每次下载完队列中的一个文件，删除downloadinfo表中的对应项时，也要更新DownloadBean中的current，以便下次开机下载使用。
+ * 最后一个文件下载完成，记录DownloadBean的updateDate字段，供下次更新用。
  * @see #downloadOnceCompleted(long)
  * 
  * 后台服务管理各个下载客户端 @see AppService
@@ -229,6 +231,7 @@ public class DownloadClient {
 			state = STATE.NONE;
 			// 在Download.db的downloadBean表中标记下载完成
 			downloadBean.setCompleted(true);
+			downloadBean.setUpdateDate(new Date());
 					
             // 更新downloadBean数据库记录，标记已经完成
 			try {

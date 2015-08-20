@@ -44,7 +44,7 @@ public class DownloadBean {
 	@DatabaseField(columnName = "isDownloading", defaultValue = "false")
 	private boolean isDownloading;
 	
-	/** 表示该下载(更新)任务向服务器请求的时间 */
+	/** 表示该下载(更新)完成的时间 */
 	@DatabaseField(columnName = "updateDate")
 	private Date updateDate; 
 
@@ -123,14 +123,14 @@ public class DownloadBean {
 	}
 	
 	/**
-	 * @return 返回本次请求下载(更新)的时间:Date
+	 * @return 返回本次下载(更新)完成的时间:Date
 	 */
 	public Date getUpdateDate() {
 		return updateDate;
 	}
 
 	/**
-	 * 设置本次请求下载（更新)任务的时间
+	 * 设置本次下载（更新)完成的时间
 	 * @param updateDate
 	 */
 	public void setUpdateDate(Date updateDate) {
