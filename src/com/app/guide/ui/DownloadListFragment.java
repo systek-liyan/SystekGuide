@@ -78,9 +78,12 @@ public class DownloadListFragment extends Fragment {
 
 	/** 开始(下载)回调 */
 	private OnDownloadListener onDownload = new OnDownloadListener() {
+		/**
+		 * @param downloadBean 正在下载离线资源文件的博物馆
+		 * @param holder 对应可扩展ListView子层显示的该博物馆界面元素
+		 */
 		@Override
-		public void onDownload(DownloadBean downloadBean,
-				final ChildViewHolder holder) {
+		public void onDownload(DownloadBean downloadBean,final ChildViewHolder holder) {
 			String museumId = downloadBean.getMuseumId();
 			DownloadClient client = AppService.getDownloadClient(getActivity(),
 					museumId);
@@ -104,17 +107,18 @@ public class DownloadListFragment extends Fragment {
 
 				@Override
 				public void onStart() {
-					holder.tvState.setText("正在下载...");
+					holder.tvState.setText("开始下载...");
 				}
 
 				@Override
 				public void onProgress(long total, long current) {
 					double d = current * 100.0 / total;
-					holder.tvState.setText(String.format("%.0f", d) + "%");
+					holder.tvState.setText(String.format("%.1f", d) + "%");
 				}
 
 				@Override
 				public void onFailed(String url, String msg) {
+					Log.d(TAG,"下载失败：msg=" + msg);
 					holder.tvState.setText("下载失败！");
 				}
 			});

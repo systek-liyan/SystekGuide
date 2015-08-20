@@ -31,6 +31,7 @@ import com.lidroid.xutils.http.callback.RequestCallBack;
 /**
  * 
  * 使用xUtils框架进行单个博物馆的下载任务，对博物馆离线数据的所有文件形成一个队列依次进行下载<br>
+ * 离线文件（资源）列表由OfflineDownloadHelper提供
  * 一个下载任务将会开启一个DownloadClient(下载客户端),对应一个downloadBean<br>
  * 所有的下载客户端由AppService统一管理
  * @see AppService
@@ -218,10 +219,9 @@ public class DownloadClient {
 		else { // 整个队列下载完成
 			//更新下载状态
 			state = STATE.NONE;
-			// 在数据
+			// 在Download.db的downloadBean表中标记下载完成
 			downloadBean.setCompleted(true);
-			
-			
+					
             // 更新downloadBean数据库记录，标记已经完成
 			try {
 				beanDao.createOrUpdate(downloadBean);
@@ -317,7 +317,7 @@ public class DownloadClient {
 
 				@Override
 				public void onFailed(String msg) {
-					Log.d(TAG,"下载失败！");
+					Log.d(TAG,"offlineDownloadHelper通过Volley获取各Offline的Bean及离线(资源)文件列表失败！");
 					// 调用ProgressListener#onFailed()方法
 					if (mProgressListener != null) {
 						mProgressListener.onFailed("no start", msg);
@@ -326,6 +326,7 @@ public class DownloadClient {
 
 				@Override
 				public void onSuccess(List<DownloadInfo> list, DownloadBean bean) {
+					Log.d(TAG,"offlineDownloadHelper通过Volley获取各Offline的Bean及离线(资源)文件列表成功！");
 					downloadBean = bean;
 					try {
 						//创建或更新downloadBean
@@ -474,6 +475,9 @@ public class DownloadClient {
 	 */
 	public interface OnProgressListener {
 		
+		/**
+		 * 开始
+		 */
 		public void onStart();
 
 		/**

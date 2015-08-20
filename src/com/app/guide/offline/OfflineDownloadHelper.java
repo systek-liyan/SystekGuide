@@ -33,10 +33,11 @@ import com.j256.ormlite.dao.Dao;
 /**
  * 
  * 下载博物馆离线数据包辅助类，
+ * DownloadListFragment --> GetBeanStrategy --> getDownloadBeanList --> List<DownloadBean>
  * 从服务器获得可下载博物馆的DownloadBean对象，一个博物馆一个
- * 从服务器获取各个Offline的bean类
- * 博物馆离线数据：lrc,mp3,jpg
- * 数据库中写入数据
+ * 从服务器获取各个Offline的bean类,各Bean类录入数据库
+ * 博物馆离线数据(资源文件)：lrc,mp3,jpg, 
+ * 资源列表文件通过onFinishedListener回调监听，提交各DownloadClient,通过xUtil下载各个资源文件
  * 
  * @author joe_c
  * 
@@ -308,7 +309,7 @@ public class OfflineDownloadHelper {
 	}
 
 	/**
-	 * 下载博物馆下所有的文件
+	 * 博物馆下所有资源文件列表
 	 * 
 	 */
 	private void downloadFiles() {
@@ -352,7 +353,7 @@ public class OfflineDownloadHelper {
 	}
 
 	/**
-	 * 下载离线数据
+	 * 下载离线数据，各Bean类录入数据库，资源列表文件通过onFinishedListener回调监听，提交各DownloadClient
 	 * 
 	 * @throws SQLException
 	 * @throws NumberFormatException
@@ -369,7 +370,7 @@ public class OfflineDownloadHelper {
 		downloadLabel(dContext, museumId);
 		downloadMuseum(dContext, museumId);
 		downloadBeacon(dContext, museumId);
-		downloadFiles();
+		downloadFiles();  // 资源文件列表
 	}
 
 	/**
@@ -458,9 +459,9 @@ public class OfflineDownloadHelper {
 	}
 
 	public interface OnFinishedListener {
-		
+		/** 通过Volley获得各Bean和离线文件（资源）列表; 各Offline的Bean录入数据库，离线文件列表形成，并通过此接口传递 */
 		public void onSuccess(List<DownloadInfo> list, DownloadBean downloadBean);
-
+        /** 通过Volley获得各Bean和离线文件（资源）列表出现的错误通过此接口传递 */
 		public void onFailed(String msg);
 	}
 
