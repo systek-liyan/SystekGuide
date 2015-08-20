@@ -53,9 +53,13 @@ public class DownloadListFragment extends Fragment {
 	private List<DownloadBean> downloadList;
 
 	
-	/** 下载回调接口 */
+	/** 开始(下载)回调并接收来自DownloadClient下载博物馆离线资源文件列表的状态信息 **/
 	public interface OnDownloadListener {
-        /** 执行下载 */
+		/**
+		 * 执行DownloadClient start()下载，并接收DownloadClient回调信息
+		 * @param downloadBean 正在下载离线资源文件的博物馆
+		 * @param holder 对应可扩展ListView子层显示的该博物馆界面元素
+		 */
 		void onDownload(DownloadBean downloadBean,ChildViewHolder holder);
 
 		// TODO 更新
@@ -76,9 +80,10 @@ public class DownloadListFragment extends Fragment {
 	}
 	List<ExListViewData> exListViewData = new ArrayList<ExListViewData>();  
 
-	/** 开始(下载)回调 */
+	/** 开始(下载)回调并接收来自DownloadClient下载博物馆离线资源文件列表的状态信息 **/
 	private OnDownloadListener onDownload = new OnDownloadListener() {
 		/**
+		 * 执行DownloadClient start()下载，并接收DownloadClient回调信息
 		 * @param downloadBean 正在下载离线资源文件的博物馆
 		 * @param holder 对应可扩展ListView子层显示的该博物馆界面元素
 		 */
@@ -175,7 +180,7 @@ public class DownloadListFragment extends Fragment {
 						String city="",lastcity="";
 						ExListViewData vd = new ExListViewData();
 						for (DownloadBean bean : downloadList) {
-							Log.w(TAG,bean.getCity() + ","	+ bean.getName()+","+bean.getTotal());
+							//Log.w(TAG,bean.getCity() + ","	+ bean.getName()+","+bean.getTotal());
 							city = bean.getCity();
 							// 新的城市或第一次循环
 							if (!lastcity.equals(city) || lastcity.equals("")) {
