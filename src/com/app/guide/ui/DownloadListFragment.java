@@ -90,6 +90,8 @@ public class DownloadListFragment extends Fragment {
 			try {
 				client.start(); // 开始下载
 			} catch (Exception e) {
+				// 后查明，是DownloadClient中的start()中Log.d()打印一个null的downloadBean引起这里的
+				// java.lang.NullPointerException
 				Log.d(TAG,"onDownload出错，这里出错，奇怪!!!"+e.toString());
 			}
 			client.setOnProgressListener(new OnProgressListener() {

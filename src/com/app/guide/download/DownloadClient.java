@@ -119,6 +119,8 @@ public class DownloadClient {
 		
 		mContext = context;
 		this.museumId = museumId;
+		Log.d(TAG, "DownloadClient(),museumId=" + museumId);
+		
 		// 下载队列
 		queue = new LinkedBlockingQueue<DownloadInfo>();
 		utils = new HttpUtils();
@@ -160,7 +162,7 @@ public class DownloadClient {
 				Log.w(TAG, "Loading");
 				// 在主线程,更新进度条
 				if (mProgressListener != null) {
-					Log.w(TAG, "当前下载: " + ((downloadBean.getCurrent() + current)/downloadBean.getTotal())*100+"%");
+					Log.w(TAG, "当前下载: " + ((downloadBean.getCurrent() + current)*1.0/downloadBean.getTotal())*100+"%");
 					mainHandler.post(new Runnable() {						
 						@Override
 						public void run() {
@@ -212,11 +214,13 @@ public class DownloadClient {
 		if (queue.size() != 0) {
 			// 下载队列的第一个任务
 			downloadNext();
-		} else { // 整个队列下载完成
+		} 
+		else { // 整个队列下载完成
 			//更新下载状态
 			state = STATE.NONE;
 			// 在数据
 			downloadBean.setCompleted(true);
+			
 			
             // 更新downloadBean数据库记录，标记已经完成
 			try {
@@ -265,13 +269,16 @@ public class DownloadClient {
 	}
 
 	/**
-	 * 开始下载，自动判断是否为第一次开始下载
+	 * 开始下载，自动判断是否为第一次开始下载,否则，恢复下载
 	 * 
 	 * @throws SQLException
 	 * @throws IOException 
 	 * @throws NumberFormatException 
 	 */
 	public void start() throws SQLException, NumberFormatException, IOException {
+		// 问题出在这条语句，此时downloadBean是null
+		// 引起DownloadListFragment中的OnDownloadListener产生java.lang.NullPointerException
+		/////////////Log.w(TAG, "博物馆开始下载," + downloadBean.toString());
 		if (state == STATE.NONE) {
 			if (prepare()) {
 				if(mProgressListener != null){
@@ -298,6 +305,7 @@ public class DownloadClient {
 		Log.w(TAG, "prepare");
 		//判断数据库中downloadBean表中是否有带下载的博物馆的记录
 		downloadBean = beanDao.queryBuilder().where().eq("museumId", museumId).queryForFirst();
+		Log.w(TAG, "博物馆准备下载," + downloadBean.toString());
 		if (downloadBean.isDownloading() == false && downloadBean.isCompleted() == false) { 
 			//如果不存在，则调用offlineDownloadHelper,并准备开始下载，为helper对象设置下载状态监听接口OnFinishedListener
 			//当helper完成所有的下载接口（服务端API）的访问，且成功生成一个下载列表时，会回调OnFinishedListener#onSuccess()方法
