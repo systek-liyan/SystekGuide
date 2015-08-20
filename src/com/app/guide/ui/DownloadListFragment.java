@@ -107,6 +107,7 @@ public class DownloadListFragment extends Fragment {
 				@Override
 				public void onSuccess() {
 					holder.tvState.setText("已下载");
+					// Log.d(TAG,"onSuccess," + downloadBean.toString());
 					//不可再按
 					holder.ivStart.setEnabled(false);
 				}
@@ -120,9 +121,10 @@ public class DownloadListFragment extends Fragment {
 				public void onProgress(long total, long current) {
 					double d = current * 100.0 / total;
 					holder.tvState.setText(String.format("%.1f", d) + "%");
-					// 处理该信息来的比onSuccess()晚是，显示文字100.0%甚至是100.1%的情况
-					if (current == total) {
+					// 处理该信息来的比onSuccess()晚时，显示文字100.0%甚至是100.1%的情况
+					if ((total - current) < 0.01) {
 						holder.tvState.setText("已下载");
+						Log.d(TAG,"onProgress < 0.1");
 					}
 				}
 
