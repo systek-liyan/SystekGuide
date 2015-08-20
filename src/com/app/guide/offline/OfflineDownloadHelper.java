@@ -24,6 +24,7 @@ import com.app.guide.Constant;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.download.DownloadBean;
 import com.app.guide.download.DownloadInfo;
+import com.app.guide.service.AppService;
 import com.app.guide.sql.DatabaseContext;
 import com.app.guide.sql.DownloadManagerHelper;
 import com.app.guide.utils.FastJsonArrayRequest;
@@ -31,15 +32,23 @@ import com.app.guide.utils.FileUtils;
 import com.j256.ormlite.dao.Dao;
 
 /**
+ * <pre>
+ * 下载数据流向：
+ * DownloadListFragment(可扩展ListView子层选择下载某个博物馆) --> GetBeanStrategy.getDownloadBeanList() --> List<DownloadBean>
+ * DownloadListFragment.onDownload --> AppService.getDownloadClient()从后台服务获取DownloadClient，一个博物馆一个client
+ * DownloadClient.start() -- prepare() 启动 --> OfflineDownloadHelper.download() --> 下载各个Bean记录数据库，下载资源文件列表-->
+ * 通过接口onFinishedListener提交给DownloadClient形成下载队列
  * 
  * 下载博物馆离线数据包辅助类，
- * DownloadListFragment --> GetBeanStrategy --> getDownloadBeanList --> List<DownloadBean>
  * 从服务器获得可下载博物馆的DownloadBean对象，一个博物馆一个
  * 从服务器获取各个Offline的bean类,各Bean类录入数据库
  * 博物馆离线数据(资源文件)：lrc,mp3,jpg, 
  * 资源列表文件通过onFinishedListener回调监听，提交各DownloadClient,通过xUtil下载各个资源文件
  * 
- * @author joe_c
+ * 后台服务管理各个下载客户端 @see AppService
+ * 下载数据流向 @see OfflineDownloadHelper
+ * 可扩展ListView界面选择下载博物馆 @see DownloadListFragment
+ * 下载客户端 @see DownloadClient
  * 
  */
 public class OfflineDownloadHelper {
@@ -143,7 +152,7 @@ public class OfflineDownloadHelper {
 	private void downloadMap(final Context context, final String museumId)
 			throws SQLException {
 		String url = Constant.HOST_HEAD
-				+ "/api/museumMapService/museumMapLis?museumId=" + museumId;
+				+ "/api/museumMapService/museumMapList?museumId=" + museumId;
 		FastJsonArrayRequest<OfflineMapBean> request = new FastJsonArrayRequest<OfflineMapBean>(
 				url, OfflineMapBean.class,
 				new Response.Listener<List<OfflineMapBean>>() {
