@@ -29,12 +29,20 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 
 /**
- * 
+ * <pre>
  * 使用xUtils框架进行单个博物馆的下载任务，对博物馆离线数据的所有文件形成一个队列依次进行下载<br>
  * 离线文件（资源）列表由OfflineDownloadHelper提供
  * 一个下载任务将会开启一个DownloadClient(下载客户端),对应一个downloadBean<br>
  * 所有的下载客户端由AppService统一管理
- * @see AppService
+ * 本博物馆的资源文件形成一个下载队列，记录在Download.db的downloadinfo表中，每下载完成一个文件，从表中删除一项，直至下载完成，本表清空。
+ * 首先记录数据库，是因为本次由于某种原因（如暂停，关机，开机），下次下载时读取数据库，下载以前的文件。
+ * 考虑到这种情况，每次下载完队列中的一个文件，删除downloadinfo表中的对应项时，也要更新downloadBean中的current，以便下次开机下载使用。
+ * @see #downloadOnceCompleted(long)
+ * 
+ * 后台服务管理各个下载客户端 @see AppService
+ * 下载数据流向 @see OfflineDownloadHelper
+ * 可扩展ListView界面选择下载博物馆 @see DownloadListFragment
+ * 下载客户端 @see DownloadClient
  * @author joe_c
  *
  */
@@ -294,7 +302,8 @@ public class DownloadClient {
 	/**
 	 * 下载准备方法，首先访问数据库中是否存在之前的下载任务
 	 * 
-	 * @return
+	 * @return false 调用OfflineDownloadHelper的download(),使其开始工作,使用Volley下载各个Bean并记录数据库，下载资源文件列表，该列表供这里使用，形成下载队列
+	 *         True 从Download.db中的downinfo中取出以前没有下载完的本博物馆资源文件
 	 * @throws SQLException
 	 * @throws NumberFormatException
 	 * @throws IOException
@@ -306,7 +315,7 @@ public class DownloadClient {
 		//判断数据库中downloadBean表中是否有带下载的博物馆的记录
 		downloadBean = beanDao.queryBuilder().where().eq("museumId", museumId).queryForFirst();
 		Log.w(TAG, "博物馆准备下载," + downloadBean.toString());
-		if (downloadBean.isDownloading() == false && downloadBean.isCompleted() == false) { 
+		if ((downloadBean.isCompleted() == false) && (downloadBean.getCurrent() == 0)) { 
 			//如果要下载，则调用offlineDownloadHelper,并准备开始下载，为helper对象设置下载状态监听接口OnFinishedListener
 			//当helper完成所有的下载接口（服务端API）的访问，且成功生成一个下载列表时，会回调OnFinishedListener#onSuccess()方法
 			//否则（不成功的情况下）,会回调OnFinishedListener#onFailed()方法
@@ -346,21 +355,21 @@ public class DownloadClient {
 					}
 				}
 			});
-			//调用OfflineDownloadHelper#download()方法，使其开始工作
+			// 调用OfflineDownloadHelper#download()方法，使其开始工作
+			// 使用Volley下载各个Bean并记录数据库，下载资源文件列表，该列表供这里使用，形成下载队列
 			helper.download();
 			return false;
 		} 
-		return true;  // TODO 与下列一并处理
-// TODO 待整理，将之前未下载的要下载，考虑在界面部分提示用户选择
-//		else
-//		{
-//			//如果数据库中已经存在 要下载的博物馆的记录了，从数据库中获取该博物馆的所有downloadInfo记录
-//			//一个DownloadInfo记录表示一个未下载完成的下载项，并将其添加到下载队列中。
-//			List<DownloadInfo> list = infoDao.queryBuilder().where()
-//					.eq("museumId", downloadBean.getMuseumId()).query();
-//			addTask(list);
-//			return true;
-//		}
+		// 之前未下载
+		else if ((downloadBean.isCompleted() == false) && (downloadBean.getCurrent() != downloadBean.getTotal()))
+		{   // 将之前未下载的要下载
+			//如果数据库中已经存在 要下载的博物馆的记录了，从数据库中获取该博物馆的所有downloadInfo记录
+			//一个DownloadInfo记录表示一个未下载完成的下载项，并将其添加到下载队列中。
+			List<DownloadInfo> list = infoDao.queryBuilder().where().eq("museumId", downloadBean.getMuseumId()).query();
+			addTask(list);
+			Log.w(TAG, "上次未下载的资源文件加入队列" + downloadBean.toString());
+		}
+		return true;  
 	}
 
 	/**
@@ -377,7 +386,8 @@ public class DownloadClient {
 		for (int i = 1; i < list.size(); i++) {
 			addTask(list.get(i));
 		}
-		beanDao.createOrUpdate(downloadBean);//？?TODO 
+		// 没有意义，downloadBean下载前来源于本地数据库，下载过程中，每下载完一个文件，更新当前大小，更新此表
+		// beanDao.createOrUpdate(downloadBean);  
 		list.clear();
 	}
 
@@ -472,6 +482,7 @@ public class DownloadClient {
 
 	/**
 	 * 下载进度监听接口 ，用以监听下载进度的变化
+	 * 下载博物馆离线资源文件列表的状态信息
 	 */
 	public interface OnProgressListener {
 		
