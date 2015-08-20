@@ -173,7 +173,7 @@ public class DownloadClient {
 				Log.w(TAG, "Loading");
 				// 在主线程,更新进度条
 				if (mProgressListener != null) {
-					Log.w(TAG, "当前下载: " + ((downloadBean.getCurrent() + current)*1.0/downloadBean.getTotal())*100+"%");
+					Log.w(TAG, downloadBean.getName()+",下载: " + ((downloadBean.getCurrent() + current)*1.0/downloadBean.getTotal())*100+"%");
 					mainHandler.post(new Runnable() {						
 						@Override
 						public void run() {
