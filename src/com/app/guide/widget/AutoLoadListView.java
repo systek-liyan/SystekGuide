@@ -1,5 +1,6 @@
 package com.app.guide.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -12,7 +13,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.app.guide.R;
-import com.app.guide.ui.SearchActivity;
 
 /**
  * 
@@ -62,6 +62,7 @@ public class AutoLoadListView extends ListView implements OnScrollListener {
 	}
 
 	// 初始化组件
+	@SuppressLint("InflateParams")
 	private void initView(Context context) {
 		inflater = LayoutInflater.from(context);
 		footer = inflater.inflate(R.layout.listview_footer, null);

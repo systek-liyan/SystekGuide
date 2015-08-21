@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,7 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.toolbox.ClearCacheRequest;
 import com.app.guide.R;
 import com.app.guide.download.DownloadBean;
 import com.app.guide.download.DownloadClient;

@@ -166,13 +166,6 @@ public class GetBeanHelper {
 	}
 
 	/**
-	 * 获取所有正在下载中的bean
-	 */
-	public void getDownloadingBeans(GetBeanCallBack<List<DownloadBean>> callBack) {
-		mGetBeanStrategy.getDownloadingBeans(callBack);
-	}
-
-	/**
 	 * 在本地数据库中获取所有已下载完成的bean
 	 */
 	public void getDownloadCompletedBeans(

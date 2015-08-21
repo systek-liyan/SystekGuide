@@ -19,7 +19,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.app.guide.R;
-import com.app.guide.beanhelper.GetBeanFromDB;
 
 /**
  * 自定义SearchView应该包含两个结构：输入栏+弹出框。

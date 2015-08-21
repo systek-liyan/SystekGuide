@@ -20,7 +20,7 @@ import android.view.SurfaceView;
 
 public class MyMap extends SurfaceView implements SurfaceHolder.Callback {
 
-	private static final String TAG = MyMap.class.getSimpleName();
+	//private static final String TAG = MyMap.class.getSimpleName();
 
 	private static final long DOUBLE_CLICK_TIME_SPACE = 300;
 

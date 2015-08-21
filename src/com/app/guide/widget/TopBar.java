@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.app.guide.Constant;
 import com.app.guide.R;
 import com.app.guide.ui.HomeActivity;
 import com.app.guide.ui.SearchActivity;
