@@ -9,7 +9,6 @@ import android.util.Log;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.download.DownloadBean;
 import com.app.guide.download.DownloadInfo;
-import com.app.guide.download.DownloadModel;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
@@ -42,12 +41,6 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 	private Dao<DownloadBean, String> beanDao;
 	
 	/**
-	 * downloadModel表的数据访问对象
-	 */
-	private Dao<DownloadModel, String> modelDao;
-
-
-	/**
 	 * 管理已下载的离线数据包，数据表：MuseumBean,DownloadInfo,DownloadBean,DownloadModel
 	 * @param context 如果使用DatabaseContext对象，则数据库建立在外部SD卡上;
 	 *                否则，DB_PATH = "/data" + Environment.getDataDirectory().getAbsolutePath()+ "/" + context.getPackageName()+"/databases"
@@ -68,7 +61,6 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTableIfNotExists(arg1, MuseumBean.class);
 			TableUtils.createTableIfNotExists(arg1, DownloadInfo.class);
 			TableUtils.createTableIfNotExists(arg1, DownloadBean.class);
-			TableUtils.createTableIfNotExists(arg1, DownloadModel.class);
 		} catch (java.sql.SQLException e) {
 			Log.d(TAG,"数据库:"+db_name+",创建失败！" + e.toString());
 		}
@@ -80,7 +72,7 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase arg0, ConnectionSource arg1, int arg2,
 			int arg3) {
-		//TODO 目前考虑，升级即是删除sdk目录下的数据库，重新生成之。
+		//TODO 目前考虑，升级即是删除guide目录下的数据库，重新生成之。
 	}
 
 	/**
@@ -119,17 +111,5 @@ public class DownloadManagerHelper extends OrmLiteSqliteOpenHelper {
 		}
 		return beanDao;
 	}
-	
-	public Dao<DownloadModel,String> getModelDao()throws SQLException{
-		if(modelDao == null){
-			modelDao = getDao(DownloadModel.class);
-		}
-		return modelDao;
-	}
-	
-	/** 数据库是否存在 **/
-//	public boolean isDownloadListExist(){
-//		File file = new File( DB_PATH + "/" + db_name);
-//		return false;
-//	}
+
 }

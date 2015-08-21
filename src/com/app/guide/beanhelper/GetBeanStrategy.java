@@ -313,26 +313,7 @@ public abstract class GetBeanStrategy {
 		mQueue.add(request);
 		Log.w(TAG, "Download.db and network access dada in getDownloadBeanList()!");
 	}
-
-	/**
-	 * 在本地数据库中获取正在下载离线数据包的博物馆信息(DownloadBean isDownloading=true) 
-	 * @param callBack
-	 */
-	public void getDownloadingBeans(GetBeanCallBack<List<DownloadBean>> callBack) {
-		// 外部数据库Context
-		Context dContext = new DatabaseContext(mContext, Constant.FLODER_NAME);
-		DownloadManagerHelper dbHelper = new DownloadManagerHelper(dContext,"Download.db");
-		List<DownloadBean> list = null;
-		try {
-			list = dbHelper.getDownloadBeanDao().queryBuilder().where()
-					.eq("isDownloading", true).query();
-			callBack.onGetBeanResponse(list);
-		} catch (SQLException e) {
-			callBack.onGetBeanResponse(null);
-			Log.d(TAG, "getDownloadingBeans(),Access form Download.db error!" + e.toString());
-		}
-	}
-
+	
 	/**
 	 * 在本地数据库中获取所有已下载完成的bean
 	 * 

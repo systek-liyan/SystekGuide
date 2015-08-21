@@ -40,10 +40,6 @@ public class DownloadBean {
 	@DatabaseField(columnName = "isCompleted", defaultValue = "false")
 	private boolean isCompleted;
 	
-	/** 表示该下载任务正在下载 */
-	@DatabaseField(columnName = "isDownloading", defaultValue = "false")
-	private boolean isDownloading;
-	
 	/** 表示该下载(更新)完成的时间 */
 	@DatabaseField(columnName = "updateDate")
 	private Date updateDate; 
@@ -53,21 +49,6 @@ public class DownloadBean {
 	 */
 	public boolean isCompleted() {
 		return isCompleted;
-	}
-
-	/**
-	 * 设置下载任务是否正在下载
-	 * @param isCompleted true:表示已完成； false：表示未完成
-	 */
-	public void setDownloading(boolean isDownloading) {
-		this.isDownloading = isDownloading;
-	}
-	
-	/**
-	 * @return 该下载任务是否正在下载
-	 */
-	public boolean isDownloading() {
-		return isDownloading;
 	}
 
 	/**
