@@ -315,9 +315,10 @@ public class DownloadClient {
 			IOException {
 		state = STATE.PREPARE;
 		Log.w(TAG, "prepare");
-		//判断数据库中downloadBean表中是否有带下载的博物馆的记录
+		//判断数据库中downloadBean表中是否有待下载的博物馆的记录
 		downloadBean = beanDao.queryBuilder().where().eq("museumId", museumId).queryForFirst();
 		Log.w(TAG, "博物馆准备下载," + downloadBean.toString());
+		// 新下载
 		if ((downloadBean.isCompleted() == false) && (downloadBean.getCurrent() == 0)) { 
 			//如果要下载，则调用offlineDownloadHelper,并准备开始下载，为helper对象设置下载状态监听接口OnFinishedListener
 			//当helper完成所有的下载接口（服务端API）的访问，且成功生成一个下载列表时，会回调OnFinishedListener#onSuccess()方法

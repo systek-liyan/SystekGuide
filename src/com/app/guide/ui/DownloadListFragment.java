@@ -16,6 +16,7 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app.guide.R;
 import com.app.guide.beanhelper.GetBeanCallBack;
@@ -196,25 +197,14 @@ public class DownloadListFragment extends Fragment {
 	 * 初始化数据和Adapter
 	 */
 	private void initData() {
-		// TODO 下载完成的不在该页面显示
-//		/** 在本地数据库中获取所有已下载完成的bean */
-//		GetBeanHelper.getInstance(getActivity()).getDownloadCompletedBeans(
-//				new GetBeanCallBack<List<DownloadBean>>() {
-//					@Override
-//					public void onGetBeanResponse(List<DownloadBean> response) {
-//						for(DownloadBean bean:response) {
-//							hasDownloaded.add(bean.getMuseumId());
-//						}
-//					}
-//				});
-
 		GetBeanHelper.getInstance(getActivity()).getDownloadBeanList(
 				new GetBeanCallBack<List<DownloadBean>>() {
 
 					@Override
 					public void onGetBeanResponse(List<DownloadBean> response) {
 						if (response == null || response.size() == 0) {
-							Log.d(TAG,"getDownloadBeanList(),没有数据返回!!!");
+							Log.d(TAG,"getDownloadBeanList(),对不起，暂无新的可下载博物馆列表!");
+							Toast.makeText(getActivity(), "对不起，暂无新的可下载博物馆列表!", Toast.LENGTH_LONG).show();
 							return;
 						}
 						downloadList = response;
@@ -476,216 +466,3 @@ public class DownloadListFragment extends Fragment {
 	}
 }
 
-
-///** 可扩展视图Adapter*/
-//private BaseExpandableListAdapter mAdapter = new BaseExpandableListAdapter() {
-//
-//	private static final int STATE_DOWNLOAD = 1;
-//	private static final int STATE_DOWNLOADING = 2;
-//	private static final int STATE_DOWNLOADED = 3;
-//	private static final int STATE_UPDATE = 4;
-//
-//	@Override
-//	public boolean isChildSelectable(int groupPosition, int childPosition) {
-//		// TODO Auto-generated method stub
-//		return true;
-//	}
-//
-//	@Override
-//	public boolean hasStableIds() {
-//		// TODO Auto-generated method stub
-//		return true;
-//	}
-//
-//	@SuppressLint("InflateParams")
-//	@Override
-//	public View getGroupView(int groupPosition, boolean isExpanded,
-//			View convertView, ViewGroup parent) {
-//		GroupViewHolder holder = null;
-//		/** 外层--城市*/
-//		if (convertView == null) {
-//			convertView = LayoutInflater.from(getActivity()).inflate(
-//					R.layout.item_download_group, null);
-//			holder = new GroupViewHolder();
-//			holder.tvName = (TextView) convertView
-//					.findViewById(R.id.tv_download_group_name);
-//			holder.ivIndicator = (ImageView) convertView
-//					.findViewById(R.id.iv_download_group_icon);
-//			convertView.setTag(holder);
-//		} else {
-//			holder = (GroupViewHolder) convertView.getTag();
-//		}
-//		/** 外层显示城市名 */
-//		holder.tvName.setText(getGroup(groupPosition).getCity());
-//		if (isExpanded) {
-//			holder.ivIndicator.setImageResource(R.drawable.arrow_press);
-//		} else {
-//			holder.ivIndicator.setImageResource(R.drawable.arrow);
-//		}
-//		return convertView;
-//	}
-//
-//	@Override
-//	public long getGroupId(int groupPosition) {
-//		// TODO Auto-generated method stub
-//		return groupPosition;
-//	}
-//
-//	@Override
-//	public int getGroupCount() {
-//		// TODO Auto-generated method stub
-//		return downloadList.size();
-//	}
-//
-//	@Override
-//	public DownloadBean getGroup(int groupPosition) {
-//		return downloadList.get(groupPosition);
-//	}
-//
-////	@Override
-////	public int getChildrenCount(int groupPosition) {
-////		// TODO Auto-generated method stub
-////		return getGroup(groupPosition).getMuseumList().size();
-////	}
-//
-//	/** 内层（子层）--博物馆*/
-//	@Override
-//	public View getChildView(final int groupPosition,
-//			final int childPosition, boolean isLastChild, View convertView,
-//			ViewGroup parent) {
-//		final ChildViewHolder holder;
-//		if (convertView == null) {
-//			convertView = LayoutInflater.from(getActivity()).inflate(
-//					R.layout.item_download_child, null);
-//			holder = new ChildViewHolder();
-//			holder.tvName = (TextView) convertView
-//					.findViewById(R.id.tv_download_child_name);
-//			holder.tvSize = (TextView) convertView
-//					.findViewById(R.id.tv_download_child_size);
-//			holder.ivStart = (ImageView) convertView
-//					.findViewById(R.id.iv_download_child_icon);
-//			holder.tvState = (TextView) convertView
-//					.findViewById(R.id.tv_download_child_state);
-//			convertView.setTag(holder);
-//		} else {
-//			holder = (ChildViewHolder) convertView.getTag();
-//		}
-//		holder.tvName.setText(getChild(groupPosition, childPosition)
-//				.getName());
-//		holder.tvSize.setText(getChild(groupPosition, childPosition)
-//				.getTotal() + "");
-//		// 确定状态 将状态保存在stateMap中，
-//        // 存放规则: groupPosition(外层城市)+""+childPosition(内层博物馆) -> state
-//		if (hasDownloaded.contains(getChild(groupPosition, childPosition).getMuseumId())) {
-//			stateMap.put(groupPosition + "" + childPosition,STATE_DOWNLOADED);
-//			holder.ivStart.setImageResource(R.drawable.play_btn_pause);
-//			// TODO update Donwloading 状态 更换图片
-//			// if(...)
-//		} else {
-//			stateMap.put(groupPosition + "" + childPosition, STATE_DOWNLOADING);
-//			holder.ivStart.setImageResource(R.drawable.play_btn_play);
-//		}
-//		
-//		/** 获取当前选中子层博物馆id */
-//		final String museumId = getChild(groupPosition, childPosition).getMuseumId();
-//		
-//		/** 开始(下载)*/
-//		holder.ivStart.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				int state = stateMap.get(groupPosition + "" + childPosition);
-//				Log.w(TAG, state + "," + groupPosition + "" + childPosition);
-//				((ImageView) v).setImageResource(R.drawable.play_btn_pause);
-//				if (state == STATE_DOWNLOAD) {
-//					DownloadClient client = AppService.getDownloadClient(getActivity(), museumId);
-//					holder.tvState.setText("准备中");
-//					stateMap.put(groupPosition + "" + childPosition,STATE_DOWNLOADING);
-//					try {
-//						client.start();  // 开始下载
-//					} catch (Exception e) {
-//					}
-//					client.setOnProgressListener(new OnProgressListener() {
-//
-//						@Override
-//						public void onSuccess() {
-//							holder.tvState.setText("已下载");
-//						}
-//
-//						@Override
-//						public void onStart() {
-//							holder.tvState.setText("正在下载");
-//						}
-//
-//						@Override
-//						public void onProgress(long total, long current) {
-//						}
-//
-//						@Override
-//						public void onFailed(String url, String msg) {
-//						}
-//					});
-//					if (downloadListener != null) {
-//						// TODO
-//						hasDownloaded.add(getChild(groupPosition,childPosition).getMuseumId());
-//						downloadListener.onDownload(getChild(groupPosition,childPosition));
-//					}
-//				} else if (state == STATE_DOWNLOADED
-//						|| state == STATE_DOWNLOADING) {
-//					if (mToggleListener != null) {
-//						mToggleListener.onToggle();
-//					}
-//				} else {
-//					// TODO update
-//				}
-//			}
-//		});
-//
-//		return convertView;
-//	}
-//
-//	@Override
-//	public long getChildId(int groupPosition, int childPosition) {
-//		// TODO Auto-generated method stub
-//		return childPosition;
-//	}
-//
-//	@Override
-//	public DownloadBean getChild(int groupPosition, int childPosition) {
-//		// TODO Auto-generated method stub
-//		return getGroup(groupPosition).getMuseumList().get(childPosition);
-//	}
-//
-//	/** 外层 */
-//	class GroupViewHolder {
-//		/** 城市 */
-//		TextView tvName;
-//		/** 展开 */
-//		ImageView ivIndicator;
-//	}
-//
-//	/** 子层  */
-//	class ChildViewHolder {
-//		/** 博物馆 */
-//		TextView tvName;
-//		/** 资源文件大小 */
-//		TextView tvSize;
-//		/** 状态  */
-//		TextView tvState;
-//		/** 开始  */
-//		ImageView ivStart;
-//	}
-//};
-//
-//// private OnClickListener mClickListener =
-//
-//public interface OnDownloadBeginListener {
-//
-//	void onDownload(DownloadBean downloadBean);
-//
-//	void onUpdate();
-//}
-//
-//public interface OnToggleListener {
-//	void onToggle();
-//}
-//}
