@@ -49,5 +49,16 @@
        android:layout_toLeftOf="@id/iv_download_child_icon"
        android:layout_marginRight="8dp"
        android:textSize="@dimen/download_text_size"/>
+   <!-- 进度条 -->
+   <ProgressBar 
+        android:id="@+id/pb_downloading"
+        android:visibility="gone"
+        android:layout_below="@id/tv_download_child_size"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:max="100"
+        android:layout_width="match_parent"                                                                                                         
+        android:layout_height="wrap_content"
+        style="?android:attr/progressBarStyleHorizontal" />
    
 </RelativeLayout>

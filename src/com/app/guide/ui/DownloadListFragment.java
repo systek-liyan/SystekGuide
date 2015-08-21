@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.app.guide.R;
@@ -132,14 +133,17 @@ public class DownloadListFragment extends Fragment {
 				public void onSuccess() {
 					holder.tvState.setText("已下载");
 					// Log.d(TAG,"onSuccess," + downloadBean.toString());
-					//不可再按
+					// 不可再按
 					holder.ivStart.setEnabled(false);
 					holder.ivStart.setImageResource(R.drawable.play_btn_prew);
+					// 进度条不显示了
+					holder.progressBar.setVisibility(View.GONE);
 				}
 
 				@Override
 				public void onStart() {
 					holder.tvState.setText("开始下载...");
+					holder.progressBar.setVisibility(View.VISIBLE);
 				}
 
 				@Override
@@ -151,6 +155,9 @@ public class DownloadListFragment extends Fragment {
 						holder.tvState.setText("已下载");
 						Log.d(TAG,"onProgress < 0.1");
 					}
+					// 进度条
+					int progress = (int)(current*100/total);
+					holder.progressBar.setProgress(progress);
 				}
 
 				@Override
@@ -386,6 +393,9 @@ public class DownloadListFragment extends Fragment {
 				holder.tvStateRecord = (TextView) convertView
 						.findViewById(R.id.tv_download_child_state_record);
 				holder.tvStateRecord.setText(NONE);
+				/** 进度条  **/
+				holder.progressBar = (ProgressBar) convertView
+						.findViewById(R.id.pb_downloading);
 				convertView.setTag(holder);
 			} else {
 				holder = (ChildViewHolder) convertView.getTag();
@@ -460,6 +470,8 @@ public class DownloadListFragment extends Fragment {
 			TextView tvStateRecord;
 			/** 开始  */
 			ImageView ivStart;
+			/** 进度条 */
+			ProgressBar progressBar;
 		} 
 	}
 }
