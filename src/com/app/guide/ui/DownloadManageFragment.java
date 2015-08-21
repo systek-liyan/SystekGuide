@@ -26,6 +26,8 @@ import com.app.guide.ui.DownloadListFragment.OnDownloadListener;
 
 /**
  * 下载管理，显示已经下载完成的博物馆，供更新删除使用
+ * 数据来源：
+ * 从本地数据库Download.db中的downloadBean表中获取已经下载
  */
 public class DownloadManageFragment extends Fragment implements
 		OnItemDeleteListener, OnDownloadListener ,OnDownloadCompleteListener{
@@ -92,9 +94,9 @@ public class DownloadManageFragment extends Fragment implements
 						downloadCompletedList = response;
 					}
 				});
-		// TODO
-//		mUpdatingAdapter = new DownloadAdapter(getActivity(),
-//				updatingList, R.layout.item_download);
+		
+		mUpdatingAdapter = new DownloadAdapter(getActivity(),
+				updatingList, R.layout.item_download);
 		mDownloadedAdapter = new DownloadAdapter(getActivity(),
 				downloadCompletedList, R.layout.item_download);
 	}
@@ -105,11 +107,13 @@ public class DownloadManageFragment extends Fragment implements
 			Bundle savedInstanceState) {
 		// 初始化View
 		View view = inflater.inflate(R.layout.frag_download_manage, null);
-//		lvUpdating = (ListView) view.findViewById(R.id.lv_download_ing);
+		
+		lvUpdating = (ListView) view.findViewById(R.id.lv_download_ing);
 		lvDownloadComplete = (ListView) view.findViewById(R.id.lv_download_complete);
 		tvUpdating = (TextView) view.findViewById(R.id.tv_download_ing);
 		tvDownloaded = (TextView) view.findViewById(R.id.tv_download_complete);
 		tvNoItems = (TextView) view.findViewById(R.id.tv_download_no_items);
+		
 		lvUpdating.setAdapter(mUpdatingAdapter);
 		lvDownloadComplete.setAdapter(mDownloadedAdapter);
 		updateTvVisibility();

@@ -48,18 +48,23 @@ public class DownloadAdapter extends CommonAdapter<DownloadBean> {
 	 */
 	private Map<String,DownloadClient> clientMap;
 	
+	/** 删除博物馆监听   */
 	private OnItemDeleteListener mItemDeleteListener;
 	
+	/** 更新下载完成监听  */
 	private OnDownloadCompleteListener mDownloadCompleteListener;
 	
+	/** 设置删除博物馆监听 */
 	public void setItemDeleteListener(OnItemDeleteListener listener){
 		this.mItemDeleteListener = listener;
 	}
 	
+	/** 设置下载更新完成监听  */
 	public void setDownloadCompleteListener(OnDownloadCompleteListener listener){
 		this.mDownloadCompleteListener = listener;
 	}
 	
+	/** 下载更新Adapter */
 	public DownloadAdapter(Context context, List<DownloadBean> data,
 			int layoutId) {
 		super(context, data, layoutId);
@@ -76,6 +81,7 @@ public class DownloadAdapter extends CommonAdapter<DownloadBean> {
 	@Override
 	public void notifyDataSetChanged() {
 		super.notifyDataSetChanged();
+		// 首先清除原有记录，例如，经过删除操作，根据新的数据填充
 		clientMap.clear();
 		for(DownloadBean bean : mData){
 			clientMap.put(bean.getMuseumId(), AppService.getDownloadClient(mContext,bean.getMuseumId()));
@@ -125,13 +131,12 @@ public class DownloadAdapter extends CommonAdapter<DownloadBean> {
 			int progress ;
 			@Override
 			public void onSuccess() {
-				Toast.makeText(mContext, getItem(position).getName() + "资源更新下载完成",
+				Toast.makeText(mContext, getItem(position).getName() + ",资源更新下载完成",
 						Toast.LENGTH_SHORT).show();
-				// 设置更新下载完成的回调监听 TODO
 				if(mDownloadCompleteListener != null){
 					mDownloadCompleteListener.onDownloadComplete(getItem(position));
 				}
-				// remove(position); // 坚决不能删除吧，好容易下载
+				// remove(position); // 坚决不能删除吧，好容易下载了更新
 			}
 
 			@Override
@@ -153,6 +158,7 @@ public class DownloadAdapter extends CommonAdapter<DownloadBean> {
 			}
 		});
 
+		/** 下载更新 */
 		ivStart.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -179,11 +185,11 @@ public class DownloadAdapter extends CommonAdapter<DownloadBean> {
 			}
 		});
 
+		// 长按，删除
 		holder.getConvertView().setOnLongClickListener(new OnLongClickListener() {
-
 			@Override
 			public boolean onLongClick(View v) {
-				// TODO Auto-generated method stub
+				// TODO 加入对话框，让用户确认是否删除
 				Toast.makeText(mContext, "删除", Toast.LENGTH_SHORT).show();
 				if(mItemDeleteListener!=null){
 					mItemDeleteListener.onItemDeleted(getItem(position));

@@ -38,8 +38,6 @@
     <!-- 自动导游和手动导游 -->
     <string name="auto_guide">自动导游</string>
     <string name="manally_guide">手动导游</string>
-    <string name="downloading_text">正在下载</string>
-    <string name="downloaded_text">下载完成</string>
     <string name="map_menu_loca">loca</string>
     <string name="map_menu_friend">frie</string>
     <string name="map_menu_toggle_list">toggle</string>
@@ -89,5 +87,7 @@
    	<string name="download_no_items">暂无下载，点击"城市列表"进行下载吧 ！</string>
     <string name="download_items">下载或暂停</string>
     <string name="downloadlist_error">"对不起，暂无新的可下载博物馆列表!"</string>
+    <string name="downloading_text">正在下载更新</string>
+    <string name="downloaded_text">下载完成</string>
    	
 </resources>

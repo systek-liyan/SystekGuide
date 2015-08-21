@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"/>
     
-    <!-- 用于更新暂停，有更新时显示  -->
+    <!-- 用于执行更新暂停操作，有更新时显示  -->
     <ImageView 
         android:id="@+id/iv_download_start"
         android:visibility="gone"

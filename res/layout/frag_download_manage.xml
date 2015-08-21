@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
+    <!-- 正在下载更新 -->
 	<TextView 
 	    android:paddingLeft="10dp"
 	    android:text="@string/downloading_text"
@@ -9,27 +10,30 @@
 	    android:layout_height="wrap_content"
 	    android:layout_width="match_parent"
 	    android:background="@color/lightgray"/>
-    <ListView
-        <!--  -->
+	<!-- 正在更新的博物馆ListView -->
+    <ListView       
         android:layout_below="@id/tv_download_ing"
         android:id="@+id/lv_download_ing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>
+    <!-- 下载完成   -->
 	<TextView 
-	     android:paddingLeft="10dp"
+	    android:paddingLeft="10dp"
 	    android:text="@string/downloaded_text"
 	    android:layout_below="@id/lv_download_ing"
 	    android:id="@+id/tv_download_complete"
 	    android:layout_height="wrap_content"
 	    android:layout_width="match_parent"
 	    android:background="@color/lightgray"/>
+	<!-- 已经下载好的博物馆ListView -->
     <ListView
         android:layout_below="@id/tv_download_complete"
         android:id="@+id/lv_download_complete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>
+    <!-- 既没有下载好的，又没有正在下载更新的，提示到城市列表中选择下载  -->
     <TextView 
         android:visibility="gone"
         android:id="@+id/tv_download_no_items"
