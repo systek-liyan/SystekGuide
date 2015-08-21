@@ -10,7 +10,7 @@
 	    android:layout_width="match_parent"
 	    android:background="@color/lightgray"/>
     <ListView
-        
+        <!--  -->
         android:layout_below="@id/tv_download_ing"
         android:id="@+id/lv_download_ing"
         android:layout_width="match_parent"

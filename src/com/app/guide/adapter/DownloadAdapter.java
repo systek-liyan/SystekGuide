@@ -26,17 +26,26 @@ import com.app.guide.download.DownloadClient.STATE;
 import com.app.guide.service.AppService;
 
 /**
- * 正在下载列表adapter
- * 
+ * 管理已经下载好的博物馆列表adapter，用于更新删除
+ * 类中的"下载"关键词针对更新资源的下载
  */
 public class DownloadAdapter extends CommonAdapter<DownloadBean> {
+	private static String TAG;
 
 	/**
 	 * 存储每一项的progressBar， 复用导致无法更新item中的progress，所以要提取出来
+	 * key：ListView的item position
 	 */
 	private Map<Integer, ProgressBar> progressMap;
 
+	/**
+	 * museumId与ListView item view键值对
+	 */
 	private Map<String,View> viewMap;
+	
+	/**
+	 * museumId与ListView item view键值对
+	 */
 	private Map<String,DownloadClient> clientMap;
 	
 	private OnItemDeleteListener mItemDeleteListener;
@@ -54,39 +63,44 @@ public class DownloadAdapter extends CommonAdapter<DownloadBean> {
 	public DownloadAdapter(Context context, List<DownloadBean> data,
 			int layoutId) {
 		super(context, data, layoutId);
+		TAG = this.getClass().getSimpleName();
+		
 		progressMap = new HashMap<Integer, ProgressBar>();
-//		clientMap = new HashMap<String, DownloadClient>();
-//		for(DownloadBean bean : mData){
-//			clientMap.put(bean.getMuseumId(), AppService.getDownloadClient(mContext,bean.getMuseumId()));
-//		}
+		clientMap = new HashMap<String, DownloadClient>();
+		for(DownloadBean bean : mData){
+			clientMap.put(bean.getMuseumId(), AppService.getDownloadClient(mContext,bean.getMuseumId()));
+		}
 		viewMap = new HashMap<String, View>();
 	}
 
 	@Override
 	public void notifyDataSetChanged() {
 		super.notifyDataSetChanged();
-//		for(DownloadBean bean : mData){
-//			clientMap.put(bean.getMuseumId(), AppService.getDownloadClient(mContext,bean.getMuseumId()));
-//		}
+		clientMap.clear();
+		for(DownloadBean bean : mData){
+			clientMap.put(bean.getMuseumId(), AppService.getDownloadClient(mContext,bean.getMuseumId()));
+		}
 	}
 	
+	/** 删除此处的博物馆 */
 	public void remove(int position) {
 		this.mData.remove(position);
 		notifyDataSetChanged();
 	}
 	
-//	public void startDownload(String museumId){
-//		DownloadClient client = clientMap.get(museumId);
-//		try {
-//			client.start();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		} catch (NumberFormatException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
+	/** 开始下载更新资源 */
+	public void startDownload(String museumId){
+		DownloadClient client = clientMap.get(museumId);
+		try {
+			client.start();
+		} catch (SQLException e) {
+			Log.d(TAG,"startDownload() Sql error,museumId["+museumId+"]," + e.toString());
+		} catch (NumberFormatException e) {
+			Log.d(TAG,"startDownload() NumberFormat error,museumId["+museumId+"]," + e.toString());
+		} catch (IOException e) {
+			Log.d(TAG,"startDownload() IO error,museumId["+museumId+"]," + e.toString());
+		}
+	}
 
 	@Override
 	public void convert(ViewHolder holder, final int position) {
@@ -111,19 +125,18 @@ public class DownloadAdapter extends CommonAdapter<DownloadBean> {
 			int progress ;
 			@Override
 			public void onSuccess() {
-				// TODO Auto-generated method stub
-				Toast.makeText(mContext, getItem(position).getName() + "下载完成",
+				Toast.makeText(mContext, getItem(position).getName() + "资源更新下载完成",
 						Toast.LENGTH_SHORT).show();
+				// 设置更新下载完成的回调监听 TODO
 				if(mDownloadCompleteListener != null){
 					mDownloadCompleteListener.onDownloadComplete(getItem(position));
 				}
-				remove(position);
+				// remove(position); // 坚决不能删除吧，好容易下载
 			}
 
 			@Override
 			public void onStart() {
-				// TODO Auto-generated method stub
-
+				tvMsg.setText("正在准备...");
 			}
 
 			@Override

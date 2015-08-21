@@ -87,16 +87,14 @@ public class DownloadManageFragment extends Fragment implements
 
 		GetBeanHelper.getInstance(getActivity()).getDownloadCompletedBeans(
 				new GetBeanCallBack<List<DownloadBean>>() {
-
 					@Override
 					public void onGetBeanResponse(List<DownloadBean> response) {
 						downloadCompletedList = response;
-
 					}
 				});
 		// TODO
-		mUpdatingAdapter = new DownloadAdapter(getActivity(),
-				updatingList, R.layout.item_download);
+//		mUpdatingAdapter = new DownloadAdapter(getActivity(),
+//				updatingList, R.layout.item_download);
 		mDownloadedAdapter = new DownloadAdapter(getActivity(),
 				downloadCompletedList, R.layout.item_download);
 	}
@@ -107,9 +105,8 @@ public class DownloadManageFragment extends Fragment implements
 			Bundle savedInstanceState) {
 		// 初始化View
 		View view = inflater.inflate(R.layout.frag_download_manage, null);
-		lvUpdating = (ListView) view.findViewById(R.id.lv_download_ing);
-		lvDownloadComplete = (ListView) view
-				.findViewById(R.id.lv_download_complete);
+//		lvUpdating = (ListView) view.findViewById(R.id.lv_download_ing);
+		lvDownloadComplete = (ListView) view.findViewById(R.id.lv_download_complete);
 		tvUpdating = (TextView) view.findViewById(R.id.tv_download_ing);
 		tvDownloaded = (TextView) view.findViewById(R.id.tv_download_complete);
 		tvNoItems = (TextView) view.findViewById(R.id.tv_download_no_items);

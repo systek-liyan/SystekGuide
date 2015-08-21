@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:padding="10dp">
     
+    <!-- 显示下载完成的博物馆名称供更新下载使用 -->
     <TextView 
         android:id="@+id/tv_download_museum_name"
         android:layout_margin="5dp"
@@ -13,6 +14,7 @@
         android:layout_width="wrap_content"
         android:textSize="@dimen/download_text_size"/>
     
+    <!-- 更新的资源文件列表大小,无更新时显示下载好的资源大小  -->
     <TextView 
         android:id="@+id/tv_download_size"
         android:layout_toRightOf="@id/tv_download_museum_name"
@@ -21,14 +23,19 @@
         android:textSize="@dimen/download_text_size"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"/>
-      <ImageView 
+    
+    <!-- 用于更新暂停，有更新时显示  -->
+    <ImageView 
         android:id="@+id/iv_download_start"
+        android:visibility="gone"
+        android:contentDescription="@string/download_items"
         android:layout_alignParentRight="true"
         android:layout_margin="5dp"
         android:layout_width="@dimen/download_icon_size"
         android:layout_height="@dimen/download_icon_size"
         android:src="@drawable/play_btn_play"/>
     
+    <!-- 显示信息，更新时显示进度，平时显示有无更新  -->
     <TextView 
         android:id="@+id/tv_download_msg"
         android:layout_width="wrap_content"
@@ -38,6 +45,7 @@
         android:textSize="@dimen/download_text_size"
         android:textColor="@color/download_msg_color"/>
     
+    <!-- 进度条用于更新时使用，平时用于博物馆之间的分隔线 -->
     <ProgressBar 
         android:id="@+id/pb_downloading"
         android:layout_below="@id/tv_download_museum_name"
@@ -48,6 +56,6 @@
         android:layout_height="wrap_content"
         style="?android:attr/progressBarStyleHorizontal" />
     
-     <!-- 下载完成后就变成更新按钮，下载过程中是开始/按钮 -->
+     <!-- 下载完成后就变成更新按钮，下载过程中是开始按钮 -->
   
 </RelativeLayout>
