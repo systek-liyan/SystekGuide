@@ -19,7 +19,7 @@
        android:layout_height="wrap_content"
        android:layout_toRightOf="@+id/tv_download_child_name"
        android:layout_centerVertical="true"
-       android:textSize="11sp"
+       android:textSize="12sp"
        android:layout_marginLeft="5dp"/>
    <!-- 仅用于记录状态，并不显示  -->
    <TextView 
@@ -29,7 +29,7 @@
        android:layout_height="wrap_content"
        android:layout_toRightOf="@+id/tv_download_child_name"
        android:layout_centerVertical="true"
-       android:textSize="11sp"
+       android:textSize="12sp"
        android:layout_marginLeft="5dp"
    />
    <!-- 开始(下载) -->
@@ -40,6 +40,7 @@
        android:layout_alignParentRight="true"
        android:layout_marginRight="5dp"
        android:layout_centerVertical="true"
+       android:contentDescription="@string/download_items"
        android:src="@drawable/play_btn_play"/>
    <!-- 资源文件大小 -->
    <TextView android:id="@+id/tv_download_child_size"

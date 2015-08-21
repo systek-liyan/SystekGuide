@@ -204,7 +204,7 @@ public class DownloadListFragment extends Fragment {
 					public void onGetBeanResponse(List<DownloadBean> response) {
 						if (response == null || response.size() == 0) {
 							Log.d(TAG,"getDownloadBeanList(),对不起，暂无新的可下载博物馆列表!");
-							Toast.makeText(getActivity(), "对不起，暂无新的可下载博物馆列表!", Toast.LENGTH_LONG).show();
+							Toast.makeText(getActivity(),R.string.download_items,Toast.LENGTH_LONG).show();
 							return;
 						}
 						downloadList = response;
