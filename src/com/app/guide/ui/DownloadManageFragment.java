@@ -27,7 +27,11 @@ import com.app.guide.ui.DownloadListFragment.OnDownloadListener;
 /**
  * 下载管理，显示已经下载完成的博物馆，供更新删除使用
  * 数据来源：
- * 从本地数据库Download.db中的downloadBean表中获取已经下载
+ * （1）从本地数据库Download.db中的downloadBean表中获取已经下载好的博物馆列表，
+ * 此部分由调用GetBeanHelper的getDownloadCompletedBeans()完成
+ * （2）从服务器获得已经下载好的博物馆是否有更新，基本上是按照offlineDownloadHelper的做法，只是加一个上一次下载更新资源的时间，在downloadBean中获得
+ * 下载博物馆的各个Bean，更新数据库，资源文件列表形成队列，通过DownloadClient下载，
+ * 具体流程与DownloadListFragment相同
  */
 public class DownloadManageFragment extends Fragment implements
 		OnItemDeleteListener, OnDownloadListener ,OnDownloadCompleteListener{
