@@ -100,7 +100,7 @@ public abstract class GetBeanStrategy {
 							cityDao = dbHelper.getCityDao();
 							for (CityBean city : response) {
 								cityDao.createOrUpdate(city);
-								Log.w(TAG, city.toString());
+								//Log.w(TAG, city.toString());
 							}
 						} catch (SQLException e) {
 							Log.d(TAG,"write CityName.db error!" + e.toString());
@@ -329,7 +329,7 @@ public abstract class GetBeanStrategy {
 			callBack.onGetBeanResponse(list);
 		} catch (SQLException e) {
 			callBack.onGetBeanResponse(null);
-			Log.d(TAG, "getDownloadingBeans(),Access form network error!" + e.toString());
+			Log.d(TAG, "getDownloadingBeans(),Access form Download.db error!" + e.toString());
 		}
 	}
 
@@ -349,7 +349,8 @@ public abstract class GetBeanStrategy {
 					.eq("isCompleted", true).query();
 			callBack.onGetBeanResponse(list);
 		} catch (SQLException e) {
-			Log.d(TAG, "getDownloadCompletedBeans(),Access form network error!" + e.toString());
+			callBack.onGetBeanResponse(null);
+			Log.d(TAG, "getDownloadCompletedBeans(),Access form Download.db error!" + e.toString());
 		}
 	}
 }

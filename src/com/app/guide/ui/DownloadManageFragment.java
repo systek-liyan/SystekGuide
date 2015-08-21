@@ -25,26 +25,24 @@ import com.app.guide.ui.DownloadListFragment.ExListViewAdapter.ChildViewHolder;
 import com.app.guide.ui.DownloadListFragment.OnDownloadListener;
 
 /**
- * 下载管理，目前显示正在下载和已经下载完成的博物馆
- * @author Administrator
- *
+ * 下载管理，显示已经下载完成的博物馆，供更新删除使用
  */
 public class DownloadManageFragment extends Fragment implements
 		OnItemDeleteListener, OnDownloadListener ,OnDownloadCompleteListener{
 
 	private static String TAG;
-	private DownloadAdapter mDownloadingAdapter;
+	private DownloadAdapter mUpdatingAdapter;
 
 	private DownloadAdapter mDownloadedAdapter;
 
-	private List<DownloadBean> downloadingList = new ArrayList<DownloadBean>();
+	private List<DownloadBean> updatingList = new ArrayList<DownloadBean>();
 
 	private List<DownloadBean> downloadCompletedList = new ArrayList<DownloadBean>();
 
 	/**
-	 * 正在下载的listview
+	 * 正在更新的listview
 	 */
-	private ListView lvDownloading;
+	private ListView lvUpdating;
 
 	/**
 	 * 已经下载完成的listview
@@ -54,7 +52,7 @@ public class DownloadManageFragment extends Fragment implements
 	/**
 	 * 正在下载标题栏 tv
 	 */
-	private TextView tvDownloading;
+	private TextView tvUpdating;
 
 	/**
 	 * 下载完成标题栏tv
@@ -62,7 +60,7 @@ public class DownloadManageFragment extends Fragment implements
 	private TextView tvDownloaded;
 
 	/**
-	 * 当没有正在下载列表 也没有完成列表时显示
+	 * 当没有正在更新列表 也没有下载完成列表时显示
 	 */
 	private TextView tvNoItems;
 
@@ -72,20 +70,20 @@ public class DownloadManageFragment extends Fragment implements
 		TAG = this.getClass().getSimpleName();
 		
 		// DownloadListFragment.setDownloadListener(this);
-//		initData();
+		initData();
 	}
 
 	private void initData() {
-		// TODO Auto-generated method stub
-		GetBeanHelper.getInstance(getActivity()).getDownloadBeanList(
-				new GetBeanCallBack<List<DownloadBean>>() {
-
-					@Override
-					public void onGetBeanResponse(List<DownloadBean> response) {
-						downloadingList = response;
-						// TODO == null
-					}
-				});
+		// TODO 获取正在更新的
+//		GetBeanHelper.getInstance(getActivity()).getDownloadCompletedBeans(
+//				new GetBeanCallBack<List<DownloadBean>>() {
+//
+//					@Override
+//					public void onGetBeanResponse(List<DownloadBean> response) {
+//						updatingList = response;
+//						// TODO == null
+//					}
+//				});
 
 		GetBeanHelper.getInstance(getActivity()).getDownloadCompletedBeans(
 				new GetBeanCallBack<List<DownloadBean>>() {
@@ -96,8 +94,9 @@ public class DownloadManageFragment extends Fragment implements
 
 					}
 				});
-		mDownloadingAdapter = new DownloadAdapter(getActivity(),
-				downloadingList, R.layout.item_download);
+		// TODO
+		mUpdatingAdapter = new DownloadAdapter(getActivity(),
+				updatingList, R.layout.item_download);
 		mDownloadedAdapter = new DownloadAdapter(getActivity(),
 				downloadCompletedList, R.layout.item_download);
 	}
@@ -108,15 +107,15 @@ public class DownloadManageFragment extends Fragment implements
 			Bundle savedInstanceState) {
 		// 初始化View
 		View view = inflater.inflate(R.layout.frag_download_manage, null);
-//		lvDownloading = (ListView) view.findViewById(R.id.lv_download_ing);
-//		lvDownloadComplete = (ListView) view
-//				.findViewById(R.id.lv_download_complete);
-//		tvDownloading = (TextView) view.findViewById(R.id.tv_download_ing);
-//		tvDownloaded = (TextView) view.findViewById(R.id.tv_download_complete);
-//		tvNoItems = (TextView) view.findViewById(R.id.tv_download_no_items);
-//		lvDownloading.setAdapter(mDownloadingAdapter);
-//		lvDownloadComplete.setAdapter(mDownloadedAdapter);
-//		updateTvVisibility();
+		lvUpdating = (ListView) view.findViewById(R.id.lv_download_ing);
+		lvDownloadComplete = (ListView) view
+				.findViewById(R.id.lv_download_complete);
+		tvUpdating = (TextView) view.findViewById(R.id.tv_download_ing);
+		tvDownloaded = (TextView) view.findViewById(R.id.tv_download_complete);
+		tvNoItems = (TextView) view.findViewById(R.id.tv_download_no_items);
+		lvUpdating.setAdapter(mUpdatingAdapter);
+		lvDownloadComplete.setAdapter(mDownloadedAdapter);
+		updateTvVisibility();
 		return view;
 	}
 
@@ -126,12 +125,12 @@ public class DownloadManageFragment extends Fragment implements
 		else
 			tvDownloaded.setVisibility(View.VISIBLE);
 
-		if (mDownloadingAdapter.getCount() == 0)
-			tvDownloading.setVisibility(View.GONE);
+		if (mUpdatingAdapter.getCount() == 0)
+			tvUpdating.setVisibility(View.GONE);
 		else
-			tvDownloading.setVisibility(View.VISIBLE);
+			tvUpdating.setVisibility(View.VISIBLE);
 
-		if (mDownloadingAdapter.getCount() + mDownloadedAdapter.getCount() == 0) {
+		if (mUpdatingAdapter.getCount() + mDownloadedAdapter.getCount() == 0) {
 			tvNoItems.setVisibility(View.VISIBLE);
 		} else {
 			tvNoItems.setVisibility(View.GONE);
@@ -146,24 +145,23 @@ public class DownloadManageFragment extends Fragment implements
 
 	@Override
 	public void onItemDeleted(DownloadBean bean) {
-		// TODO Auto-generated method stub
-//		updateTvVisibility();
+		updateTvVisibility();
 	}
 
 	@Override
 	public void onDownloadComplete(DownloadBean bean) {
 		// TODO Auto-generated method stub
-//		downloadCompletedList.add(bean);
-//		mDownloadedAdapter.notifyDataSetChanged();
+		downloadCompletedList.add(bean);
+		mDownloadedAdapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public void onDownload(DownloadBean downloadBean, ChildViewHolder holder) {
 //		// TODO Auto-generated method stub
 //		Toast.makeText(getActivity(), "开始下载", Toast.LENGTH_SHORT).show();
-//		downloadingList.add(downloadBean);
-//		mDownloadingAdapter.notifyDataSetChanged();
-////		mDownloadingAdapter.startDownload(downloadBean.getMuseumId());
+//		updatingList.add(downloadBean);
+//		mUpdatingAdapter.notifyDataSetChanged();
+////		mUpdatingAdapter.startDownload(downloadBean.getMuseumId());
 //		updateTvVisibility();
 	}
 

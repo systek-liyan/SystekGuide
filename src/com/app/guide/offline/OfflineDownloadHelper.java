@@ -24,7 +24,6 @@ import com.app.guide.Constant;
 import com.app.guide.bean.MuseumBean;
 import com.app.guide.download.DownloadBean;
 import com.app.guide.download.DownloadInfo;
-import com.app.guide.service.AppService;
 import com.app.guide.sql.DatabaseContext;
 import com.app.guide.sql.DownloadManagerHelper;
 import com.app.guide.utils.FastJsonArrayRequest;
