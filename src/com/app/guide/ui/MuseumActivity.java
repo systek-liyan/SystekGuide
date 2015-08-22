@@ -117,7 +117,6 @@ public class MuseumActivity extends BaseActivity {
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 
 	}
