@@ -48,7 +48,6 @@ import com.j256.ormlite.dao.Dao;
  * 下载数据流向 @see OfflineDownloadHelper
  * 可扩展ListView界面选择下载博物馆 @see DownloadListFragment
  * 下载客户端 @see DownloadClient
- * 
  */
 public class OfflineDownloadHelper {
 
@@ -317,7 +316,7 @@ public class OfflineDownloadHelper {
 	}
 
 	/**
-	 * 博物馆下所有资源文件列表
+	 * 博物馆下所有资源文件列表,仅下载列表，并计入本地数据库Download.db的downloadinfo表中
 	 * 
 	 */
 	private void downloadFiles() {

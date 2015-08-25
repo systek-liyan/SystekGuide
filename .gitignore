@@ -28,3 +28,4 @@ proguard/
 
 # Eclipse settings
 .settings/
+.classpath
