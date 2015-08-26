@@ -86,6 +86,7 @@ public class AppService extends Service {
 		map.remove(museumId);
 	}
 
+	/** TODO 当此程序程序停止后，如果服务没有停止，由于此广播接收器的存在，有可能导致app停止对话框。 */
 	public class ConnectivityChangeReceiver extends BroadcastReceiver {
 		
 		@Override

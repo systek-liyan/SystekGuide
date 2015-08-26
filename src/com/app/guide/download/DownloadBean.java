@@ -8,7 +8,7 @@ import com.j256.ormlite.table.DatabaseTable;
 /**
  * 管理博物馆数据包的下载<br>
  * 
- * 一个DownloadBean对象，表示对应一个下载任务 ，即某一个博物馆的离线数据包
+ * 一个DownloadBean对象，表示对应一个下载任务 ，即某一个博物馆的离线数据包（数据和文件（资源））
  * 
  * @author joe_c
  *
@@ -32,7 +32,7 @@ public class DownloadBean {
 	@DatabaseField(columnName = "current", defaultValue = "0")
 	private long current;
 	
-	/** 下载数据的总大小 */
+	/** 下载数据的总大小，文件列表的总大小 */
 	@DatabaseField(columnName = "total", defaultValue = "0")
 	private long total;
 	
