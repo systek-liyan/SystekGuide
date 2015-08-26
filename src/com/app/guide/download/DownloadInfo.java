@@ -6,7 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 /**
  * 记录下载的单个文件的信息<br>
  * 一个downloadInfo对应一个文件下载任务，该bean储存了文件下载的url和存放位置target,以及所属的museumId
- * 
+ * 来自服务器的文件列表存入该表，每下载一个文件，删除对应行 
  * @author joe_c
  * 
  */
