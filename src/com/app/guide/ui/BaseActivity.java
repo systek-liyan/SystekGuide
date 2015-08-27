@@ -14,6 +14,7 @@ import com.app.guide.ui.MenuFragment.HomeClick;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
+/** 所有Activity的基类 */
 public class BaseActivity extends SlidingFragmentActivity {
 
 	protected SlidingMenu sm;
