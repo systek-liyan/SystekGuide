@@ -16,7 +16,7 @@ import com.app.guide.bean.CityBean;
 public class CityAdapter extends CommonAdapter<CityBean> {
 
 	/**
-	 * 存储每个字母的首个城市在城市列表中的位置
+	 * 存储每个字母的首个城市在城市列表中位置
 	 */
 	private HashMap<String, Integer> alphaIndexer;
 
